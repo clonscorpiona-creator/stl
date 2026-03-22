@@ -1,9 +1,27 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
-import { Direction, InquiryStatus } from "@prisma/client";
 import { createNotification } from "@/lib/notifications";
 import { NotificationType } from "@/lib/notifications";
+
+// Valid art directions
+const VALID_DIRECTIONS = [
+  "ILLUSTRATION",
+  "ANIMATION",
+  "DESIGN",
+  "3D",
+  "PHOTOGRAPHY",
+  "TRADITIONAL",
+  "DIGITAL",
+  "CONCEPT_ART",
+];
+
+// Inquiry statuses
+const INQUIRY_STATUS = {
+  NEW: "NEW",
+  IN_PROGRESS: "IN_PROGRESS",
+  CLOSED: "CLOSED",
+} as const;
 
 // 📥 GET /api/inquiries - список заявок текущего пользователя
 export async function GET(req: NextRequest) {
@@ -84,7 +102,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    if (!Object.values(Direction).includes(direction)) {
+    if (!VALID_DIRECTIONS.includes(direction)) {
       return NextResponse.json({ error: "Invalid direction" }, { status: 400 });
     }
 
@@ -159,7 +177,7 @@ export async function POST(req: NextRequest) {
         recipientUserId,
         direction,
         subject,
-        status: InquiryStatus.NEW,
+        status: INQUIRY_STATUS.NEW,
         messages: {
           create: {
             senderUserId: session.userId,

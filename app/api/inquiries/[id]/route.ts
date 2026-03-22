@@ -1,7 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
-import { InquiryStatus } from "@prisma/client";
+
+// Inquiry statuses
+const INQUIRY_STATUS = {
+  NEW: "NEW",
+  ACTIVE: "ACTIVE",
+  IN_PROGRESS: "IN_PROGRESS",
+  CLOSED: "CLOSED",
+} as const;
 
 // 📋 GET /api/inquiries/[id] - просмотр заявки
 export async function GET(
@@ -105,13 +112,13 @@ export async function PATCH(
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    let newStatus: InquiryStatus;
+    let newStatus: string;
     let closedAt: Date | null = null;
 
     if (action === "accept") {
-      newStatus = InquiryStatus.ACTIVE;
+      newStatus = INQUIRY_STATUS.ACTIVE;
     } else if (action === "close") {
-      newStatus = InquiryStatus.CLOSED;
+      newStatus = INQUIRY_STATUS.CLOSED;
       closedAt = new Date();
     } else {
       return NextResponse.json({ error: "Invalid action" }, { status: 400 });
