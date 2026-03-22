@@ -1,0 +1,42 @@
+═══════════════════════════════════════════════════════════
+  ✅ ИСПРАВЛЕНО: NotificationType Import Error
+═══════════════════════════════════════════════════════════
+
+🔧 Проблема:
+   Cloudflare Pages не мог найти экспорт NotificationType
+
+🔧 Решение:
+   Изменил импорты с двух строк на одну с type keyword:
+
+   Было:
+   import { createNotification } from "@/lib/notifications";
+   import { NotificationType } from "@/lib/notifications";
+
+   Стало:
+   import { createNotification, type NotificationType } from "@/lib/notifications";
+
+📦 Коммит: 59b040eb
+📦 Исправлено файлов: 6
+
+───────────────────────────────────────────────────────────
+
+🎯 ЧТО ДЕЛАТЬ СЕЙЧАС:
+
+1. Откройте Cloudflare Dashboard:
+   https://dash.cloudflare.com
+
+2. Workers & Pages → stl-platform → Deployments
+
+3. Нажмите "Retry deployment" на failed build
+
+4. Cloudflare подтянет commit 59b040eb с исправлениями
+
+5. Build должен пройти успешно (5-10 минут)
+
+───────────────────────────────────────────────────────────
+
+✅ Код исправлен
+✅ Изменения на GitHub
+⏳ Ожидание retry deployment
+
+═══════════════════════════════════════════════════════════
