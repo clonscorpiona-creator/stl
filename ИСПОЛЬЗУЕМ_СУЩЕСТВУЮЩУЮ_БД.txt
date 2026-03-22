@@ -1,0 +1,84 @@
+═══════════════════════════════════════════════════════════
+  ✅ ИСПОЛЬЗУЕМ СУЩЕСТВУЮЩУЮ БАЗУ ДАННЫХ
+═══════════════════════════════════════════════════════════
+
+У вас уже есть бесплатная PostgreSQL база на Render.
+Давайте используем её!
+
+───────────────────────────────────────────────────────────
+
+ШАГ 1: Найдите существующую БД
+───────────────────────────────────────────────────────────
+
+1. Откройте: https://dashboard.render.com
+
+2. В левом меню найдите "PostgreSQL" или "Databases"
+
+3. Вы увидите список баз данных
+
+4. Откройте существующую PostgreSQL базу
+
+───────────────────────────────────────────────────────────
+
+ШАГ 2: Скопируйте Internal Database URL
+───────────────────────────────────────────────────────────
+
+1. В открытой базе данных перейдите на вкладку "Connect"
+
+2. Найдите поле "Internal Database URL"
+
+3. Нажмите кнопку копирования (📋)
+
+4. Сохраните URL в блокнот
+
+URL выглядит примерно так:
+postgresql://user:password@host/database
+
+───────────────────────────────────────────────────────────
+
+ШАГ 3: Создайте Web Service
+───────────────────────────────────────────────────────────
+
+1. Dashboard → New + → Web Service
+
+2. Connect repository: clonscorpiona-creator/stl
+
+3. Заполните:
+   Name: stl-platform
+   Region: Frankfurt
+   Branch: master
+   Build Command: npm install && npx prisma generate && npx prisma migrate deploy && npm run build
+   Start Command: npm start
+
+4. Environment Variables (добавьте 6 переменных):
+
+   NODE_ENV
+   → production
+
+   DATABASE_URL
+   → [вставьте Internal Database URL из Шага 2]
+
+   SESSION_SECRET
+   → a8f3k2m9p1q7r4s6t8u2v5w9x3y7z1b4c6d8e2f5g9h3j7k1m4n8p2q6r9s3t7u1v5w9
+
+   NEXT_PUBLIC_APP_URL
+   → https://stl-platform.onrender.com
+
+   NEXT_PUBLIC_BASE_URL
+   → https://stl-platform.onrender.com
+
+   RESEND_API_KEY
+   → (оставьте пустым)
+
+5. Нажмите: Create Web Service
+
+───────────────────────────────────────────────────────────
+
+💬 НАЧНИТЕ С ШАГА 1
+
+Найдите существующую БД и скопируйте её URL
+Потом создайте Web Service
+
+Дайте знать когда начнётся деплой!
+
+═══════════════════════════════════════════════════════════
