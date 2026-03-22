@@ -1,0 +1,75 @@
+═══════════════════════════════════════════════════════════
+  🎯 ЧТО ДЕЛАТЬ СЕЙЧАС - ПРОСТЫЕ ШАГИ
+═══════════════════════════════════════════════════════════
+
+У вас уже есть бесплатная БД на Render.
+Используем её для нашего проекта!
+
+───────────────────────────────────────────────────────────
+
+ШАГ 1: Скопируйте URL существующей БД (2 минуты)
+───────────────────────────────────────────────────────────
+
+1. https://dashboard.render.com
+
+2. Найдите в списке PostgreSQL базу данных
+
+3. Откройте её
+
+4. Вкладка "Connect"
+
+5. Найдите "Internal Database URL"
+
+6. Нажмите кнопку копирования
+
+7. Вставьте URL в блокнот
+
+───────────────────────────────────────────────────────────
+
+ШАГ 2: Создайте Web Service (5 минут)
+───────────────────────────────────────────────────────────
+
+1. Dashboard → New + → Web Service
+
+2. Connect repository: clonscorpiona-creator/stl
+
+3. Name: stl-platform
+
+4. Region: Frankfurt
+
+5. Branch: master
+
+6. Build Command:
+npm install && npx prisma generate && npx prisma migrate deploy && npm run build
+
+7. Start Command:
+npm start
+
+8. Environment Variables (6 штук):
+
+NODE_ENV = production
+
+DATABASE_URL = [URL из Шага 1]
+
+SESSION_SECRET = a8f3k2m9p1q7r4s6t8u2v5w9x3y7z1b4c6d8e2f5g9h3j7k1m4
+
+NEXT_PUBLIC_APP_URL = https://stl-platform.onrender.com
+
+NEXT_PUBLIC_BASE_URL = https://stl-platform.onrender.com
+
+RESEND_API_KEY = (пусто)
+
+9. Create Web Service
+
+───────────────────────────────────────────────────────────
+
+✅ ПОСЛЕ СОЗДАНИЯ:
+
+Деплой начнётся автоматически (10-15 минут)
+Покажите мне скриншот логов!
+
+───────────────────────────────────────────────────────────
+
+💬 НАЧИНАЙТЕ С ШАГА 1!
+
+═══════════════════════════════════════════════════════════
