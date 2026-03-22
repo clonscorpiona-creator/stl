@@ -1,4 +1,4 @@
-import { PrismaClient, Direction, WorkStatus, InquiryStatus } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
@@ -127,13 +127,13 @@ async function main() {
   // Добавляем направления
   await prisma.userDirection.createMany({
     data: [
-      { userId: user1.id, direction: Direction.ILLUSTRATION_2D },
-      { userId: user1.id, direction: Direction.GRAPHIC_DESIGN },
-      { userId: user2.id, direction: Direction.VISUALIZATION_3D },
-      { userId: user2.id, direction: Direction.MODELING_3D },
-      { userId: user3.id, direction: Direction.MOTION },
-      { userId: user3.id, direction: Direction.GRAPHIC_DESIGN },
-      { userId: user4.id, direction: Direction.GRAPHIC_DESIGN },
+      { userId: user1.id, direction: "ILLUSTRATION_2D" },
+      { userId: user1.id, direction: "GRAPHIC_DESIGN" },
+      { userId: user2.id, direction: "VISUALIZATION_3D" },
+      { userId: user2.id, direction: "MODELING_3D" },
+      { userId: user3.id, direction: "MOTION" },
+      { userId: user3.id, direction: "GRAPHIC_DESIGN" },
+      { userId: user4.id, direction: "GRAPHIC_DESIGN" },
     ],
   });
 
@@ -222,8 +222,8 @@ async function main() {
       userId: user1.id,
       title: 'Лесная фея',
       description: 'Концепт персонажа для фэнтези игры',
-      direction: Direction.ILLUSTRATION_2D,
-      status: WorkStatus.PUBLISHED,
+      direction: "ILLUSTRATION_2D",
+      status: "PUBLISHED",
       publishedAt: new Date(),
     },
   });
@@ -233,8 +233,8 @@ async function main() {
       userId: user1.id,
       title: 'Горный пейзаж',
       description: 'Digital painting, создано в Procreate',
-      direction: Direction.ILLUSTRATION_2D,
-      status: WorkStatus.PUBLISHED,
+      direction: "ILLUSTRATION_2D",
+      status: "PUBLISHED",
       publishedAt: new Date(),
     },
   });
@@ -244,8 +244,8 @@ async function main() {
       userId: user2.id,
       title: 'Современная гостиная',
       description: 'Визуализация интерьера в скандинавском стиле',
-      direction: Direction.VISUALIZATION_3D,
-      status: WorkStatus.PUBLISHED,
+      direction: "VISUALIZATION_3D",
+      status: "PUBLISHED",
       publishedAt: new Date(),
     },
   });
@@ -296,9 +296,9 @@ async function main() {
     data: {
       creatorUserId: user5.id,
       recipientUserId: user1.id,
-      direction: Direction.ILLUSTRATION_2D,
+      direction: "ILLUSTRATION_2D",
       subject: 'Иллюстрация для книги',
-      status: InquiryStatus.ACTIVE,
+      status: "ACTIVE",
     },
   });
 
@@ -306,9 +306,9 @@ async function main() {
     data: {
       creatorUserId: user5.id,
       recipientUserId: user2.id,
-      direction: Direction.VISUALIZATION_3D,
+      direction: "VISUALIZATION_3D",
       subject: 'Визуализация квартиры',
-      status: InquiryStatus.NEW,
+      status: "NEW",
     },
   });
 
