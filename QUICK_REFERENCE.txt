@@ -1,0 +1,52 @@
+═══════════════════════════════════════════════════════════
+  ⚡ БЫСТРАЯ СПРАВКА - ДЕПЛОЙ НА RENDER
+═══════════════════════════════════════════════════════════
+
+🎯 ЦЕЛЬ: Задеплоить сайт на https://stl-api.onrender.com
+
+───────────────────────────────────────────────────────────
+
+📋 ТРИ ПРОСТЫХ ШАГА:
+
+1️⃣ https://dashboard.render.com → New + → Blueprint
+
+2️⃣ Выбрать: clonscorpiona-creator/stl (branch: master)
+
+3️⃣ Заполнить 4 переменные → Apply → Ждать 15 минут
+
+───────────────────────────────────────────────────────────
+
+📝 ПЕРЕМЕННЫЕ (скопируйте):
+
+RESEND_API_KEY: (ваш ключ или пусто)
+NEXT_PUBLIC_APP_URL: https://stl-api.onrender.com
+NEXT_PUBLIC_API_URL: https://stl-api.onrender.com
+ALLOWED_ORIGINS: https://stl-api.onrender.com
+
+───────────────────────────────────────────────────────────
+
+❓ ПРОБЛЕМЫ:
+
+Не вижу Apply → RENDER_APPLY_BUTTON.txt
+Blueprint не работает → RENDER_MANUAL_SETUP.txt
+Не понимаю интерфейс → RENDER_VISUAL_GUIDE.txt
+Нужна полная инструкция → START_HERE.txt
+
+───────────────────────────────────────────────────────────
+
+✅ ПОСЛЕ ДЕПЛОЯ:
+
+Проверить: https://stl-api.onrender.com/api/health
+Открыть: https://stl-api.onrender.com
+
+───────────────────────────────────────────────────────────
+
+💬 ГДЕ ВЫ СЕЙЧАС?
+
+□ Ещё не начал → START_HERE.txt
+□ Застрял на Apply → RENDER_APPLY_BUTTON.txt
+□ Деплой идёт → Жду, смотрю логи
+□ Ошибка → Покажите текст ошибки
+□ Готово → AFTER_DEPLOY.txt
+
+═══════════════════════════════════════════════════════════
