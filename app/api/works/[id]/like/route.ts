@@ -42,7 +42,7 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string
 
       await createNotification({
         userId: work.userId,
-        type: NotificationType.WORK_LIKE,
+        type: "WORK_LIKE",
         title: "Новый лайк",
         message: `${liker?.displayName || liker?.username} оценил вашу работу "${work.title}"`,
         linkUrl: `/works/${workId}`

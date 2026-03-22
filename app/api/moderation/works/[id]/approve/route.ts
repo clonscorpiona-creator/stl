@@ -27,7 +27,7 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string
   // 🔔 Create notification for work author
   await createNotification({
     userId: updated.userId,
-    type: NotificationType.WORK_APPROVED,
+    type: "WORK_APPROVED",
     title: "Работа одобрена",
     message: `Ваша работа "${updated.title}" прошла модерацию и опубликована`,
     linkUrl: `/works/${updated.id}`

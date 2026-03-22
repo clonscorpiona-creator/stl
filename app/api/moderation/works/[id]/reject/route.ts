@@ -29,7 +29,7 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string
   // 🔔 Create notification for work author
   await createNotification({
     userId: updated.userId,
-    type: NotificationType.WORK_REJECTED,
+    type: "WORK_REJECTED",
     title: "Работа отклонена",
     message: `Ваша работа "${updated.title}" отклонена модератором. Причина: ${reason || "Не указана"}`,
     linkUrl: `/works/${updated.id}`

@@ -52,7 +52,7 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string
 
     await createNotification({
       userId: work.userId,
-      type: NotificationType.WORK_COMMENT,
+      type: "WORK_COMMENT",
       title: "Новый комментарий",
       message: `${commenter?.displayName || commenter?.username} прокомментировал вашу работу "${work.title}"`,
       linkUrl: `/works/${workId}`

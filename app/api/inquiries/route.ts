@@ -212,7 +212,7 @@ export async function POST(req: NextRequest) {
 
     await createNotification({
       userId: recipientUserId,
-      type: NotificationType.INQUIRY_NEW,
+      type: "INQUIRY_CREATED",
       title: "Новая заявка",
       message: `${sender?.displayName || sender?.username} отправил вам заявку: ${subject}`,
       linkUrl: `/inquiries/${inquiry.id}`

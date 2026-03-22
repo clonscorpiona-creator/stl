@@ -111,7 +111,7 @@ export async function POST(
 
     await createNotification({
       userId: recipientId,
-      type: NotificationType.INQUIRY_MESSAGE,
+      type: "INQUIRY_MESSAGE",
       title: "Новое сообщение в заявке",
       message: `${sender?.displayName || sender?.username}: ${text.substring(0, 50)}${text.length > 50 ? '...' : ''}`,
       linkUrl: `/inquiries/${id}`
