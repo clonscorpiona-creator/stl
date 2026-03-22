@@ -1,0 +1,49 @@
+═══════════════════════════════════════════════════════════
+  🎯 NEXT STEP - CREATE DATABASE
+═══════════════════════════════════════════════════════════
+
+Blueprint doesn't work. Let's create services manually.
+
+───────────────────────────────────────────────────────────
+
+STEP 1: Create PostgreSQL Database
+───────────────────────────────────────────────────────────
+
+1. Open: https://dashboard.render.com
+
+2. Click: New + (top right)
+
+3. Select: PostgreSQL
+
+4. Fill in:
+   Name: stl-db
+   Database: stl_db
+   User: stl_user
+   Region: Frankfurt (EU Central)
+   PostgreSQL Version: 16
+   Plan: Free
+
+5. Click: Create Database
+
+6. Wait 1-2 minutes until status shows "Available"
+
+7. Copy the Internal Database URL:
+   - Open the created database
+   - Go to "Connect" tab
+   - Find "Internal Database URL"
+   - Click copy button
+   - Save it in notepad
+
+───────────────────────────────────────────────────────────
+
+AFTER DATABASE IS CREATED:
+
+Send me a screenshot or say "Database created, URL copied"
+
+Then I'll give you instructions for Step 2 (Web Service)
+
+───────────────────────────────────────────────────────────
+
+START NOW: https://dashboard.render.com → New + → PostgreSQL
+
+═══════════════════════════════════════════════════════════
