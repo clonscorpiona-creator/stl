@@ -1,6 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { Direction } from "@prisma/client";
+
+// Valid art directions
+const VALID_DIRECTIONS = [
+  "ILLUSTRATION",
+  "ANIMATION",
+  "DESIGN",
+  "3D",
+  "PHOTOGRAPHY",
+  "TRADITIONAL",
+  "DIGITAL",
+  "CONCEPT_ART",
+];
 
 // 👥 GET /api/artists - каталог художников с фильтрацией
 export async function GET(req: NextRequest) {
@@ -19,10 +30,10 @@ export async function GET(req: NextRequest) {
     };
 
     // 🎯 Фильтр по направлению
-    if (direction && Object.values(Direction).includes(direction as Direction)) {
+    if (direction && VALID_DIRECTIONS.includes(direction)) {
       whereClause.directions = {
         some: {
-          direction: direction as Direction,
+          direction: direction,
         },
       };
     }

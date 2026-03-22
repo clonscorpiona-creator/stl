@@ -5,9 +5,25 @@
  */
 
 export const MODULES = {
-  works: { name: 'Работы', enabled: true },
-  chat: { name: 'Чат', enabled: true },
-  news: { name: 'Новости', enabled: true },
+  works: {
+    name: 'Работы',
+    enabled: true,
+    icon: '🎨',
+    description: 'Галерея работ пользователей'
+  },
+  chat: {
+    name: 'Чат',
+    enabled: true,
+    icon: '💬',
+    description: 'Каналы и сообщения'
+  },
+  news: {
+    name: 'Новости',
+    enabled: true,
+    icon: '📰',
+    description: 'Новости платформы'
+  },
 } as const;
 
 export type ModuleName = keyof typeof MODULES;
+export type ModuleKey = ModuleName; // Alias for compatibility

@@ -1,7 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Enable standalone output for Docker/containerized deployments
-  output: process.env.NEXT_OUTPUT_MODE || 'standalone',
+  // Output mode: standalone for Render, default for Cloudflare Pages
+  // Only use standalone if explicitly set (for Render backend)
+  ...(process.env.NEXT_OUTPUT_MODE === 'standalone' && { output: 'standalone' }),
 
   // Image optimization
   images: {

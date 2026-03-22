@@ -10,6 +10,12 @@ import { cookies } from 'next/headers';
 
 export interface SessionData {
   userId?: string;
+  user?: {
+    id: string;
+    username: string;
+    email: string;
+    role: string;
+  };
 }
 
 const sessionOptions = {
@@ -24,13 +30,30 @@ const sessionOptions = {
 };
 
 /**
- * Get the current session
+ * Get the current session (for Server Components)
+ */
+export async function getSession(): Promise<IronSession<SessionData>>;
+/**
+ * Get the current session (for API Routes)
  */
 export async function getSession(
   req: NextRequest,
   res: NextResponse
+): Promise<IronSession<SessionData>>;
+/**
+ * Implementation
+ */
+export async function getSession(
+  req?: NextRequest,
+  res?: NextResponse
 ): Promise<IronSession<SessionData>> {
-  return getIronSession<SessionData>(req, res, sessionOptions);
+  if (req && res) {
+    // API Route usage
+    return getIronSession<SessionData>(req, res, sessionOptions);
+  } else {
+    // Server Component usage
+    return getIronSession<SessionData>(await cookies(), sessionOptions);
+  }
 }
 
 /**
