@@ -1,0 +1,65 @@
+═══════════════════════════════════════════════════════════
+  ⚡ ПРОДОЛЖАЕМ - ИСПОЛЬЗУЙТЕ УНИКАЛЬНОЕ ИМЯ
+═══════════════════════════════════════════════════════════
+
+Имя "stl-platform" занято.
+Используйте другое имя!
+
+───────────────────────────────────────────────────────────
+
+🎯 РЕКОМЕНДУЮ:
+
+Name: stl-scorpion161
+
+URL будет: https://stl-scorpion161.onrender.com
+
+───────────────────────────────────────────────────────────
+
+📝 ЗАПОЛНИТЕ ФОРМУ ТАК:
+
+Name:
+stl-scorpion161
+
+Region:
+Frankfurt
+
+Branch:
+master
+
+Build Command:
+npm install && npx prisma generate && npx prisma migrate deploy && npm run build
+
+Start Command:
+npm start
+
+───────────────────────────────────────────────────────────
+
+Environment Variables (6 штук):
+
+1. NODE_ENV
+   production
+
+2. DATABASE_URL
+   [ваш скопированный URL базы данных]
+
+3. SESSION_SECRET
+   a8f3k2m9p1q7r4s6t8u2v5w9x3y7z1b4c6d8e2f5g9h3j7k1m4
+
+4. NEXT_PUBLIC_APP_URL
+   https://stl-scorpion161.onrender.com
+
+5. NEXT_PUBLIC_BASE_URL
+   https://stl-scorpion161.onrender.com
+
+6. RESEND_API_KEY
+   (пусто)
+
+───────────────────────────────────────────────────────────
+
+✅ ПОСЛЕ ЗАПОЛНЕНИЯ:
+
+Нажмите: Create Web Service
+
+Покажите мне скриншот!
+
+═══════════════════════════════════════════════════════════
