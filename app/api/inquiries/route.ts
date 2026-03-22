@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
-import { createNotification } from "@/lib/notifications";
-import { NotificationType } from "@/lib/notifications";
+import { createNotification, type NotificationType } from "@/lib/notifications";
 
 // Valid art directions
 const VALID_DIRECTIONS = [
