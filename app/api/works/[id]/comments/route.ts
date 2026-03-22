@@ -55,7 +55,7 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string
       type: "WORK_COMMENT",
       title: "Новый комментарий",
       message: `${commenter?.displayName || commenter?.username} прокомментировал вашу работу "${work.title}"`,
-      linkUrl: `/works/${workId}`
+      link: `/works/${workId}`
     });
   }
 

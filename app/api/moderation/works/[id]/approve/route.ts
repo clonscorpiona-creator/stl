@@ -30,7 +30,7 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string
     type: "WORK_APPROVED",
     title: "Работа одобрена",
     message: `Ваша работа "${updated.title}" прошла модерацию и опубликована`,
-    linkUrl: `/works/${updated.id}`
+    link: `/works/${updated.id}`
   });
 
   return NextResponse.json({ work: updated });

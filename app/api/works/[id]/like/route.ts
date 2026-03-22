@@ -45,7 +45,7 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string
         type: "WORK_LIKE",
         title: "Новый лайк",
         message: `${liker?.displayName || liker?.username} оценил вашу работу "${work.title}"`,
-        linkUrl: `/works/${workId}`
+        link: `/works/${workId}`
       });
     }
   } catch (e: any) {
