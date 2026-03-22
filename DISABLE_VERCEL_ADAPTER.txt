@@ -1,0 +1,61 @@
+═══════════════════════════════════════════════════════════
+  🔧 ИСПРАВЛЕНИЕ: Отключить Vercel Adapter
+═══════════════════════════════════════════════════════════
+
+🔧 Проблема:
+   Cloudflare автоматически использует @cloudflare/next-on-pages
+   который вызывает "npx vercel build" и падает
+
+🔧 Решение:
+   Отключить автоопределение Next.js в настройках Cloudflare
+
+───────────────────────────────────────────────────────────
+
+🎯 ЧТО ДЕЛАТЬ:
+
+1. Откройте Cloudflare Dashboard:
+   https://dash.cloudflare.com
+
+2. Workers & Pages → stl-platform
+
+3. Settings (вкладка сверху)
+
+4. Builds & deployments (в левом меню)
+
+5. Build configuration → Edit configuration
+
+6. ИЗМЕНИТЕ настройки:
+
+   Framework preset:
+   ❌ Было: Next.js
+   ✅ Стало: None
+
+   Build command:
+   ✅ Оставьте: npm run build
+
+   Build output directory:
+   ✅ Оставьте: out
+
+   Root directory:
+   ✅ Оставьте: (пусто)
+
+7. Save
+
+8. Вернитесь в Deployments → Retry deployment
+
+───────────────────────────────────────────────────────────
+
+💡 Почему это нужно:
+
+Framework preset "Next.js" заставляет Cloudflare использовать
+@cloudflare/next-on-pages adapter, который вызывает Vercel build.
+
+Framework preset "None" использует стандартный Next.js build
+с export mode (через NEXT_OUTPUT_MODE=export).
+
+───────────────────────────────────────────────────────────
+
+✅ После изменения настроек retry deployment
+⏳ Build должен пройти успешно
+
+═══════════════════════════════════════════════════════════
