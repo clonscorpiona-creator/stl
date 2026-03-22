@@ -1,0 +1,145 @@
+═══════════════════════════════════════════════════════════
+  🔧 РУЧНАЯ НАСТРОЙКА RENDER (без Blueprint)
+═══════════════════════════════════════════════════════════
+
+Если Blueprint не работает - создайте сервисы вручную.
+Это займёт на 5 минут больше, но результат тот же.
+
+───────────────────────────────────────────────────────────
+
+ШАГ 1: Создайте PostgreSQL базу данных
+───────────────────────────────────────────────────────────
+
+1. https://dashboard.render.com
+
+2. New + → PostgreSQL
+
+3. Заполните:
+   Name: stl-db
+   Region: Frankfurt (EU Central)
+   PostgreSQL Version: 16 (или последняя)
+   Plan: Free
+
+4. Create Database
+
+5. Дождитесь создания (1-2 минуты)
+
+6. ВАЖНО: Скопируйте Internal Database URL
+   - Откройте созданную БД
+   - Вкладка "Connect"
+   - Скопируйте "Internal Database URL"
+   - Сохраните в блокнот (понадобится в Шаге 2)
+
+───────────────────────────────────────────────────────────
+
+ШАГ 2: Создайте Web Service
+───────────────────────────────────────────────────────────
+
+1. Dashboard → New + → Web Service
+
+2. Connect repository:
+   - Если первый раз: Connect account → GitHub
+   - Выберите: clonscorpiona-creator/stl
+
+3. Заполните настройки:
+
+   Name: stl-api
+
+   Region: Frankfurt (EU Central)
+
+   Branch: master
+
+   Runtime: Node
+
+   Build Command:
+   npm install && npx prisma generate && npx prisma migrate deploy && npm run build:backend
+
+   Start Command:
+   npm start
+
+   Plan: Free
+
+4. НЕ НАЖИМАЙТЕ Create Web Service ещё!
+   Сначала добавьте Environment Variables ↓
+
+───────────────────────────────────────────────────────────
+
+ШАГ 3: Добавьте Environment Variables
+───────────────────────────────────────────────────────────
+
+Прокрутите вниз до раздела "Environment Variables"
+
+Нажмите "Add Environment Variable" для каждой:
+
+1. NODE_ENV
+   Value: production
+
+2. DATABASE_URL
+   Value: [вставьте Internal Database URL из Шага 1]
+
+3. SESSION_SECRET
+   Value: [любая случайная строка, например:]
+   a8f3k2m9p1q7r4s6t8u2v5w9x3y7z1b4c6d8e2f5g9h3j7k1m4n8p2q6r9s3t7u1v5w9
+
+4. RESEND_API_KEY
+   Value: [ваш ключ от Resend, или оставьте пустым]
+
+5. NEXT_PUBLIC_APP_URL
+   Value: https://stl-api.onrender.com
+
+6. NEXT_PUBLIC_API_URL
+   Value: https://stl-api.onrender.com
+
+7. ALLOWED_ORIGINS
+   Value: https://stl-api.onrender.com
+
+───────────────────────────────────────────────────────────
+
+ШАГ 4: Создайте сервис
+───────────────────────────────────────────────────────────
+
+1. Проверьте что все поля заполнены
+
+2. Нажмите "Create Web Service" (внизу страницы)
+
+3. Начнётся деплой (10-15 минут)
+
+───────────────────────────────────────────────────────────
+
+ШАГ 5: Мониторинг
+───────────────────────────────────────────────────────────
+
+1. Откроется страница с логами
+
+2. Следите за процессом:
+   ⏳ Installing dependencies...
+   ⏳ Generating Prisma Client...
+   ⏳ Running migrations...
+   ⏳ Building Next.js...
+   ✅ Starting server...
+
+3. Если ошибка - покажите мне лог
+
+───────────────────────────────────────────────────────────
+
+ШАГ 6: Проверка
+───────────────────────────────────────────────────────────
+
+После успешного деплоя:
+
+1. https://stl-api.onrender.com/api/health
+   Должно показать: {"status":"ok"}
+
+2. https://stl-api.onrender.com
+   Должен открыться сайт
+
+───────────────────────────────────────────────────────────
+
+💡 СОВЕТЫ:
+
+- Для SESSION_SECRET можно использовать любую длинную строку
+- Если нет RESEND_API_KEY - оставьте поле пустым
+- DATABASE_URL должен начинаться с postgresql://
+- Все URL должны быть https://stl-api.onrender.com
+
+═══════════════════════════════════════════════════════════

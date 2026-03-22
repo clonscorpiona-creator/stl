@@ -1,0 +1,115 @@
+═══════════════════════════════════════════════════════════
+  🔍 ГДЕ НАЙТИ КНОПКУ "APPLY" В RENDER
+═══════════════════════════════════════════════════════════
+
+ПРОБЛЕМА: Не видите кнопку Apply
+
+───────────────────────────────────────────────────────────
+
+РЕШЕНИЕ 1: Проверьте что вы на правильном экране
+───────────────────────────────────────────────────────────
+
+1. Dashboard → New + (справа вверху)
+
+2. Выберите ИМЕННО "Blueprint" (не "Web Service"!)
+
+   Должно быть:
+   ✅ Blueprint
+   ❌ Web Service
+   ❌ Static Site
+   ❌ Background Worker
+
+3. Если выбрали не то - начните заново:
+   - Вернитесь на Dashboard
+   - New + → Blueprint
+
+───────────────────────────────────────────────────────────
+
+РЕШЕНИЕ 2: Заполните все обязательные поля
+───────────────────────────────────────────────────────────
+
+Кнопка Apply появится ТОЛЬКО после заполнения:
+
+□ Repository: clonscorpiona-creator/stl
+□ Branch: master
+□ Blueprint file: render-backend.yaml (найдётся автоматически)
+
+□ Environment Variables (4 штуки):
+  - RESEND_API_KEY
+  - NEXT_PUBLIC_APP_URL
+  - NEXT_PUBLIC_API_URL
+  - ALLOWED_ORIGINS
+
+Если хоть одно поле пустое - кнопки не будет!
+
+───────────────────────────────────────────────────────────
+
+РЕШЕНИЕ 3: Прокрутите страницу вниз
+───────────────────────────────────────────────────────────
+
+Кнопка Apply находится ВНИЗУ страницы!
+
+После заполнения всех полей:
+1. Прокрутите страницу до самого низа
+2. Там будет синяя кнопка "Apply"
+
+───────────────────────────────────────────────────────────
+
+РЕШЕНИЕ 4: Попробуйте другой браузер
+───────────────────────────────────────────────────────────
+
+Иногда Render глючит в некоторых браузерах.
+
+Попробуйте:
+- Chrome
+- Firefox
+- Edge
+
+───────────────────────────────────────────────────────────
+
+АЛЬТЕРНАТИВА: Создайте вручную (без Blueprint)
+───────────────────────────────────────────────────────────
+
+Если Blueprint не работает, можно создать вручную:
+
+1. New + → PostgreSQL
+   - Name: stl-db
+   - Region: Frankfurt
+   - Plan: Free
+   - Create Database
+
+2. New + → Web Service
+   - Repository: clonscorpiona-creator/stl
+   - Name: stl-api
+   - Region: Frankfurt
+   - Branch: master
+   - Runtime: Node
+   - Build Command:
+     npm install && npx prisma generate && npx prisma migrate deploy && npm run build:backend
+   - Start Command:
+     npm start
+   - Plan: Free
+
+3. Environment Variables (в Web Service):
+   NODE_ENV=production
+   DATABASE_URL=[скопируйте из stl-db → Connect → Internal Database URL]
+   SESSION_SECRET=[любая случайная строка 32+ символов]
+   RESEND_API_KEY=[ваш ключ]
+   NEXT_PUBLIC_APP_URL=https://stl-api.onrender.com
+   NEXT_PUBLIC_API_URL=https://stl-api.onrender.com
+   ALLOWED_ORIGINS=https://stl-api.onrender.com
+
+4. Create Web Service
+
+───────────────────────────────────────────────────────────
+
+📸 ЧТО МНЕ ПОКАЗАТЬ:
+
+Сделайте скриншот того что видите на экране, или опишите:
+
+1. Какой заголовок страницы? (Blueprint / Web Service / что-то ещё?)
+2. Какие поля видите?
+3. Все ли поля заполнены?
+4. Прокрутили ли до самого низа?
+
+═══════════════════════════════════════════════════════════
