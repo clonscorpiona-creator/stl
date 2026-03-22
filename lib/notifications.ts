@@ -16,14 +16,12 @@ export async function createNotification({
   title,
   message,
   linkUrl,
-  fromUserId,
 }: {
   userId: string;
   type: NotificationType;
   title: string;
   message: string;
   linkUrl?: string;
-  fromUserId?: string;
 }) {
   try {
     const notification = await prisma.notification.create({
@@ -33,7 +31,6 @@ export async function createNotification({
         title,
         message,
         linkUrl,
-        fromUserId,
       },
     });
 
