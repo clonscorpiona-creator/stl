@@ -1,0 +1,72 @@
+═══════════════════════════════════════════════════════════
+  🔧 РЕШЕНИЕ ПРОБЛЕМЫ С ENV VARS
+═══════════════════════════════════════════════════════════
+
+❌ Ошибка: "An error occurred while updating these environment
+           variables. Please try again."
+
+✅ ПРОСТОЕ РЕШЕНИЕ:
+
+───────────────────────────────────────────────────────────
+
+🚀 ВАРИАНТ 1: Деплой БЕЗ переменных (быстрее)
+
+1. Создайте проект на Cloudflare Pages:
+   → https://dash.cloudflare.com
+   → Workers & Pages → Create application → Pages
+   → Connect to Git → clonscorpiona-creator/stl
+
+2. Настройки:
+   Project name: stl-platform
+   Build command: npm run build
+   Build output: out
+
+3. НЕ добавляйте Environment Variables
+
+4. Save and Deploy
+
+5. После успешного деплоя:
+   → Settings → Environment Variables
+   → Добавьте ПО ОДНОЙ переменной:
+     • NEXT_PUBLIC_API_URL = https://stl-api.onrender.com
+     • Сохраните
+     • NEXT_PUBLIC_APP_URL = https://stl-platform.pages.dev
+     • Сохраните
+     • NODE_ENV = production
+     • Сохраните
+
+6. Deployments → Retry deployment
+
+───────────────────────────────────────────────────────────
+
+🚀 ВАРИАНТ 2: Добавляйте переменные по одной
+
+Если уже создали проект:
+
+1. Settings → Environment Variables
+2. Добавьте ОДНУ переменную:
+   NEXT_PUBLIC_API_URL = https://stl-api.onrender.com
+3. Сохраните
+4. Добавьте следующую:
+   NEXT_PUBLIC_APP_URL = https://stl-platform.pages.dev
+5. Сохраните
+6. И так далее...
+
+НЕ добавляйте все сразу - это вызывает ошибку.
+
+───────────────────────────────────────────────────────────
+
+📚 Подробные инструкции:
+
+• CLOUDFLARE_NO_ENV.md - Деплой без env vars
+• ENV_VARS_TROUBLESHOOTING.md - Полное руководство
+
+───────────────────────────────────────────────────────────
+
+💡 Почему это работает:
+
+Frontend может работать без env vars, используя дефолтные
+значения. После добавления переменных и retry, они
+перезапишут дефолты.
+
+═══════════════════════════════════════════════════════════
