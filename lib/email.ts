@@ -3,7 +3,9 @@ import { render } from "@react-email/components";
 import VerificationEmail from "./email-templates/verification";
 import PasswordResetEmail from "./email-templates/password-reset";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resend = process.env.RESEND_API_KEY
+  ? new Resend(process.env.RESEND_API_KEY)
+  : null;
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 const FROM_EMAIL = process.env.FROM_EMAIL || "noreply@stl.com";
@@ -13,7 +15,7 @@ export async function sendVerificationEmail(params: {
   verifyUrl: string;
 }) {
   // If no API key is configured, fall back to console logging
-  if (!process.env.RESEND_API_KEY || process.env.RESEND_API_KEY === "your_resend_api_key_here") {
+  if (!resend) {
     console.log("\n[STL] Verify email for", params.toEmail);
     console.log(params.verifyUrl, "\n");
     return;
@@ -48,7 +50,7 @@ export async function sendPasswordResetEmail(params: {
   resetUrl: string;
 }) {
   // If no API key is configured, fall back to console logging
-  if (!process.env.RESEND_API_KEY || process.env.RESEND_API_KEY === "your_resend_api_key_here") {
+  if (!resend) {
     console.log("\n[STL] Password reset email for", params.toEmail);
     console.log(params.resetUrl, "\n");
     return;
@@ -84,7 +86,7 @@ export async function sendRegistrationEmail(params: {
   password: string;
 }) {
   // If no API key is configured, fall back to console logging
-  if (!process.env.RESEND_API_KEY || process.env.RESEND_API_KEY === "your_resend_api_key_here") {
+  if (!resend) {
     console.log("\n[STL] Registration email for", params.toEmail);
     console.log("Username:", params.username);
     console.log("Password:", params.password, "\n");
