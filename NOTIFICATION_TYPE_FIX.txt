@@ -1,0 +1,42 @@
+═══════════════════════════════════════════════════════════
+  ✅ ИСПРАВЛЕНО: NotificationType Enum Usage
+═══════════════════════════════════════════════════════════
+
+🔧 Проблема:
+   NotificationType использовался как enum (NotificationType.INQUIRY_MESSAGE)
+   вместо строковых литералов
+
+🔧 Решение:
+   Заменил все использования на строки:
+
+   Было:
+   type: NotificationType.INQUIRY_MESSAGE
+
+   Стало:
+   type: "INQUIRY_MESSAGE"
+
+📦 Коммиты: c7e4ca9b, 0a8e5f8d
+📦 Исправлено файлов: 6
+
+───────────────────────────────────────────────────────────
+
+🎯 ЧТО ДЕЛАТЬ СЕЙЧАС:
+
+1. Откройте Cloudflare Dashboard:
+   https://dash.cloudflare.com
+
+2. Workers & Pages → stl-platform → Deployments
+
+3. Нажмите "Retry deployment" на failed build
+
+4. Cloudflare подтянет commit 0a8e5f8d с исправлениями
+
+5. Build должен пройти успешно (5-10 минут)
+
+───────────────────────────────────────────────────────────
+
+✅ Все NotificationType исправлены
+✅ Изменения на GitHub
+⏳ Ожидание retry deployment
+
+═══════════════════════════════════════════════════════════
