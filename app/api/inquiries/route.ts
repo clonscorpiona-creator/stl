@@ -3,7 +3,7 @@ import { getSession } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { Direction, InquiryStatus } from "@prisma/client";
 import { createNotification } from "@/lib/notifications";
-import { NotificationType } from "@prisma/client";
+import { NotificationType } from "@/lib/notifications";
 
 // 📥 GET /api/inquiries - список заявок текущего пользователя
 export async function GET(req: NextRequest) {

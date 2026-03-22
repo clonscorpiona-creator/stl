@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/session";
 import { NextResponse, type NextRequest } from "next/server";
 import { createNotification } from "@/lib/notifications";
-import { NotificationType } from "@prisma/client";
+import { NotificationType } from "@/lib/notifications";
 
 export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string }> }) {
   const res = NextResponse.next();
