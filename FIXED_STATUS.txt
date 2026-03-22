@@ -1,0 +1,54 @@
+═══════════════════════════════════════════════════════════
+  ✅ BUILD ERROR FIXED
+═══════════════════════════════════════════════════════════
+
+🔧 Что было исправлено:
+
+   ❌ Было: build command запускал Prisma на frontend
+   ✅ Стало: Frontend собирается без Prisma
+
+📝 Изменения:
+
+   package.json:
+   - "build": "next build" (для Cloudflare)
+   - "build:backend": "prisma generate && next build" (для Render)
+
+   render-backend.yaml:
+   - buildCommand использует "npm run build:backend"
+
+🚀 Код обновлён на GitHub:
+   Commit: 379dd74e
+   Branch: master
+
+───────────────────────────────────────────────────────────
+
+📋 ЧТО ДЕЛАТЬ СЕЙЧАС:
+
+1️⃣ Cloudflare Pages - Retry деплоя
+
+   Откройте: https://dash.cloudflare.com
+   → Workers & Pages → stl-platform → Deployments
+   → Найдите failed deployment → Retry deployment
+
+   Или создайте новый проект с настройками:
+   - Build command: npm run build
+   - Build output: out
+   - Env vars: NEXT_PUBLIC_API_URL, NEXT_PUBLIC_APP_URL
+
+   📚 Подробно: CLOUDFLARE_RETRY.md
+
+2️⃣ Render - Создайте Backend
+
+   Откройте: https://dashboard.render.com
+   → New + → Blueprint
+   → Выберите репозиторий: clonscorpiona-creator/stl
+   → Apply
+
+   📚 Подробно: RENDER_DEPLOY_STEPS.md
+
+───────────────────────────────────────────────────────────
+
+⏱️  Время: 10-15 минут на оба деплоя
+🔍 Проверка: ./check-deployment.sh
+
+═══════════════════════════════════════════════════════════
