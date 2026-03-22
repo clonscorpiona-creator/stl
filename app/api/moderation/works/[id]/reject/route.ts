@@ -32,7 +32,7 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string
     type: "WORK_REJECTED",
     title: "Работа отклонена",
     message: `Ваша работа "${updated.title}" отклонена модератором. Причина: ${reason || "Не указана"}`,
-    link: `/works/${updated.id}`
+    linkUrl: `/works/${updated.id}`
   });
 
   return NextResponse.json({ work: updated });

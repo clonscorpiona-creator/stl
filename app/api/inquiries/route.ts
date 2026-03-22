@@ -215,7 +215,7 @@ export async function POST(req: NextRequest) {
       type: "INQUIRY_CREATED",
       title: "Новая заявка",
       message: `${sender?.displayName || sender?.username} отправил вам заявку: ${subject}`,
-      link: `/inquiries/${inquiry.id}`
+      linkUrl: `/inquiries/${inquiry.id}`
     });
 
     return NextResponse.json({ inquiry }, { status: 201 });

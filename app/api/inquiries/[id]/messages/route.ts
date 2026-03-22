@@ -114,7 +114,7 @@ export async function POST(
       type: "INQUIRY_MESSAGE",
       title: "Новое сообщение в заявке",
       message: `${sender?.displayName || sender?.username}: ${text.substring(0, 50)}${text.length > 50 ? '...' : ''}`,
-      link: `/inquiries/${id}`
+      linkUrl: `/inquiries/${id}`
     });
 
     return NextResponse.json({ message }, { status: 201 });

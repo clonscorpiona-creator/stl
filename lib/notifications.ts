@@ -15,14 +15,14 @@ export async function createNotification({
   type,
   title,
   message,
-  link,
+  linkUrl,
   fromUserId,
 }: {
   userId: string;
   type: NotificationType;
   title: string;
   message: string;
-  link?: string;
+  linkUrl?: string;
   fromUserId?: string;
 }) {
   try {
@@ -32,7 +32,7 @@ export async function createNotification({
         type,
         title,
         message,
-        link,
+        linkUrl,
         fromUserId,
       },
     });
