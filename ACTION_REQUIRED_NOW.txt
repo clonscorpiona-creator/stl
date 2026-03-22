@@ -1,0 +1,67 @@
+═══════════════════════════════════════════════════════════
+  ⚡ ACTION REQUIRED NOW
+═══════════════════════════════════════════════════════════
+
+You need to add environment variables to stl-scorpion161 service.
+
+───────────────────────────────────────────────────────────
+
+STEP 1: Open the service
+───────────────────────────────────────────────────────────
+
+Go to: https://dashboard.render.com
+Click on: stl-scorpion161
+
+───────────────────────────────────────────────────────────
+
+STEP 2: Go to Environment section
+───────────────────────────────────────────────────────────
+
+In the left menu, click: Environment
+
+───────────────────────────────────────────────────────────
+
+STEP 3: Add 6 variables (copy and paste these)
+───────────────────────────────────────────────────────────
+
+Click "Add Environment Variable" 6 times and fill in:
+
+1. Key: NODE_ENV
+   Value: production
+
+2. Key: DATABASE_URL
+   Value: [paste your PostgreSQL URL from notepad]
+
+3. Key: SESSION_SECRET
+   Value: a8f3k2m9p1q7r4s6t8u2v5w9x3y7z1b4c6d8e2f5g9h3j7k1m4
+
+4. Key: NEXT_PUBLIC_APP_URL
+   Value: https://stl-scorpion161.onrender.com
+
+5. Key: NEXT_PUBLIC_BASE_URL
+   Value: https://stl-scorpion161.onrender.com
+
+6. Key: RESEND_API_KEY
+   Value: (leave empty)
+
+───────────────────────────────────────────────────────────
+
+STEP 4: Save
+───────────────────────────────────────────────────────────
+
+Click: Save Changes
+
+───────────────────────────────────────────────────────────
+
+STEP 5: Deploy
+───────────────────────────────────────────────────────────
+
+Click: Manual Deploy → Deploy latest commit
+
+───────────────────────────────────────────────────────────
+
+💬 SHOW ME:
+
+Screenshot after you complete each step, or tell me where you're stuck.
+
+═══════════════════════════════════════════════════════════
