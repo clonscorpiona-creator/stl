@@ -1,0 +1,371 @@
+.page {
+  min-height: 100vh;
+  background: var(--background);
+  color: var(--text-primary);
+  padding: 32px 20px;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.header {
+  margin-bottom: 32px;
+}
+
+.backLink {
+  color: var(--accent);
+  text-decoration: none;
+  font-size: 14px;
+  transition: color 0.2s;
+  display: inline-block;
+  margin-bottom: 16px;
+  font-weight: 600;
+}
+
+.backLink:hover {
+  color: var(--accent-dark);
+}
+
+.title {
+  font-size: 36px;
+  font-weight: 700;
+  margin: 0 0 10px 0;
+  color: var(--accent);
+}
+
+.subtitle {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.adminLink {
+  display: inline-block;
+  margin-top: 12px;
+  padding: 8px 16px;
+  background: var(--accent);
+  color: var(--foreground);
+  text-decoration: none;
+  border-radius: 2px;
+  font-weight: 600;
+  font-size: 14px;
+  transition: background-color 0.2s;
+}
+
+.adminLink:hover {
+  background: var(--accent-dark);
+}
+
+.content {
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  gap: 24px;
+  align-items: start;
+}
+
+.playerSection {
+  background: rgba(var(--card-bg-rgb), var(--card-opacity));
+  border: none;
+  border-radius: 24px;
+  padding: 32px;
+  box-shadow: var(--shadow-lg);
+}
+
+.nowPlaying {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.coverArt {
+  width: 240px;
+  height: 240px;
+  margin: 0 auto 20px;
+  border-radius: 2px;
+  overflow: hidden;
+  background: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.coverArt img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.coverPlaceholder {
+  font-size: 64px;
+  opacity: 0.5;
+}
+
+.songInfo {
+  margin-bottom: 20px;
+}
+
+.songTitle {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0 0 6px 0;
+  color: var(--text-primary);
+}
+
+.songArtist {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.progressSection {
+  margin-bottom: 20px;
+}
+
+.progressBar {
+  width: 100%;
+  height: 4px;
+  background: rgba(139, 139, 122, 0.15);
+  border-radius: 2px;
+  cursor: pointer;
+  position: relative;
+  margin-bottom: 6px;
+}
+
+.progressFill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 2px;
+  transition: width 0.1s linear;
+}
+
+.timeDisplay {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.controlButton {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(139, 139, 122, 0.1);
+  color: var(--accent);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s;
+  font-size: 18px;
+}
+
+.controlButton:hover:not(:disabled) {
+  background: rgba(139, 139, 122, 0.2);
+}
+
+.controlButton:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.playButton {
+  width: 56px;
+  height: 56px;
+  background: var(--accent);
+  color: var(--foreground);
+  font-size: 24px;
+}
+
+.playButton:hover:not(:disabled) {
+  background: var(--accent-dark);
+}
+
+.volumeSection {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.volumeIcon {
+  font-size: 18px;
+  color: var(--text-secondary);
+}
+
+.volumeSlider {
+  flex: 1;
+  height: 4px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: rgba(139, 139, 122, 0.15);
+  border-radius: 2px;
+  outline: none;
+}
+
+.volumeSlider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--accent);
+  cursor: pointer;
+}
+
+.volumeSlider::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--accent);
+  cursor: pointer;
+  border: none;
+}
+
+.playlistSection {
+  background: rgba(var(--card-bg-rgb), var(--card-opacity));
+  border: none;
+  border-radius: 24px;
+  padding: 24px;
+  max-height: 700px;
+  overflow-y: auto;
+  box-shadow: var(--shadow-lg);
+}
+
+.playlistTitle {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0 0 16px 0;
+  color: var(--text-primary);
+}
+
+.songList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.songItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: left;
+}
+
+.songItem:hover {
+  background: rgba(139, 139, 122, 0.08);
+  border-color: rgba(139, 139, 122, 0.3);
+}
+
+.songItem.active {
+  background: rgba(139, 139, 122, 0.15);
+  border-color: var(--accent);
+}
+
+.songCover {
+  width: 40px;
+  height: 40px;
+  border-radius: 2px;
+  overflow: hidden;
+  background: var(--accent);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.songCover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.songCoverPlaceholder {
+  font-size: 16px;
+  opacity: 0.5;
+}
+
+.songDetails {
+  flex: 1;
+  min-width: 0;
+}
+
+.songItemTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 3px 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.songItemArtist {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.songDuration {
+  font-size: 12px;
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-secondary);
+}
+
+.emptyState p {
+  font-size: 14px;
+  margin: 0;
+}
+
+@media (max-width: 968px) {
+  .content {
+    grid-template-columns: 1fr;
+  }
+
+  .playerSection {
+    order: 1;
+  }
+
+  .playlistSection {
+    order: 2;
+    max-height: 500px;
+  }
+}
+
+@media (max-width: 768px) {
+  .title {
+    font-size: 36px;
+  }
+
+  .coverArt {
+    width: 220px;
+    height: 220px;
+  }
+
+  .playerSection {
+    padding: 24px;
+  }
+}

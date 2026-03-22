@@ -1,0 +1,111 @@
+{
+  "version": "5.22.0",
+  "dialect": "postgresql",
+  "name": "init",
+  "steps": [
+    {
+      "tag": "CreateSchema",
+      "schema": "public"
+    },
+    {
+      "tag": "CreateTable",
+      "table": "users"
+    },
+    {
+      "tag": "CreateTable",
+      "table": "user_directions"
+    },
+    {
+      "tag": "CreateTable",
+      "table": "works"
+    },
+    {
+      "tag": "CreateTable",
+      "table": "work_media"
+    },
+    {
+      "tag": "CreateTable",
+      "table": "tags"
+    },
+    {
+      "tag": "CreateTable",
+      "table": "work_tags"
+    },
+    {
+      "tag": "CreateTable",
+      "table": "work_likes"
+    },
+    {
+      "tag": "CreateTable",
+      "table": "work_comments"
+    },
+    {
+      "tag": "CreateTable",
+      "table": "channels"
+    },
+    {
+      "tag": "CreateTable",
+      "table": "stickers"
+    },
+    {
+      "tag": "CreateTable",
+      "table": "channel_messages"
+    },
+    {
+      "tag": "CreateTable",
+      "table": "channel_bans"
+    },
+    {
+      "tag": "CreateTable",
+      "table": "inquiries"
+    },
+    {
+      "tag": "CreateTable",
+      "table": "inquiry_messages"
+    },
+    {
+      "tag": "CreateTable",
+      "table": "inquiry_attachments"
+    },
+    {
+      "tag": "CreateTable",
+      "table": "user_blocks"
+    },
+    {
+      "tag": "CreateTable",
+      "table": "email_verification_tokens"
+    },
+    {
+      "tag": "CreateTable",
+      "table": "password_reset_tokens"
+    },
+    {
+      "tag": "CreateTable",
+      "table": "news_posts"
+    },
+    {
+      "tag": "CreateTable",
+      "table": "news_comments"
+    },
+    {
+      "tag": "CreateTable",
+      "table": "notifications"
+    },
+    {
+      "tag": "CreateTable",
+      "table": "color_palettes"
+    },
+    {
+      "tag": "CreateTable",
+      "table": "songs"
+    },
+    {
+      "tag": "CreateTable",
+      "table": "platform_settings"
+    },
+    {
+      "tag": "CreateTable",
+      "table": "themes"
+    }
+  ]
+}

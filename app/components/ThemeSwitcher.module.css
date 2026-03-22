@@ -1,0 +1,137 @@
+.themeSwitcher {
+  position: fixed;
+  bottom: 32px;
+  right: 32px;
+  z-index: 1000;
+}
+
+.toggleButton {
+  padding: 12px 20px;
+  background: var(--color-primary);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #F5F1ED;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.toggleButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  background: var(--color-secondary);
+}
+
+.themeMenu {
+  position: absolute;
+  bottom: 60px;
+  right: 0;
+  min-width: 240px;
+  background: var(--color-primary);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+}
+
+.themeMenuHeader {
+  padding: 12px 16px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-accent);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.themeOption {
+  width: 100%;
+  padding: 12px 16px;
+  background: transparent;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  font-size: 14px;
+  color: #E8E3DC;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 500;
+}
+
+.themeOption:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.themeOption.active {
+  background: var(--color-accent);
+  color: var(--color-primary);
+  font-weight: 600;
+  border-left: 3px solid var(--color-secondary);
+}
+
+.themeName {
+  flex: 1;
+}
+
+.defaultButton {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  color: #7F8C8D;
+  padding: 4px;
+  transition: color 0.2s ease;
+  line-height: 1;
+}
+
+.defaultButton:hover {
+  color: #3498DB;
+}
+
+.defaultButton.isDefault {
+  color: #3498DB;
+}
+
+.colorPreview {
+  width: 20px;
+  height: 20px;
+  border-radius: 2px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  flex-shrink: 0;
+}
+
+.checkmark {
+  margin-left: auto;
+  color: #FFFFFF;
+  font-weight: 700;
+  font-size: 16px;
+}
+
+@media (max-width: 768px) {
+  .themeSwitcher {
+    bottom: 20px;
+    right: 20px;
+  }
+
+  .toggleButton {
+    padding: 12px 20px;
+    font-size: 15px;
+  }
+
+  .themeMenu {
+    min-width: 240px;
+    bottom: 65px;
+  }
+
+  .themeOption {
+    padding: 12px 18px;
+  }
+}

@@ -1,0 +1,100 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 0;
+  border: none;
+  background: transparent;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+  position: relative;
+}
+
+.card:hover .hexagon {
+  transform: scale(1.05);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.hexagon {
+  width: 140px;
+  height: 140px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #FFFFFF;
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  margin-bottom: 16px;
+}
+
+.hexagon::before {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  background: #F8F9FA;
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  z-index: 0;
+}
+
+.icon {
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #2C3E50;
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 1;
+}
+
+.card:hover .icon {
+  color: #3498DB;
+  transform: scale(1.1);
+}
+
+.title {
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0 0 8px 0;
+  color: #2C3E50;
+  max-width: 180px;
+}
+
+.description {
+  font-size: 13px;
+  color: #7F8C8D;
+  margin: 0;
+  line-height: 1.5;
+  max-width: 180px;
+}
+
+@media (max-width: 1024px) {
+  .card {
+    position: static !important;
+    margin: 20px;
+  }
+
+  .hexagon {
+    width: 120px;
+    height: 120px;
+  }
+
+  .icon {
+    width: 56px;
+    height: 56px;
+  }
+
+  .title {
+    font-size: 15px;
+  }
+
+  .description {
+    font-size: 12px;
+  }
+}

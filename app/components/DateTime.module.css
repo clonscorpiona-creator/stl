@@ -1,0 +1,29 @@
+.dateTime {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.date {
+  font-weight: 600;
+}
+
+.time {
+  font-family: 'Courier New', Courier, monospace;
+  font-weight: 700;
+  color: var(--accent);
+  font-size: 14px;
+}
+
+@media (max-width: 768px) {
+  .dateTime {
+    font-size: 12px;
+    gap: 10px;
+  }
+
+  .time {
+    font-size: 13px;
+  }
+}

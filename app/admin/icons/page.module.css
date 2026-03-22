@@ -1,0 +1,372 @@
+.page {
+  min-height: 100vh;
+  background: var(--background);
+  padding: 20px;
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  font-size: 18px;
+  color: var(--text-secondary);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.backLink {
+  display: inline-block;
+  color: var(--accent);
+  font-size: 14px;
+  margin-bottom: 12px;
+  transition: color 0.2s;
+}
+
+.backLink:hover {
+  color: var(--accent-light);
+}
+
+.header h1 {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 8px 0;
+}
+
+.header p {
+  font-size: 16px;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.headerActions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.historyButton {
+  padding: 12px 24px;
+  background: rgba(var(--card-light-rgb), var(--card-opacity));
+  color: var(--text-primary);
+  border: 2px solid var(--accent);
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.historyButton:hover {
+  background: var(--accent);
+  transform: translateY(-2px);
+}
+
+.saveButton {
+  padding: 12px 32px;
+  background: var(--accent);
+  color: var(--text-primary);
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.saveButton:hover:not(:disabled) {
+  background: var(--accent-light);
+  transform: translateY(-2px);
+}
+
+.saveButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.status {
+  padding: 16px 24px;
+  border-radius: 12px;
+  margin-bottom: 24px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.statusSuccess {
+  background: rgba(143, 168, 133, 0.2);
+  color: var(--accent);
+  border: 2px solid var(--accent);
+}
+
+.statusError {
+  background: rgba(220, 53, 69, 0.2);
+  color: #dc3545;
+  border: 2px solid #dc3545;
+}
+
+.iconGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 24px;
+}
+
+.iconCard {
+  background: rgba(var(--card-bg-rgb), var(--card-opacity));
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: var(--shadow-md);
+  display: flex;
+  gap: 20px;
+  transition: transform 0.2s;
+}
+
+.iconCard:hover {
+  transform: translateY(-2px);
+}
+
+.iconPreview {
+  width: 80px;
+  height: 80px;
+  background: rgba(var(--card-light-rgb), var(--card-opacity));
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: 2px solid var(--accent-dark);
+}
+
+.iconSvg {
+  width: 48px;
+  height: 48px;
+  color: var(--text-primary);
+}
+
+.iconSvg svg {
+  width: 100%;
+  height: 100%;
+}
+
+.iconImage {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+}
+
+.iconInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.iconInfo h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.iconInfo p {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin: 0;
+  flex: 1;
+}
+
+.iconActions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.uploadButton {
+  padding: 8px 16px;
+  background: var(--accent);
+  color: var(--text-primary);
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-block;
+}
+
+.uploadButton:hover {
+  background: var(--accent-light);
+}
+
+.uploadButton input {
+  display: none;
+}
+
+.resetButton {
+  padding: 8px 16px;
+  background: rgba(var(--card-light-rgb), var(--card-opacity));
+  color: var(--text-primary);
+  border: 2px solid var(--accent-dark);
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.resetButton:hover {
+  border-color: var(--accent);
+  background: var(--accent);
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modalContent {
+  background: rgba(var(--card-bg-rgb), var(--card-opacity));
+  border-radius: 16px;
+  max-width: 600px;
+  width: 100%;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow-lg);
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px;
+  border-bottom: 2px solid var(--border);
+}
+
+.modalHeader h2 {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.closeButton {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: rgba(var(--card-light-rgb), var(--card-opacity));
+  border: none;
+  color: var(--text-primary);
+  font-size: 20px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.closeButton:hover {
+  background: var(--accent);
+}
+
+.historyList {
+  padding: 24px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.emptyHistory {
+  text-align: center;
+  color: var(--text-secondary);
+  padding: 40px 20px;
+}
+
+.historyItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  background: rgba(var(--card-light-rgb), var(--card-opacity));
+  border-radius: 12px;
+  margin-bottom: 12px;
+  transition: all 0.2s;
+}
+
+.historyItem:hover {
+  background: var(--accent-dark);
+}
+
+.historyInfo {
+  flex: 1;
+}
+
+.historyDate {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.historyChanges {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.restoreButton {
+  padding: 8px 20px;
+  background: var(--accent);
+  color: var(--text-primary);
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.restoreButton:hover {
+  background: var(--accent-light);
+  transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+  }
+
+  .headerActions {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .historyButton,
+  .saveButton {
+    width: 100%;
+  }
+
+  .iconGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .iconCard {
+    flex-direction: column;
+  }
+
+  .iconPreview {
+    width: 100%;
+    height: 120px;
+  }
+}

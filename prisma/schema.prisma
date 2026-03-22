@@ -1,0 +1,420 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                      String                   @id @default(uuid()) @map("id")
+  email                   String                   @unique @map("email")
+  passwordHash            String                   @map("password_hash")
+  emailVerifiedAt         DateTime?                @map("email_verified_at")
+  username                String                   @unique @map("username")
+  displayName             String?                  @map("display_name")
+  avatarUrl               String?                  @map("avatar_url")
+  bio                     String?                  @map("bio")
+  howToWork               String?                  @map("how_to_work")
+  theme                   String                   @default("LIGHT") @map("theme")
+  role                    String                   @default("USER") @map("role")
+  isBanned                Boolean                  @default(false) @map("is_banned")
+  createdAt               DateTime                 @default(now()) @map("created_at")
+  updatedAt               DateTime                 @updatedAt @map("updated_at")
+  channelBansGiven        ChannelBan[]             @relation("channel_ban_by")
+  channelBans             ChannelBan[]             @relation("channel_ban_user")
+  deletedChannelMsgs      ChannelMessage[]         @relation("channel_message_deleted_by")
+  channelMessages         ChannelMessage[]
+  createdChannels         Channel[]                @relation("channel_created_by")
+  colorPalettes           ColorPalette[]
+  emailVerificationTokens EmailVerificationToken[]
+  passwordResetTokens     PasswordResetToken[]
+  inquiriesReceived       Inquiry[]                @relation("inquiry_recipient")
+  inquiriesCreated        Inquiry[]                @relation("inquiry_creator")
+  inquiryMessages         InquiryMessage[]
+  deletedNewsComments     NewsComment[]            @relation("news_comment_deleted_by")
+  newsComments            NewsComment[]
+  newsPosts               NewsPost[]
+  notifications           Notification[]
+  uploadedSongs           Song[]
+  blocksReceived          UserBlock[]              @relation("user_blocks_received")
+  blocksGiven             UserBlock[]              @relation("user_blocks_given")
+  directions              UserDirection[]
+  deletedWorkComments     WorkComment[]            @relation("work_comment_deleted_by")
+  workComments            WorkComment[]
+  workLikes               WorkLike[]
+  works                   Work[]
+
+  @@index([role])
+  @@index([createdAt])
+  @@map("users")
+}
+
+model UserDirection {
+  userId    String   @map("user_id")
+  direction String   @map("direction")
+  createdAt DateTime @default(now()) @map("created_at")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, direction])
+  @@index([direction, userId], map: "user_directions_direction_user_idx")
+  @@map("user_directions")
+}
+
+model Work {
+  id              String        @id @default(uuid()) @map("id")
+  userId          String        @map("user_id")
+  title           String        @map("title")
+  description     String        @map("description")
+  direction       String        @map("direction")
+  status          String        @default("DRAFT") @map("status")
+  rejectionReason String?       @map("rejection_reason")
+  publishedAt     DateTime?     @map("published_at")
+  createdAt       DateTime      @default(now()) @map("created_at")
+  updatedAt       DateTime      @updatedAt @map("updated_at")
+  comments        WorkComment[]
+  likes           WorkLike[]
+  media           WorkMedia[]
+  tags            WorkTag[]
+  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt(sort: Desc)], map: "works_user_created_idx")
+  @@index([status, publishedAt(sort: Desc)], map: "works_status_published_idx")
+  @@index([direction, publishedAt(sort: Desc)], map: "works_direction_published_idx")
+  @@map("works")
+}
+
+model WorkMedia {
+  id              String   @id @default(uuid()) @map("id")
+  workId          String   @map("work_id")
+  type            String   @map("type")
+  url             String   @map("url")
+  previewUrl      String?  @map("preview_url")
+  mimeType        String?  @map("mime_type")
+  sizeBytes       BigInt?  @map("size_bytes")
+  width           Int?     @map("width")
+  height          Int?     @map("height")
+  durationSeconds Int?     @map("duration_seconds")
+  sortOrder       Int      @default(0) @map("sort_order")
+  createdAt       DateTime @default(now()) @map("created_at")
+  work            Work     @relation(fields: [workId], references: [id], onDelete: Cascade)
+
+  @@index([workId, sortOrder], map: "work_media_work_sort_idx")
+  @@map("work_media")
+}
+
+model Tag {
+  id        String    @id @default(uuid()) @map("id")
+  slug      String    @unique @map("slug")
+  title     String    @map("title")
+  createdAt DateTime  @default(now()) @map("created_at")
+  works     WorkTag[]
+
+  @@map("tags")
+}
+
+model WorkTag {
+  workId String @map("work_id")
+  tagId  String @map("tag_id")
+  tag    Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+  work   Work   @relation(fields: [workId], references: [id], onDelete: Cascade)
+
+  @@id([workId, tagId])
+  @@index([tagId, workId], map: "work_tags_tag_work_idx")
+  @@map("work_tags")
+}
+
+model WorkLike {
+  userId    String   @map("user_id")
+  workId    String   @map("work_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  work      Work     @relation(fields: [workId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, workId])
+  @@index([workId, createdAt(sort: Desc)], map: "work_likes_work_created_idx")
+  @@map("work_likes")
+}
+
+model WorkComment {
+  id          String    @id @default(uuid()) @map("id")
+  workId      String    @map("work_id")
+  userId      String    @map("user_id")
+  text        String    @map("text")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  deletedAt   DateTime? @map("deleted_at")
+  deletedById String?   @map("deleted_by_id")
+  deletedBy   User?     @relation("work_comment_deleted_by", fields: [deletedById], references: [id])
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  work        Work      @relation(fields: [workId], references: [id], onDelete: Cascade)
+
+  @@index([workId, createdAt], map: "work_comments_work_created_idx")
+  @@index([userId, createdAt(sort: Desc)], map: "work_comments_user_created_idx")
+  @@map("work_comments")
+}
+
+model Channel {
+  id          String           @id @default(uuid()) @map("id")
+  slug        String           @unique @map("slug")
+  title       String           @map("title")
+  description String?          @map("description")
+  isReadonly  Boolean          @default(false) @map("is_readonly")
+  createdById String?          @map("created_by_id")
+  createdAt   DateTime         @default(now()) @map("created_at")
+  bans        ChannelBan[]
+  messages    ChannelMessage[]
+  createdBy   User?            @relation("channel_created_by", fields: [createdById], references: [id])
+
+  @@map("channels")
+}
+
+model Sticker {
+  id        String   @id @map("id")
+  title     String   @map("title")
+  src       String   @map("src")
+  order     Int      @default(0) @map("order")
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([isActive, order], map: "stickers_active_order_idx")
+  @@map("stickers")
+}
+
+model ChannelMessage {
+  id          String    @id @default(uuid()) @map("id")
+  channelId   String    @map("channel_id")
+  userId      String    @map("user_id")
+  type        String    @default("TEXT") @map("type")
+  text        String?   @map("text")
+  stickerId   String?   @map("sticker_id")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  editedAt    DateTime? @map("edited_at")
+  deletedAt   DateTime? @map("deleted_at")
+  deletedById String?   @map("deleted_by_id")
+  deletedBy   User?     @relation("channel_message_deleted_by", fields: [deletedById], references: [id])
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  channel     Channel   @relation(fields: [channelId], references: [id], onDelete: Cascade)
+
+  @@index([channelId, createdAt(sort: Desc)], map: "channel_messages_channel_created_idx")
+  @@index([userId, createdAt(sort: Desc)], map: "channel_messages_user_created_idx")
+  @@map("channel_messages")
+}
+
+model ChannelBan {
+  id         String    @id @default(uuid()) @map("id")
+  channelId  String?   @map("channel_id")
+  userId     String    @map("user_id")
+  reason     String?   @map("reason")
+  bannedById String    @map("banned_by_id")
+  expiresAt  DateTime? @map("expires_at")
+  createdAt  DateTime  @default(now()) @map("created_at")
+  bannedBy   User      @relation("channel_ban_by", fields: [bannedById], references: [id], onDelete: Cascade)
+  user       User      @relation("channel_ban_user", fields: [userId], references: [id], onDelete: Cascade)
+  channel    Channel?  @relation(fields: [channelId], references: [id], onDelete: Cascade)
+
+  @@index([userId, expiresAt], map: "channel_bans_user_expires_idx")
+  @@index([channelId, userId], map: "channel_bans_channel_user_idx")
+  @@map("channel_bans")
+}
+
+model Inquiry {
+  id              String           @id @default(uuid()) @map("id")
+  creatorUserId   String           @map("creator_user_id")
+  recipientUserId String           @map("recipient_user_id")
+  direction       String           @map("direction")
+  subject         String           @map("subject")
+  status          String           @default("NEW") @map("status")
+  closedAt        DateTime?        @map("closed_at")
+  createdAt       DateTime         @default(now()) @map("created_at")
+  updatedAt       DateTime         @updatedAt @map("updated_at")
+  recipient       User             @relation("inquiry_recipient", fields: [recipientUserId], references: [id], onDelete: Cascade)
+  creator         User             @relation("inquiry_creator", fields: [creatorUserId], references: [id], onDelete: Cascade)
+  messages        InquiryMessage[]
+
+  @@index([recipientUserId, status, updatedAt(sort: Desc)], map: "inquiries_recipient_status_updated_idx")
+  @@index([creatorUserId, status, updatedAt(sort: Desc)], map: "inquiries_creator_status_updated_idx")
+  @@map("inquiries")
+}
+
+model InquiryMessage {
+  id           String              @id @default(uuid()) @map("id")
+  inquiryId    String              @map("inquiry_id")
+  senderUserId String              @map("sender_user_id")
+  text         String              @map("text")
+  createdAt    DateTime            @default(now()) @map("created_at")
+  editedAt     DateTime?           @map("edited_at")
+  deletedAt    DateTime?           @map("deleted_at")
+  attachments  InquiryAttachment[]
+  sender       User                @relation(fields: [senderUserId], references: [id], onDelete: Cascade)
+  inquiry      Inquiry             @relation(fields: [inquiryId], references: [id], onDelete: Cascade)
+
+  @@index([inquiryId, createdAt], map: "inquiry_messages_inquiry_created_idx")
+  @@map("inquiry_messages")
+}
+
+model InquiryAttachment {
+  id        String         @id @default(uuid()) @map("id")
+  messageId String         @map("message_id")
+  url       String         @map("url")
+  filename  String         @map("filename")
+  mimeType  String         @map("mime_type")
+  sizeBytes BigInt         @map("size_bytes")
+  width     Int?           @map("width")
+  height    Int?           @map("height")
+  createdAt DateTime       @default(now()) @map("created_at")
+  message   InquiryMessage @relation(fields: [messageId], references: [id], onDelete: Cascade)
+
+  @@index([messageId], map: "inquiry_attachments_message_idx")
+  @@map("inquiry_attachments")
+}
+
+model UserBlock {
+  blockerId String   @map("blocker_id")
+  blockedId String   @map("blocked_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  blocked   User     @relation("user_blocks_received", fields: [blockedId], references: [id], onDelete: Cascade)
+  blocker   User     @relation("user_blocks_given", fields: [blockerId], references: [id], onDelete: Cascade)
+
+  @@id([blockerId, blockedId])
+  @@index([blockedId], map: "user_blocks_blocked_idx")
+  @@map("user_blocks")
+}
+
+model EmailVerificationToken {
+  id        String   @id @default(uuid()) @map("id")
+  userId    String   @map("user_id")
+  tokenHash String   @unique @map("token_hash")
+  expiresAt DateTime @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("email_verification_tokens")
+}
+
+model PasswordResetToken {
+  id        String   @id @default(uuid()) @map("id")
+  userId    String   @map("user_id")
+  tokenHash String   @unique @map("token_hash")
+  expiresAt DateTime @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("password_reset_tokens")
+}
+
+model NewsPost {
+  id          String        @id @default(uuid()) @map("id")
+  slug        String        @unique @map("slug")
+  title       String        @map("title")
+  coverUrl    String?       @map("cover_url")
+  content     String        @map("content")
+  status      String        @default("DRAFT") @map("status")
+  publishedAt DateTime?     @map("published_at")
+  authorId    String        @map("author_id")
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
+  comments    NewsComment[]
+  author      User          @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@index([status, publishedAt(sort: Desc)], map: "news_posts_status_published_idx")
+  @@map("news_posts")
+}
+
+model NewsComment {
+  id          String    @id @default(uuid()) @map("id")
+  postId      String    @map("post_id")
+  userId      String    @map("user_id")
+  text        String    @map("text")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  deletedAt   DateTime? @map("deleted_at")
+  deletedById String?   @map("deleted_by_id")
+  deletedBy   User?     @relation("news_comment_deleted_by", fields: [deletedById], references: [id])
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post        NewsPost  @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@index([postId, createdAt], map: "news_comments_post_created_idx")
+  @@index([userId, createdAt(sort: Desc)], map: "news_comments_user_created_idx")
+  @@map("news_comments")
+}
+
+model Notification {
+  id        String   @id @default(uuid()) @map("id")
+  userId    String   @map("user_id")
+  type      String   @map("type")
+  title     String   @map("title")
+  message   String   @map("message")
+  linkUrl   String?  @map("link_url")
+  isRead    Boolean  @default(false) @map("is_read")
+  createdAt DateTime @default(now()) @map("created_at")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt(sort: Desc)], map: "notifications_user_created_idx")
+  @@index([userId, isRead], map: "notifications_user_read_idx")
+  @@map("notifications")
+}
+
+model ColorPalette {
+  id        String   @id @default(uuid()) @map("id")
+  userId    String   @map("user_id")
+  name      String   @map("name")
+  colors    String   @map("colors")
+  isPublic  Boolean  @default(false) @map("is_public")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt(sort: Desc)], map: "color_palettes_user_created_idx")
+  @@index([isPublic, createdAt(sort: Desc)], map: "color_palettes_public_created_idx")
+  @@map("color_palettes")
+}
+
+model Song {
+  id           String   @id @default(uuid()) @map("id")
+  title        String   @map("title")
+  artist       String?  @map("artist")
+  album        String?  @map("album")
+  coverUrl     String?  @map("cover_url")
+  fileUrl      String   @map("file_url")
+  duration     Int?     @map("duration")
+  fileSize     BigInt?  @map("file_size")
+  uploadedById String   @map("uploaded_by_id")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+  uploadedBy   User     @relation(fields: [uploadedById], references: [id], onDelete: Cascade)
+
+  @@index([createdAt(sort: Desc)], map: "songs_created_idx")
+  @@map("songs")
+}
+
+model PlatformSettings {
+  id          String   @id @default(uuid()) @map("id")
+  key         String   @unique @map("key")
+  value       String   @map("value")
+  type        String   @default("string") @map("type")
+  description String?  @map("description")
+  category    String   @default("general") @map("category")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@index([category])
+  @@map("platform_settings")
+}
+
+model Theme {
+  id        String   @id @default(uuid()) @map("id")
+  name      String   @map("name")
+  settings  String   @map("settings")
+  isActive  Boolean  @default(false) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([isActive])
+  @@map("themes")
+}

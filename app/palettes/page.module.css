@@ -1,0 +1,389 @@
+.page {
+  min-height: 100vh;
+  background: var(--background);
+  color: var(--text-primary);
+}
+
+.main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px 20px;
+}
+
+.header {
+  margin-bottom: 32px;
+  text-align: center;
+}
+
+.backLink {
+  color: var(--accent);
+  text-decoration: none;
+  font-size: 14px;
+  transition: color 0.2s;
+  display: inline-block;
+  margin-bottom: 12px;
+  font-weight: 600;
+}
+
+.backLink:hover {
+  color: var(--accent-dark);
+}
+
+.title {
+  font-size: 32px;
+  font-weight: 700;
+  margin: 0 0 8px 0;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.generator {
+  background: rgba(var(--card-bg-rgb), var(--card-opacity));
+  border: none;
+  border-radius: 24px;
+  padding: 32px;
+  margin-bottom: 32px;
+  box-shadow: var(--shadow-lg);
+}
+
+.colorGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.colorItem {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  position: relative;
+}
+
+.colorPreview {
+  height: 90px;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: border-color 0.2s;
+  border: 2px solid var(--border);
+}
+
+.colorPreview:hover {
+  border-color: var(--accent);
+}
+
+.colorInput {
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  background: var(--background);
+  color: var(--text-primary);
+  font-size: 13px;
+  font-family: monospace;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.colorInput:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.colorPicker {
+  width: 100%;
+  height: 36px;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  cursor: pointer;
+}
+
+.removeButton {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #e74c3c;
+  color: white;
+  border: none;
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.removeButton:hover {
+  background: #c0392b;
+}
+
+.addButton {
+  width: 100%;
+  padding: 10px;
+  background: var(--background);
+  border: 2px dashed var(--border);
+  border-radius: 2px;
+  color: var(--text-secondary);
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-bottom: 20px;
+}
+
+.addButton:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.actionButton {
+  padding: 8px 14px;
+  background: var(--background);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.actionButton:hover {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--foreground);
+}
+
+.saveSection {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+}
+
+.nameInput {
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  background: var(--background);
+  color: var(--text-primary);
+  font-size: 14px;
+}
+
+.nameInput:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.checkbox input {
+  cursor: pointer;
+}
+
+.saveButton {
+  padding: 10px 20px;
+  background: var(--accent);
+  color: var(--foreground);
+  border: none;
+  border-radius: 2px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.saveButton:hover {
+  background: var(--accent-dark);
+}
+
+.saveButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.loginPrompt {
+  text-align: center;
+  padding: 16px;
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+.loginPrompt a {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.loginPrompt a:hover {
+  color: var(--accent-dark);
+}
+
+.savedSection {
+  margin-top: 32px;
+}
+
+.sectionTitle {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0 0 20px 0;
+}
+
+.empty {
+  text-align: center;
+  color: var(--text-secondary);
+  padding: 32px;
+  font-size: 14px;
+}
+
+.paletteList {
+  display: grid;
+  gap: 12px;
+}
+
+.paletteCard {
+  background: rgba(var(--card-bg-rgb), var(--card-opacity));
+  border: none;
+  border-radius: 20px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-lg);
+}
+
+.paletteCard:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-xl);
+}
+
+.paletteColors {
+  display: flex;
+  gap: 4px;
+  flex: 1;
+}
+
+.paletteColor {
+  width: 36px;
+  height: 36px;
+  border-radius: 2px;
+  border: 1px solid var(--border);
+}
+
+.paletteInfo {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.paletteInfo strong {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.publicBadge {
+  padding: 3px 8px;
+  background: var(--accent);
+  color: var(--foreground);
+  font-size: 11px;
+  border-radius: 2px;
+  font-weight: 600;
+}
+
+.paletteActions {
+  display: flex;
+  gap: 8px;
+}
+
+.loadButton,
+.deleteButton {
+  padding: 8px 14px;
+  border-radius: 2px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  border: none;
+}
+
+.loadButton {
+  background: var(--accent);
+  color: var(--foreground);
+}
+
+.deleteButton {
+  background: #e74c3c;
+  color: white;
+}
+
+.loadButton:hover {
+  background: var(--accent-dark);
+}
+
+.deleteButton:hover {
+  background: #c0392b;
+}
+
+@media (max-width: 768px) {
+  .main {
+    padding: 20px 16px;
+  }
+
+  .title {
+    font-size: 28px;
+  }
+
+  .generator {
+    padding: 20px;
+  }
+
+  .colorGrid {
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 12px;
+  }
+
+  .actions {
+    flex-direction: column;
+  }
+
+  .actionButton {
+    width: 100%;
+  }
+
+  .paletteCard {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .paletteColors {
+    justify-content: center;
+  }
+
+  .paletteActions {
+    width: 100%;
+  }
+
+  .loadButton,
+  .deleteButton {
+    flex: 1;
+  }
+}

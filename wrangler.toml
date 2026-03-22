@@ -1,0 +1,18 @@
+# Cloudflare Pages configuration for STL Platform Frontend
+
+name = "stl-platform"
+compatibility_date = "2024-01-01"
+
+# Pages configuration
+pages_build_output_dir = "out"
+
+# Environment variables for Cloudflare Pages
+[env.production]
+# These will be set in Cloudflare Pages dashboard
+# NEXT_PUBLIC_API_URL = "https://stl-api.onrender.com"
+# NEXT_PUBLIC_APP_URL = "https://stl-platform.pages.dev"
+
+[env.preview]
+# Preview environment variables
+# NEXT_PUBLIC_API_URL = "https://stl-api.onrender.com"
+# NEXT_PUBLIC_APP_URL = "https://preview.stl-platform.pages.dev"

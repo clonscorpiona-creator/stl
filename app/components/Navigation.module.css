@@ -1,0 +1,35 @@
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.navLink {
+  padding: 10px 20px;
+  border-radius: 8px;
+  background: transparent;
+  color: #E8E3DC;
+  transition: all 0.2s ease;
+  font-weight: 500;
+  font-size: 15px;
+}
+
+.navLink:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #FFFFFF;
+}
+
+@media (max-width: 968px) {
+  .nav {
+    order: 3;
+    width: 100%;
+    justify-content: flex-start;
+    gap: 6px;
+  }
+
+  .navLink {
+    padding: 8px 14px;
+    font-size: 14px;
+  }
+}
