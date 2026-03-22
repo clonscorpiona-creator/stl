@@ -18,6 +18,9 @@ import HeroButtons from "./components/HeroButtons";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 
+// Force dynamic rendering to avoid timeout during build
+export const dynamic = 'force-dynamic';
+
 // Enable ISR with 5-minute revalidation
 export const revalidate = 300;
 
