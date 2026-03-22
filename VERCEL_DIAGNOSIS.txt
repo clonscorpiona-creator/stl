@@ -1,0 +1,69 @@
+═══════════════════════════════════════════════════════════
+  🔍 ДИАГНОСТИКА: Vercel Build всё ещё запускается
+═══════════════════════════════════════════════════════════
+
+⚠️ Проблема:
+   Даже после изменения Framework preset на "None",
+   логи показывают "npx vercel build"
+
+───────────────────────────────────────────────────────────
+
+🎯 ВОЗМОЖНЫЕ ПРИЧИНЫ:
+
+1️⃣ Смотрите на СТАРЫЙ build (до изменения настроек)
+
+   Решение:
+   - Проверьте timestamp: 21:23:56
+   - Сколько сейчас времени?
+   - Если прошло больше 5 минут - это старый build
+   - Найдите НОВЫЙ build в списке (самый верхний)
+
+2️⃣ Настройки не сохранились
+
+   Решение:
+   - Settings → Builds & deployments
+   - Build configuration
+   - Проверьте что Framework preset = "None"
+   - Если там всё ещё "Next.js" - измените снова и Save
+
+3️⃣ Нужно сделать новый commit чтобы триггернуть build
+
+   Решение:
+   - Новый build запустится автоматически
+   - Последний commit: 7da371eb
+   - Подождите 1-2 минуты
+
+───────────────────────────────────────────────────────────
+
+🔧 АЛЬТЕРНАТИВНОЕ РЕШЕНИЕ:
+
+Если ничего не помогает, попробуйте создать НОВЫЙ проект:
+
+1. Cloudflare Dashboard → Workers & Pages
+2. Create application → Pages → Connect to Git
+3. Выберите репозиторий: clonscorpiona-creator/stl
+4. Project name: stl-platform-v2 (новое имя)
+5. Framework preset: **None** (важно!)
+6. Build command: npm run build
+7. Build output directory: out
+8. Environment Variables:
+   - NODE_ENV=production
+   - NEXT_OUTPUT_MODE=export
+   - NEXT_PUBLIC_API_URL=https://stl-api.onrender.com
+   - NEXT_PUBLIC_APP_URL=https://stl-platform-v2.pages.dev
+   - NEXT_PUBLIC_BASE_URL=https://stl-api.onrender.com
+9. Save and Deploy
+
+───────────────────────────────────────────────────────────
+
+📋 ЧТО МНЕ НУЖНО ОТ ВАС:
+
+Скопируйте ПЕРВЫЕ 20-30 строк из лога build
+(с самого начала, где показано что устанавливается)
+
+Это поможет понять:
+- Какой commit используется
+- Какие команды выполняются
+- Когда именно запускается Vercel adapter
+
+═══════════════════════════════════════════════════════════
