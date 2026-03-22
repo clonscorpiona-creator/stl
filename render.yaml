@@ -29,7 +29,3 @@ services:
     env: docker
     region: frankfurt
     plan: free
-    disk:
-      name: stl-db-disk
-      mountPath: /var/lib/postgresql/data
-      sizeGB: 1
