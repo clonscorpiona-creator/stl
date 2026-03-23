@@ -15,6 +15,7 @@ import MinimalistOliveLayout from "./components/MinimalistOliveLayout";
 import LayoutGuide from "./components/LayoutGuide";
 import SectionLabels from "./components/SectionLabels";
 import StlLogo from "./components/StlLogo";
+import ClockCalendar from "./components/ClockCalendar";
 import HeroButtons from "./components/HeroButtons";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
@@ -65,7 +66,9 @@ export default async function Home() {
               Объединяем талантливых художников, дизайнеров и 3D-специалистов в одном пространстве для роста и вдохновения
             </p>
           </div>
-          <div className={styles.heroRight}></div>
+          <div className={styles.heroRight}>
+            <ClockCalendar />
+          </div>
         </div>
         <div className={styles.topToolbar}>
           <HeroButtons styles={styles} />

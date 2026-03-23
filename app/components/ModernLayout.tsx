@@ -10,6 +10,7 @@ import styles from "./page-modern.module.css";
 import LayoutGuide from "./LayoutGuide";
 import SectionLabels from "./SectionLabels";
 import StlLogo from "./StlLogo";
+import ClockCalendar from "./ClockCalendar";
 import HeroButtons from "./HeroButtons";
 import Header from "./Header";
 import Footer from "./Footer";
@@ -57,7 +58,9 @@ export default async function ModernLayout() {
               Платформа для художников, дизайнеров и 3D-специалистов, где рождаются шедевры
             </p>
           </div>
-          <div className={styles.heroRight}></div>
+          <div className={styles.heroRight}>
+            <ClockCalendar />
+          </div>
         </div>
         <div className={styles.topToolbar}>
           <HeroButtons styles={styles} />

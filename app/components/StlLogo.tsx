@@ -8,12 +8,10 @@
 export default function StlLogo() {
   return (
     <svg
-      width="100%"
-      height="100%"
+      className="stl-logo"
       viewBox="0 0 200 200"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      style={{ maxWidth: '120px', maxHeight: '120px' }}
     >
       {/* Background circle */}
       <circle cx="100" cy="100" r="95" fill="currentColor" fillOpacity="0.1" />
