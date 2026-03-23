@@ -195,13 +195,13 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: clamp(7px, 0.9vw, 13px) clamp(14px, 1.8vw, 29px);
+  padding: clamp(6px, 0.72vw, 10px) clamp(11px, 1.44vw, 23px);
   background: #808D5A;
   color: #FFFFFF;
   text-decoration: none;
   border-radius: 5px;
   font-weight: 600;
-  font-size: clamp(11px, 1.08vw, 14px);
+  font-size: clamp(9px, 0.864vw, 11px);
   transition: all 0.3s ease;
   border: 0.5px solid #808D5A;
   white-space: nowrap;
