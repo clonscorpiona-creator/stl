@@ -532,6 +532,8 @@
   margin-left: auto;
   margin-right: auto;
   padding: clamp(12px, 2vh, 40px) 0;
+  height: 70px;
+  overflow: hidden;
 }
 
 .infoGrid {
