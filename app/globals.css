@@ -159,16 +159,6 @@ header .app-container {
   border-bottom: 3px solid #D4A574;
 }
 
-header .app-container::before {
-  content: 'HEADER';
-  position: absolute;
-  left: 20px;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 2px;
-  color: #D4A574;
-  opacity: 0.8;
-}
 
 /* Footer */
 footer {
@@ -198,16 +188,6 @@ footer .app-container {
   border-top: 3px solid #8B9F6A;
 }
 
-footer .app-container::before {
-  content: 'FOOTER';
-  position: absolute;
-  left: 20px;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 2px;
-  color: #D4A574;
-  opacity: 0.8;
-}
 
 /* Sidebar */
 .main-sidebar {
@@ -232,20 +212,6 @@ footer .app-container::before {
   border-right: 3px solid #D4A574;
 }
 
-.main-sidebar .sidebar-container::before {
-  content: 'SIDEBAR';
-  position: absolute;
-  top: 20px;
-  left: 50%;
-  transform: translateX(-50%) rotate(90deg);
-  transform-origin: center;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 2px;
-  color: #D4A574;
-  opacity: 0.8;
-  white-space: nowrap;
-}
 
 /* App layout */
 .app-body {
@@ -275,19 +241,11 @@ footer .app-container::before {
     padding: 0;
   }
 
-  header .app-container::before {
-    font-size: 9px;
-    left: 16px;
-  }
 
   footer .app-container {
     height: 90px;
   }
 
-  footer .app-container::before {
-    font-size: 9px;
-    left: 16px;
-  }
 }
 
 @media (max-width: 768px) {
@@ -299,21 +257,11 @@ footer .app-container::before {
     height: 36px;
   }
 
-  header .app-container::before {
-    font-size: 8px;
-    left: 12px;
-    letter-spacing: 1.5px;
-  }
 
   footer .app-container {
     height: 80px;
   }
 
-  footer .app-container::before {
-    font-size: 8px;
-    left: 12px;
-    letter-spacing: 1.5px;
-  }
 }
 
 @media (prefers-color-scheme: dark) {
