@@ -2,6 +2,8 @@
 
 .page {
   width: 100%;
+  max-width: 100vw;
+  margin: 0 auto;
   font-family: var(--font-montserrat), 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
 }
 
@@ -9,19 +11,32 @@
   background: #0d47a1;
   box-shadow: 0 -4px 12px rgba(13, 71, 161, 0.25), 0 -2px 6px rgba(13, 71, 161, 0.15);
   border-top: 3px solid #1565c0;
+  width: 99%;
+  max-width: 99vw;
+}
+
+.page header .app-container {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 3px solid #1565c0;
+  width: 90%;
+  max-width: 90vw;
 }
 
 /* Layout Wrapper */
 .layoutWrapper {
   width: 100%;
+  max-width: 2560px;
   margin: 0 auto;
-  padding-left: 20px;
+  padding-left: 16px;
+  padding-right: 16px;
 }
 
 .contentWrapper {
   display: flex;
   gap: 24px;
-  padding: 0 32px 0 0;
+  padding: 0 16px;
 }
 
 .main {
@@ -32,77 +47,79 @@
 
 /* Hero Section */
 .hero {
-  position: relative;
   width: 100%;
-  height: 600px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  min-height: 200px;
   background: linear-gradient(135deg, #0d47a1 0%, #1565c0 50%, #1976d2 100%);
-  padding: 0 80px;
 }
 
-.heroContent {
-  width: 100%;
+.heroSidebar {
+  background: linear-gradient(135deg, #0d47a1 0%, #1565c0 50%, #1976d2 100%);
+  padding: 20px 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
   color: #FFFFFF;
-  z-index: 2;
+  width: 100%;
+  min-height: 200px;
+  gap: 20px;
 }
 
 .heroLabel {
-  display: inline-block;
-  padding: 8px 16px;
-  background: rgba(255, 255, 255, 0.15);
-  border-radius: 20px;
-  font-size: 13px;
-  font-weight: 600;
-  color: #FFFFFF;
-  margin-bottom: 24px;
+  font-size: 12px;
   text-transform: uppercase;
-  letter-spacing: 1px;
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  letter-spacing: 2px;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 0;
+  margin-right: 20px;
+  font-weight: 600;
+  white-space: nowrap;
 }
 
 .heroTitle {
-  font-size: 64px;
+  font-size: 24px;
   font-weight: 700;
-  line-height: 1.1;
-  margin: 0 0 20px 0;
-  font-family: 'Georgia', serif;
+  line-height: 1.2;
+  margin: 0 20px 0 0;
   color: #FFFFFF;
+  white-space: nowrap;
 }
 
-.heroSubtitle {
-  font-size: 16px;
-  line-height: 1.6;
+.heroText {
+  font-size: 14px;
+  line-height: 1.4;
   color: rgba(255, 255, 255, 0.9);
-  margin: 0 0 32px 0;
-  max-width: 500px;
+  margin: 0 20px 0 0;
+  white-space: nowrap;
 }
 
 .heroButtons {
-  position: absolute;
-  top: 20px;
-  right: 20px;
   display: flex;
-  gap: 16px;
-  flex-wrap: wrap;
+  gap: 12px;
+  flex-wrap: nowrap;
+  justify-content: center;
+  margin-top: auto;
+  margin-bottom: 5px;
 }
 
 .userGreeting {
   display: flex;
-  flex-direction: column;
-  gap: 6px;
-  padding: 16px 24px;
+  flex-direction: row;
+  gap: 12px;
+  padding: 8px 16px;
   background: rgba(255, 255, 255, 0.15);
-  border-radius: 16px;
+  border-radius: 0;
   border: 2px solid rgba(255, 255, 255, 0.3);
   backdrop-filter: blur(10px);
+  align-items: center;
+  white-space: nowrap;
 }
 
 .greetingText {
-  font-size: 18px;
+  font-size: 14px;
   color: #FFFFFF;
   font-weight: 500;
+  white-space: nowrap;
 }
 
 .greetingText strong {
@@ -111,24 +128,29 @@
 }
 
 .userRole {
-  font-size: 13px;
+  font-size: 11px;
   color: rgba(255, 255, 255, 0.8);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 1px;
+  white-space: nowrap;
 }
 
 .heroButton {
-  display: inline-block;
-  padding: 14px 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3px 5px;
   background: #FFFFFF;
   color: #0d47a1;
   text-decoration: none;
-  border-radius: 30px;
+  border-radius: 5px;
   font-weight: 600;
-  font-size: 15px;
+  font-size: 13px;
   transition: all 0.3s ease;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  border: 0.5px solid #FFFFFF;
+  white-space: nowrap;
 }
 
 .heroButton:hover {
@@ -138,16 +160,19 @@
 }
 
 .heroButtonSecondary {
-  display: inline-block;
-  padding: 14px 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3px 5px;
   background: transparent;
   color: #FFFFFF;
   text-decoration: none;
-  border-radius: 30px;
+  border-radius: 5px;
   font-weight: 600;
-  font-size: 15px;
+  font-size: 13px;
   transition: all 0.3s ease;
-  border: 2px solid #FFFFFF;
+  border: 1px solid #FFFFFF;
+  white-space: nowrap;
 }
 
 .heroButtonSecondary:hover {
@@ -160,13 +185,16 @@
 .whySection {
   background: #FFFFFF;
   padding: 80px 0;
-  width: 100%;
+  width: 98%;
+  max-width: 98vw;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .whyContainer {
   width: 100%;
   margin: 0 auto;
-  padding: 0 32px;
+  padding: 0 16px;
 }
 
 .whyTitle {
@@ -214,13 +242,16 @@
 .missionSection {
   background: #1a1a1a;
   padding: 80px 0;
-  width: 100%;
+  width: 98%;
+  max-width: 98vw;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .missionContainer {
   width: 100%;
   margin: 0 auto;
-  padding: 0 32px;
+  padding: 0 16px;
 }
 
 .missionHeader {
@@ -349,22 +380,33 @@
 
 @media (max-width: 968px) {
   .hero {
-    padding: 0 32px;
-    height: 450px;
+    min-height: auto;
+  }
+
+  .heroSidebar {
+    padding: 16px 24px;
+    flex-wrap: wrap;
+    gap: 20px;
   }
 
   .heroTitle {
-    font-size: 44px;
+    font-size: 20px;
+    margin-right: 12px;
   }
 
-  .heroSubtitle {
-    font-size: 15px;
+  .heroText {
+    font-size: 13px;
+    margin-right: 12px;
   }
 
-  .heroButton,
+  .heroButton {
+    padding: 3px 5px;
+    font-size: 13px;
+  }
+
   .heroButtonSecondary {
-    padding: 12px 28px;
-    font-size: 14px;
+    padding: 3px 5px;
+    font-size: 13px;
   }
 
   .whySection,
@@ -383,22 +425,26 @@
 }
 
 @media (max-width: 768px) {
-  .hero {
-    padding: 0 24px;
-    height: 400px;
+  .heroSidebar {
+    padding: 12px 16px;
+    gap: 16px;
   }
 
   .heroTitle {
-    font-size: 36px;
+    font-size: 18px;
   }
 
-  .heroSubtitle {
-    font-size: 14px;
+  .heroText {
+    font-size: 12px;
+  }
+
+  .heroLabel {
+    font-size: 11px;
   }
 
   .heroButton,
   .heroButtonSecondary {
-    padding: 10px 24px;
+    padding: 12px 24px;
     font-size: 13px;
   }
 

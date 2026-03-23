@@ -2,6 +2,8 @@
 
 .page {
   width: 100%;
+  max-width: 100vw;
+  margin: 0 auto;
   font-family: var(--font-montserrat), 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
 }
 
@@ -10,23 +12,41 @@
   box-shadow: 0 -4px 12px rgba(234, 215, 195, 0.25), 0 -2px 6px rgba(234, 215, 195, 0.15);
   border-top: 3px solid #D4C4B0;
   color: #2C1810;
+  width: 99%;
+  max-width: 99vw;
 }
 
 .page footer .app-container::before {
   color: #8B5A3C;
 }
 
+.page header .app-container {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 3px solid #D4C4B0;
+  color: #2C1810;
+  width: 90%;
+  max-width: 90vw;
+}
+
+.page header .app-container::before {
+  color: #8B5A3C;
+}
+
 /* Layout Wrapper */
 .layoutWrapper {
   width: 100%;
+  max-width: 2560px;
   margin: 0 auto;
-  padding-left: 20px;
+  padding-left: 16px;
+  padding-right: 16px;
 }
 
 .contentWrapper {
   display: flex;
   gap: 24px;
-  padding: 0 32px 0 0;
+  padding: 0 16px;
 }
 
 .main {
@@ -37,80 +57,78 @@
 
 /* Hero Section */
 .hero {
-  position: relative;
   width: 100%;
-  min-height: 150px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)),
-    linear-gradient(135deg, #F5E6D3 0%, #EAD7C3 100%);
-  padding: 80px 40px;
-  text-align: center;
+  min-height: 200px;
+  background: linear-gradient(135deg, #F5E6D3 0%, #EAD7C3 100%);
 }
 
-.heroContent {
-  max-width: 700px;
+.heroSidebar {
+  background: linear-gradient(135deg, #F5E6D3 0%, #EAD7C3 100%);
+  padding: 20px 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
   color: #2C1810;
+  width: 100%;
+  min-height: 200px;
+  gap: 20px;
 }
 
 .heroLabel {
-  display: inline-block;
-  padding: 8px 20px;
-  background: rgba(107, 68, 35, 0.1);
-  border-radius: 20px;
-  font-size: 13px;
-  font-weight: 600;
-  color: #6B4423;
-  margin-bottom: 24px;
+  font-size: 12px;
   text-transform: uppercase;
-  letter-spacing: 1.5px;
-  border: 1px solid rgba(107, 68, 35, 0.2);
+  letter-spacing: 2px;
+  color: #6B4423;
+  margin-bottom: 0;
+  margin-right: 20px;
+  font-weight: 600;
+  white-space: nowrap;
 }
 
 .heroTitle {
-  font-size: 72px;
+  font-size: 24px;
   font-weight: 700;
-  line-height: 1.1;
-  margin: 0 0 20px 0;
-  font-family: 'Georgia', serif;
+  line-height: 1.2;
+  margin: 0 20px 0 0;
   color: #2C1810;
+  white-space: nowrap;
 }
 
-.heroSubtitle {
-  font-size: 18px;
-  line-height: 1.6;
+.heroText {
+  font-size: 14px;
+  line-height: 1.4;
   color: #6B4423;
-  margin: 0 0 32px 0;
-  max-width: 600px;
-  margin-left: auto;
-  margin-right: auto;
+  margin: 0 20px 0 0;
+  white-space: nowrap;
 }
 
 .heroButtons {
-  position: absolute;
-  top: 20px;
-  right: 20px;
   display: flex;
-  gap: 16px;
-  flex-wrap: wrap;
+  gap: 12px;
+  flex-wrap: nowrap;
   justify-content: center;
+  margin-top: auto;
+  margin-bottom: 5px;
 }
 
 .userGreeting {
   display: flex;
-  flex-direction: column;
-  gap: 6px;
-  padding: 16px 24px;
+  flex-direction: row;
+  gap: 12px;
+  padding: 8px 16px;
   background: rgba(255, 255, 255, 0.95);
-  border-radius: 16px;
+  border-radius: 0;
   border: 2px solid #8B5A3C;
+  align-items: center;
+  white-space: nowrap;
 }
 
 .greetingText {
-  font-size: 18px;
+  font-size: 14px;
   color: #2C1810;
   font-weight: 500;
+  white-space: nowrap;
 }
 
 .greetingText strong {
@@ -119,26 +137,31 @@
 }
 
 .userRole {
-  font-size: 13px;
+  font-size: 11px;
   color: #8B5A3C;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 1px;
+  white-space: nowrap;
 }
 
 .heroButton {
-  display: inline-block;
-  padding: 16px 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3px 5px;
   background: #6B4423;
   color: #FFFFFF;
   text-decoration: none;
-  border-radius: 30px;
+  border-radius: 5px;
   font-weight: 600;
-  font-size: 15px;
+  font-size: 13px;
   transition: all 0.3s ease;
   box-shadow: 0 4px 12px rgba(107, 68, 35, 0.3);
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 0.5px;
+  border: 0.5px solid #6B4423;
+  white-space: nowrap;
 }
 
 .heroButton:hover {
@@ -148,18 +171,21 @@
 }
 
 .heroButtonSecondary {
-  display: inline-block;
-  padding: 16px 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3px 5px;
   background: transparent;
   color: #6B4423;
   text-decoration: none;
-  border-radius: 30px;
+  border-radius: 5px;
   font-weight: 600;
-  font-size: 15px;
+  font-size: 13px;
   transition: all 0.3s ease;
-  border: 2px solid #6B4423;
+  border: 1px solid #6B4423;
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
 }
 
 .heroButtonSecondary:hover {
@@ -172,13 +198,16 @@
 .whySection {
   background: #FFFFFF;
   padding: 80px 0;
-  width: 100%;
+  width: 98%;
+  max-width: 98vw;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .whyContainer {
   width: 100%;
   margin: 0 auto;
-  padding: 0 32px;
+  padding: 0 16px;
 }
 
 .whyTitle {
@@ -258,13 +287,16 @@
 .visitSection {
   background: #F5E6D3;
   padding: 80px 0;
-  width: 100%;
+  width: 98%;
+  max-width: 98vw;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .visitContainer {
   width: 100%;
   margin: 0 auto;
-  padding: 0 32px;
+  padding: 0 16px;
 }
 
 .visitHeader {
@@ -342,15 +374,6 @@
 
 /* Responsive Design */
 @media (max-width: 1200px) {
-  .hero {
-    min-height: 500px;
-    padding: 60px 40px;
-  }
-
-  .heroTitle {
-    font-size: 56px;
-  }
-
   .whyGrid,
   .visitGrid {
     grid-template-columns: repeat(2, 1fr);
@@ -359,22 +382,33 @@
 
 @media (max-width: 968px) {
   .hero {
-    min-height: 450px;
-    padding: 48px 32px;
+    min-height: auto;
+  }
+
+  .heroSidebar {
+    padding: 16px 24px;
+    flex-wrap: wrap;
+    gap: 20px;
   }
 
   .heroTitle {
-    font-size: 48px;
+    font-size: 20px;
+    margin-right: 12px;
   }
 
-  .heroSubtitle {
-    font-size: 17px;
+  .heroText {
+    font-size: 13px;
+    margin-right: 12px;
   }
 
-  .heroButton,
+  .heroButton {
+    padding: 3px 5px;
+    font-size: 13px;
+  }
+
   .heroButtonSecondary {
-    padding: 14px 36px;
-    font-size: 14px;
+    padding: 3px 5px;
+    font-size: 13px;
   }
 
   .whySection,
@@ -389,23 +423,27 @@
 }
 
 @media (max-width: 768px) {
-  .hero {
-    min-height: 400px;
-    padding: 40px 24px;
+  .heroSidebar {
+    padding: 12px 16px;
+    gap: 16px;
   }
 
   .heroTitle {
-    font-size: 40px;
+    font-size: 18px;
   }
 
-  .heroSubtitle {
-    font-size: 16px;
+  .heroText {
+    font-size: 12px;
+  }
+
+  .heroLabel {
+    font-size: 11px;
   }
 
   .heroButton,
   .heroButtonSecondary {
-    padding: 12px 32px;
-    font-size: 14px;
+    padding: 12px 24px;
+    font-size: 13px;
   }
 
   .whySection,

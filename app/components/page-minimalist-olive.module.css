@@ -2,6 +2,8 @@
 
 .page {
   width: 100%;
+  max-width: 100vw;
+  margin: 0 auto;
   background: #FAFAFA;
   font-family: var(--font-montserrat), 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
 }
@@ -10,19 +12,32 @@
   background: #000000;
   box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.25), 0 -2px 6px rgba(0, 0, 0, 0.15);
   border-top: 3px solid #808D5A;
+  width: 99%;
+  max-width: 99vw;
+}
+
+.page header .app-container {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 3px solid #808D5A;
+  width: 90%;
+  max-width: 90vw;
 }
 
 /* Layout Wrapper */
 .layoutWrapper {
   width: 100%;
+  max-width: 2560px;
   margin: 0 auto;
-  padding-left: 20px;
+  padding-left: 16px;
+  padding-right: 16px;
 }
 
 .contentWrapper {
   display: flex;
   gap: 24px;
-  padding: 0 32px 0 0;
+  padding: 0 16px;
 }
 
 .main {
@@ -43,24 +58,23 @@
   background: #000000;
   padding: 20px 40px;
   display: flex;
-  flex-direction: row;
-  justify-content: center;
+  flex-direction: column;
+  justify-content: flex-start;
   align-items: center;
   color: #FFFFFF;
   width: 100%;
   min-height: 200px;
-  gap: 40px;
-  position: relative;
+  gap: 20px;
 }
 
 .heroLabel {
-  font-size: 11px;
+  font-size: 12px;
   text-transform: uppercase;
-  letter-spacing: 2.5px;
+  letter-spacing: 2px;
   color: #808D5A;
   margin-bottom: 0;
   margin-right: 20px;
-  font-weight: 700;
+  font-weight: 600;
   white-space: nowrap;
 }
 
@@ -82,12 +96,12 @@
 }
 
 .heroButtons {
-  position: absolute;
-  top: 20px;
-  right: 20px;
   display: flex;
   gap: 12px;
   flex-wrap: nowrap;
+  justify-content: center;
+  margin-top: auto;
+  margin-bottom: 5px;
 }
 
 .userGreeting {
@@ -96,7 +110,7 @@
   gap: 12px;
   padding: 8px 16px;
   background: #1A1A1A;
-  border: 1px solid #808D5A;
+  border: 0.5px solid #808D5A;
   align-items: center;
   white-space: nowrap;
 }
@@ -123,17 +137,18 @@
 }
 
 .heroButton {
-  display: inline-block;
-  padding: 8px 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3px 5px;
   background: #808D5A;
   color: #FFFFFF;
   text-decoration: none;
-  border-radius: 0;
+  border-radius: 5px;
   font-weight: 600;
   font-size: 13px;
   transition: all 0.3s ease;
-  text-align: center;
-  border: 1px solid #808D5A;
+  border: 0.5px solid #808D5A;
   white-space: nowrap;
 }
 
@@ -143,17 +158,18 @@
 }
 
 .heroButtonSecondary {
-  display: inline-block;
-  padding: 8px 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3px 5px;
   background: transparent;
   color: #FFFFFF;
   text-decoration: none;
-  border-radius: 0;
+  border-radius: 5px;
   font-weight: 600;
   font-size: 13px;
   transition: all 0.3s ease;
   border: 1px solid #FFFFFF;
-  text-align: center;
   white-space: nowrap;
 }
 
@@ -170,12 +186,16 @@
 .productsSection {
   padding: 80px 0;
   background: #FFFFFF;
+  width: 98%;
+  max-width: 98vw;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .productsContainer {
   width: 100%;
   margin: 0 auto;
-  padding: 0 32px;
+  padding: 0 16px;
 }
 
 .sectionTitle {
@@ -242,12 +262,16 @@
 .featuredSection {
   padding: 80px 0;
   background: #F5F5F5;
+  width: 98%;
+  max-width: 98vw;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .featuredContainer {
   width: 100%;
   margin: 0 auto;
-  padding: 0 32px;
+  padding: 0 16px;
 }
 
 .featuredGrid {
@@ -311,12 +335,16 @@
   padding: 80px 0;
   background: #000000;
   color: #FFFFFF;
+  width: 98%;
+  max-width: 98vw;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .statsContainer {
   width: 100%;
   margin: 0 auto;
-  padding: 0 32px;
+  padding: 0 16px;
 }
 
 .statsTitle {
@@ -380,10 +408,14 @@
     margin-right: 12px;
   }
 
-  .heroButton,
+  .heroButton {
+    padding: 3px 5px;
+    font-size: 13px;
+  }
+
   .heroButtonSecondary {
-    padding: 6px 16px;
-    font-size: 12px;
+    padding: 3px 5px;
+    font-size: 13px;
   }
 
   .productsGrid {
@@ -421,8 +453,7 @@
   }
 
   .heroLabel {
-    font-size: 10px;
-    letter-spacing: 2px;
+    font-size: 11px;
   }
 
   .sectionTitle {
