@@ -56,9 +56,9 @@
   gap: clamp(4px, 0.5vw, 8px);
   padding: clamp(16px, 2vw, 32px);
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
   height: 100%;
-  text-align: center;
+  text-align: left;
 }
 
 .page footer .footer-year {
@@ -102,7 +102,7 @@
 .page footer .footer-social {
   display: flex;
   gap: clamp(12px, 1.5vw, 24px);
-  justify-content: center;
+  justify-content: flex-end;
   align-items: center;
   padding: clamp(16px, 2vw, 32px);
   height: 100%;
