@@ -9,6 +9,7 @@ import Link from "next/link";
 import styles from "./page-minimalist-olive.module.css";
 import LayoutGuide from "./LayoutGuide";
 import SectionLabels from "./SectionLabels";
+import StlLogo from "./StlLogo";
 import HeroButtons from "./HeroButtons";
 import Header from "./Header";
 import Footer from "./Footer";
@@ -41,7 +42,9 @@ export default async function MinimalistOliveLayout() {
       {/* Hero Section */}
       <section className={styles.hero}>
         <div className={styles.heroTop}>
-          <div className={styles.heroLeft}></div>
+          <div className={styles.heroLeft}>
+            <StlLogo />
+          </div>
           <div className={styles.heroCenter}>
             <span className={styles.heroLabel}>Творческое сообщество</span>
             <h1 className={styles.heroTitle}>
