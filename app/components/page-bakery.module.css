@@ -121,11 +121,14 @@
 
 .heroButtons {
   display: flex;
-  gap: 12px;
-  flex-wrap: nowrap;
+  gap: clamp(8px, 1vw, 16px);
+  flex-wrap: wrap;
   justify-content: center;
-  margin-top: auto;
-  margin-bottom: 5px;
+  align-items: center;
+  width: 100%;
+  max-width: min(90%, 1200px);
+  margin: 0 auto;
+  padding: 0 clamp(16px, 2vw, 32px);
 }
 
 .userGreeting {
@@ -165,13 +168,13 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 3px 5px;
+  padding: clamp(8px, 1vw, 14px) clamp(16px, 2vw, 32px);
   background: #6B4423;
   color: #FFFFFF;
   text-decoration: none;
   border-radius: 5px;
   font-weight: 600;
-  font-size: 13px;
+  font-size: clamp(12px, 1.2vw, 16px);
   transition: all 0.3s ease;
   box-shadow: 0 4px 12px rgba(107, 68, 35, 0.3);
   text-transform: uppercase;
@@ -190,13 +193,13 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 3px 5px;
+  padding: clamp(8px, 1vw, 14px) clamp(16px, 2vw, 32px);
   background: transparent;
   color: #6B4423;
   text-decoration: none;
   border-radius: 5px;
   font-weight: 600;
-  font-size: 13px;
+  font-size: clamp(12px, 1.2vw, 16px);
   transition: all 0.3s ease;
   border: 1px solid #6B4423;
   text-transform: uppercase;
