@@ -13,6 +13,98 @@
   border-top: 3px solid #1565c0;
   width: 99%;
   max-width: 99vw;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: stretch;
+}
+
+.page footer .footer-left {
+  flex: 0 0 10%;
+}
+
+.page footer .footer-center {
+  flex: 0 0 80%;
+}
+
+.page footer .footer-right {
+  flex: 0 0 10%;
+}
+
+.page footer .footer-info {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(4px, 0.5vw, 8px);
+  padding: clamp(16px, 2vw, 32px);
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  text-align: center;
+}
+
+.page footer .footer-year {
+  font-size: clamp(11px, 1.1vw, 16px);
+  font-weight: 600;
+  color: #FFFFFF;
+  line-height: 1.4;
+}
+
+.page footer .footer-credits {
+  font-size: clamp(9px, 0.9vw, 13px);
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.4;
+}
+
+.page footer .footer-nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: clamp(16px, 2vw, 32px);
+  padding: clamp(16px, 2vw, 32px);
+  height: 100%;
+}
+
+.page footer .footer-link {
+  font-size: clamp(11px, 1.1vw, 15px);
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9);
+  text-decoration: none;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.page footer .footer-link:hover {
+  color: #FFFFFF;
+  transform: translateY(-2px);
+}
+
+.page footer .footer-social {
+  display: flex;
+  gap: clamp(12px, 1.5vw, 24px);
+  justify-content: center;
+  align-items: center;
+  padding: clamp(16px, 2vw, 32px);
+  height: 100%;
+}
+
+.page footer .social-link {
+  font-size: clamp(11px, 1.1vw, 15px);
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+  text-decoration: none;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  padding: clamp(6px, 0.8vw, 10px) clamp(12px, 1.5vw, 18px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 5px;
+}
+
+.page footer .social-link:hover {
+  color: #FFFFFF;
+  border-color: #FFFFFF;
+  transform: translateY(-2px);
 }
 
 .page header .app-container {
