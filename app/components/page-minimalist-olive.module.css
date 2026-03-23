@@ -164,7 +164,7 @@
   max-width: 2560px;
   margin: 0 auto;
   flex: 0.2;
-  border-top: 2px solid rgba(128, 141, 90, 0.5);
+  border-top: 1px solid rgba(128, 141, 90, 0.5);
 }
 
 .heroLabel {
