@@ -19,6 +19,7 @@ import ClockCalendar from "./components/ClockCalendar";
 import HeroButtons from "./components/HeroButtons";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
+import { PaletteIcon, VideoIcon, CubeIcon, SparkleIcon, MaskIcon, StarIcon } from "./components/Icons";
 
 // Force dynamic rendering to avoid timeout during build
 export const dynamic = 'force-dynamic';
@@ -83,8 +84,8 @@ export default async function Home() {
         <section className={styles.gridSection}>
           <div className={styles.gridContainer}>
             <Link href="/artists?direction=GRAPHIC_DESIGN" className={styles.gridCard}>
-              <div className={styles.gridCardImage} style={{background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '48px'}}>
-                🎨
+              <div className={styles.gridCardImage} style={{background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                <PaletteIcon color="#fff" size={64} />
               </div>
               <div className={styles.gridCardOverlay}>
                 <h3 className={styles.gridCardTitle}>Графический дизайн</h3>
@@ -93,8 +94,8 @@ export default async function Home() {
             </Link>
 
             <Link href="/artists?direction=MOTION" className={styles.gridCard}>
-              <div className={styles.gridCardImage} style={{background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '48px'}}>
-                🎬
+              <div className={styles.gridCardImage} style={{background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                <VideoIcon color="#fff" size={64} />
               </div>
               <div className={styles.gridCardOverlay}>
                 <h3 className={styles.gridCardTitle}>Моушн-дизайн</h3>
@@ -103,8 +104,8 @@ export default async function Home() {
             </Link>
 
             <Link href="/artists?direction=MODELING_3D" className={styles.gridCard}>
-              <div className={styles.gridCardImage} style={{background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '48px'}}>
-                🧊
+              <div className={styles.gridCardImage} style={{background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                <CubeIcon color="#fff" size={64} />
               </div>
               <div className={styles.gridCardOverlay}>
                 <h3 className={styles.gridCardTitle}>3D-моделинг</h3>
@@ -113,8 +114,8 @@ export default async function Home() {
             </Link>
 
             <Link href="/artists" className={styles.gridCard}>
-              <div className={styles.gridCardImage} style={{background: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '64px'}}>
-                ✨
+              <div className={styles.gridCardImage} style={{background: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                <SparkleIcon color="#fff" size={80} />
               </div>
               <div className={styles.gridCardOverlay}>
                 <h3 className={styles.gridCardTitle}>Все специализации</h3>
@@ -128,8 +129,8 @@ export default async function Home() {
         <section className={styles.aboutSection}>
           <div className={styles.aboutContainer}>
             <div className={styles.aboutImageWrapper}>
-              <div className={styles.aboutImage} style={{background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '120px'}}>
-                🎭
+              <div className={styles.aboutImage} style={{background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                <MaskIcon color="#fff" size={140} />
               </div>
             </div>
             <div className={styles.aboutContent}>
@@ -138,11 +139,11 @@ export default async function Home() {
                 Мы создали пространство, где творческие профессионалы могут делиться своими работами, находить вдохновение и развиваться вместе. Наше сообщество объединяет художников различных направлений — от графического дизайна до 3D-моделирования.
               </p>
               <div className={styles.aboutStats}>
-                <span className={styles.star}>★</span>
-                <span className={styles.star}>★</span>
-                <span className={styles.star}>★</span>
-                <span className={styles.star}>★</span>
-                <span className={styles.star}>★</span>
+                <StarIcon color="#5C3D2E" size={28} />
+                <StarIcon color="#5C3D2E" size={28} />
+                <StarIcon color="#5C3D2E" size={28} />
+                <StarIcon color="#5C3D2E" size={28} />
+                <StarIcon color="#5C3D2E" size={28} />
               </div>
               <p className={styles.aboutFooter}>
                 "{stats.totalArtists}+ художников доверяют СТЛ"

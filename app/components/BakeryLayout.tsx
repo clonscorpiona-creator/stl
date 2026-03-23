@@ -14,6 +14,7 @@ import ClockCalendar from "./ClockCalendar";
 import HeroButtons from "./HeroButtons";
 import Header from "./Header";
 import Footer from "./Footer";
+import { PaletteIcon, VideoIcon, CubeIcon, PeopleIcon, SparkleIcon } from "./Icons";
 
 async function getStats() {
   try {
@@ -74,8 +75,8 @@ export default async function BakeryLayout() {
             <h2 className={styles.whyTitle}>Почему выбирают СТЛ</h2>
             <div className={styles.whyGrid}>
               <Link href="/artists?direction=GRAPHIC_DESIGN" className={styles.whyCard}>
-                <div className={styles.whyCardImage} style={{background: 'linear-gradient(135deg, #D4A574 0%, #8B6F47 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '64px'}}>
-                  🎨
+                <div className={styles.whyCardImage} style={{background: 'linear-gradient(135deg, #D4A574 0%, #8B6F47 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                  <PaletteIcon color="#fff" size={80} />
                 </div>
                 <div className={styles.whyCardContent}>
                   <h3 className={styles.whyCardTitle}>Графический дизайн</h3>
@@ -87,8 +88,8 @@ export default async function BakeryLayout() {
               </Link>
 
               <Link href="/artists?direction=MOTION" className={styles.whyCard}>
-                <div className={styles.whyCardImage} style={{background: 'linear-gradient(135deg, #8B6F47 0%, #5C3D2E 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '64px'}}>
-                  🎬
+                <div className={styles.whyCardImage} style={{background: 'linear-gradient(135deg, #8B6F47 0%, #5C3D2E 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                  <VideoIcon color="#fff" size={80} />
                 </div>
                 <div className={styles.whyCardContent}>
                   <h3 className={styles.whyCardTitle}>Моушн-дизайн</h3>
@@ -100,8 +101,8 @@ export default async function BakeryLayout() {
               </Link>
 
               <Link href="/artists?direction=MODELING_3D" className={styles.whyCard}>
-                <div className={styles.whyCardImage} style={{background: 'linear-gradient(135deg, #6B4423 0%, #8B5A3C 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '64px'}}>
-                  🧊
+                <div className={styles.whyCardImage} style={{background: 'linear-gradient(135deg, #6B4423 0%, #8B5A3C 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                  <CubeIcon color="#fff" size={80} />
                 </div>
                 <div className={styles.whyCardContent}>
                   <h3 className={styles.whyCardTitle}>3D-моделинг</h3>
@@ -131,8 +132,8 @@ export default async function BakeryLayout() {
 
             <div className={styles.visitGrid}>
               <div className={styles.visitCard}>
-                <div className={styles.visitCardImage} style={{background: 'linear-gradient(135deg, #D4A574 0%, #8B6F47 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '48px'}}>
-                  👥
+                <div className={styles.visitCardImage} style={{background: 'linear-gradient(135deg, #D4A574 0%, #8B6F47 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                  <PeopleIcon color="#fff" size={64} />
                 </div>
                 <div className={styles.visitCardContent}>
                   <h3 className={styles.visitCardTitle}>{stats.totalArtists}+ художников</h3>
@@ -140,8 +141,8 @@ export default async function BakeryLayout() {
               </div>
 
               <div className={styles.visitCard}>
-                <div className={styles.visitCardImage} style={{background: 'linear-gradient(135deg, #8B6F47 0%, #6B4423 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '48px'}}>
-                  🎨
+                <div className={styles.visitCardImage} style={{background: 'linear-gradient(135deg, #8B6F47 0%, #6B4423 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                  <PaletteIcon color="#fff" size={64} />
                 </div>
                 <div className={styles.visitCardContent}>
                   <h3 className={styles.visitCardTitle}>{stats.totalWorks}+ работ</h3>
@@ -149,8 +150,8 @@ export default async function BakeryLayout() {
               </div>
 
               <div className={styles.visitCard}>
-                <div className={styles.visitCardImage} style={{background: 'linear-gradient(135deg, #6B4423 0%, #5C3D2E 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '48px'}}>
-                  ✨
+                <div className={styles.visitCardImage} style={{background: 'linear-gradient(135deg, #6B4423 0%, #5C3D2E 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                  <SparkleIcon color="#fff" size={64} />
                 </div>
                 <div className={styles.visitCardContent}>
                   <h3 className={styles.visitCardTitle}>{stats.totalSpecializations} специализаций</h3>

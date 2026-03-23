@@ -14,6 +14,7 @@ import ClockCalendar from "./ClockCalendar";
 import HeroButtons from "./HeroButtons";
 import Header from "./Header";
 import Footer from "./Footer";
+import { PaletteIcon, VideoIcon, CubeIcon, FrameIcon } from "./Icons";
 
 async function getStats() {
   try {
@@ -75,7 +76,7 @@ export default async function MinimalistLayout() {
             <div className={styles.productsGrid}>
               <Link href="/artists?direction=GRAPHIC_DESIGN" className={styles.productCard}>
                 <div className={styles.productImage}>
-                  🎨
+                  <PaletteIcon color="#6B7F3D" size={80} />
                 </div>
                 <div className={styles.productContent}>
                   <h3 className={styles.productTitle}>Графический дизайн</h3>
@@ -87,7 +88,7 @@ export default async function MinimalistLayout() {
 
               <Link href="/artists?direction=MOTION" className={styles.productCard}>
                 <div className={styles.productImage}>
-                  🎬
+                  <VideoIcon color="#6B7F3D" size={80} />
                 </div>
                 <div className={styles.productContent}>
                   <h3 className={styles.productTitle}>Моушн-дизайн</h3>
@@ -99,7 +100,7 @@ export default async function MinimalistLayout() {
 
               <Link href="/artists?direction=MODELING_3D" className={styles.productCard}>
                 <div className={styles.productImage}>
-                  🧊
+                  <CubeIcon color="#6B7F3D" size={80} />
                 </div>
                 <div className={styles.productContent}>
                   <h3 className={styles.productTitle}>3D-моделинг</h3>
@@ -127,7 +128,7 @@ export default async function MinimalistLayout() {
                 </Link>
               </div>
               <div className={styles.featuredImage}>
-                🖼️
+                <FrameIcon color="#BDB76B" size={120} />
               </div>
             </div>
           </div>

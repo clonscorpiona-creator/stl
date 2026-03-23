@@ -14,6 +14,7 @@ import ClockCalendar from "./ClockCalendar";
 import HeroButtons from "./HeroButtons";
 import Header from "./Header";
 import Footer from "./Footer";
+import { PaletteIcon, VideoIcon, CubeIcon, PeopleIcon, HeartIcon } from "./Icons";
 
 // Enable ISR with 5-minute revalidation
 export const revalidate = 300;
@@ -77,7 +78,7 @@ export default async function ModernLayout() {
             <h2 className={styles.whyTitle}>Почему выбирают нас?</h2>
             <div className={styles.whyGrid}>
               <div className={styles.whyCard}>
-                <div className={styles.whyIcon}>🎨</div>
+                <div className={styles.whyIcon}><PaletteIcon color="#1565c0" size={56} /></div>
                 <h3 className={styles.whyCardTitle}>Высокое качество работ</h3>
                 <p className={styles.whyCardText}>
                   Наше сообщество объединяет профессионалов, создающих работы мирового уровня
@@ -85,7 +86,7 @@ export default async function ModernLayout() {
               </div>
 
               <div className={styles.whyCard}>
-                <div className={styles.whyIcon}>👥</div>
+                <div className={styles.whyIcon}><PeopleIcon color="#1565c0" size={56} /></div>
                 <h3 className={styles.whyCardTitle}>Профессиональные художники</h3>
                 <p className={styles.whyCardText}>
                   Опытные специалисты с портфолио, которые оставляют след в сердцах зрителей
@@ -93,7 +94,7 @@ export default async function ModernLayout() {
               </div>
 
               <div className={styles.whyCard}>
-                <div className={styles.whyIcon}>💙</div>
+                <div className={styles.whyIcon}><HeartIcon color="#1565c0" size={56} /></div>
                 <h3 className={styles.whyCardTitle}>Дружелюбная атмосфера</h3>
                 <p className={styles.whyCardText}>
                   Создаём незабываемый опыт взаимодействия, который остаётся в памяти надолго
@@ -117,8 +118,8 @@ export default async function ModernLayout() {
 
             <div className={styles.missionGrid}>
               <div className={styles.missionCard}>
-                <div className={styles.missionCardImage} style={{background: 'linear-gradient(135deg, #0d47a1 0%, #1976d2 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '64px'}}>
-                  🎨
+                <div className={styles.missionCardImage} style={{background: 'linear-gradient(135deg, #0d47a1 0%, #1976d2 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                  <PaletteIcon color="#fff" size={80} />
                 </div>
                 <div className={styles.missionCardContent}>
                   <h3 className={styles.missionCardTitle}>Графический дизайн</h3>
@@ -133,8 +134,8 @@ export default async function ModernLayout() {
               </div>
 
               <div className={styles.missionCard}>
-                <div className={styles.missionCardImage} style={{background: 'linear-gradient(135deg, #1565c0 0%, #42a5f5 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '64px'}}>
-                  🎬
+                <div className={styles.missionCardImage} style={{background: 'linear-gradient(135deg, #1565c0 0%, #42a5f5 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                  <VideoIcon color="#fff" size={80} />
                 </div>
                 <div className={styles.missionCardContent}>
                   <h3 className={styles.missionCardTitle}>Моушн-дизайн</h3>
@@ -149,8 +150,8 @@ export default async function ModernLayout() {
               </div>
 
               <div className={styles.missionCard}>
-                <div className={styles.missionCardImage} style={{background: 'linear-gradient(135deg, #1976d2 0%, #64b5f6 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '64px'}}>
-                  🧊
+                <div className={styles.missionCardImage} style={{background: 'linear-gradient(135deg, #1976d2 0%, #64b5f6 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                  <CubeIcon color="#fff" size={80} />
                 </div>
                 <div className={styles.missionCardContent}>
                   <h3 className={styles.missionCardTitle}>3D-моделинг</h3>
