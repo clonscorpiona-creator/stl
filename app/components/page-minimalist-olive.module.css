@@ -119,31 +119,32 @@
 }
 
 .heroLabel {
-  font-size: 12px;
+  font-size: clamp(10px, 0.8vw, 14px);
   text-transform: uppercase;
   letter-spacing: 2px;
   color: #808D5A;
   margin-bottom: 0;
-  margin-right: 20px;
+  margin-right: 0;
   font-weight: 600;
   white-space: nowrap;
 }
 
 .heroTitle {
-  font-size: 24px;
+  font-size: clamp(20px, 2vw, 48px);
   font-weight: 700;
   line-height: 1.2;
-  margin: 0 20px 0 0;
+  margin: 0;
   color: #FFFFFF;
-  white-space: nowrap;
+  text-align: center;
 }
 
 .heroText {
-  font-size: 14px;
+  font-size: clamp(13px, 1.2vw, 18px);
   line-height: 1.4;
   color: #9CAF88;
-  margin: 0 20px 0 0;
-  white-space: nowrap;
+  margin: 0;
+  text-align: center;
+  max-width: 100%;
 }
 
 .heroButtons {
