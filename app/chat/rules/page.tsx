@@ -9,12 +9,10 @@
 
 import Link from "next/link";
 import styles from "./page.module.css";
-import ThemeSwitcher from "../../components/ThemeSwitcher";
 
 export default function ChatRulesPage() {
   return (
     <div className={styles.page}>
-      <ThemeSwitcher />
       <main className={styles.main}>
         <Link href="/chat" className={styles.backLink}>
           ← Вернуться в чат

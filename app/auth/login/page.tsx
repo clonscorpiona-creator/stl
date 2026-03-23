@@ -205,7 +205,7 @@ function LoginForm() {
 
           {/* Register link */}
           <p className={styles.linkText}>
-            Нет аккаунта? <Link href="/auth/register" className={styles.link}>Регистрация</Link>
+            Нет аккаунта? <Link href="/auth/register" className={styles.link}>Зарегистрироваться</Link>
           </p>
         </form>
       </div>

@@ -11,7 +11,6 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import styles from "./page.module.css";
-import ThemeSwitcher from "../../components/ThemeSwitcher";
 
 type NewsPost = {
   id: string;
@@ -169,7 +168,6 @@ export default function NewsDetailPage() {
   if (loading) {
     return (
       <div className={styles.page}>
-        <ThemeSwitcher />
         <main className={styles.main}>
           <p>Загрузка...</p>
         </main>
@@ -180,7 +178,6 @@ export default function NewsDetailPage() {
   if (!post) {
     return (
       <div className={styles.page}>
-        <ThemeSwitcher />
         <main className={styles.main}>
           <p>Новость не найдена</p>
           <Link href="/news">← Вернуться к новостям</Link>
@@ -191,7 +188,6 @@ export default function NewsDetailPage() {
 
   return (
     <div className={styles.page}>
-      <ThemeSwitcher />
       <main className={styles.main}>
         <Link href="/news" className={styles.backLink}>
           ← Все новости

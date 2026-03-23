@@ -10,7 +10,6 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import styles from "./page.module.css";
-import ThemeSwitcher from "../components/ThemeSwitcher";
 
 type UserStats = {
   totalWorks: number;
@@ -81,7 +80,6 @@ export default function StatsPage() {
   if (loading) {
     return (
       <div className={styles.page}>
-        <ThemeSwitcher />
         <main className={styles.main}>
           <p>Загрузка...</p>
         </main>
@@ -92,7 +90,6 @@ export default function StatsPage() {
   if (!username || !stats) {
     return (
       <div className={styles.page}>
-        <ThemeSwitcher />
         <main className={styles.main}>
           <p>Вы не авторизованы</p>
           <Link href="/auth/login">Войти</Link>
@@ -103,7 +100,6 @@ export default function StatsPage() {
 
   return (
     <div className={styles.page}>
-      <ThemeSwitcher />
       <main className={styles.main}>
         <header className={styles.header}>
           <Link href="/profile" className={styles.backLink}>

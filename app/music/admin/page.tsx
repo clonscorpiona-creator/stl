@@ -10,7 +10,6 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import styles from "./page.module.css";
-import ThemeSwitcher from "../../components/ThemeSwitcher";
 
 type Song = {
   id: string;
@@ -114,7 +113,6 @@ export default function MusicAdminPage() {
 
   return (
     <div className={styles.page}>
-      <ThemeSwitcher />
       <main className={styles.main}>
         <Link href="/music" className={styles.backLink}>
           ← Назад к плееру

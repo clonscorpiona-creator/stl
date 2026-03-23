@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import styles from "./page.module.css";
-import ThemeSwitcher from "../../components/ThemeSwitcher";
 
 type NewsPost = {
   id: string;
@@ -68,7 +67,6 @@ export default function NewsAdminPage() {
   if (loading) {
     return (
       <div className={styles.page}>
-        <ThemeSwitcher />
         <main className={styles.main}>
           <p>Загрузка...</p>
         </main>
@@ -78,7 +76,6 @@ export default function NewsAdminPage() {
 
   return (
     <div className={styles.page}>
-      <ThemeSwitcher />
       <main className={styles.main}>
         <header className={styles.header}>
           <Link href="/news" className={styles.backLink}>

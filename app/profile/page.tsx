@@ -86,8 +86,7 @@ export default function ProfilePage() {
       <main style={{ maxWidth: 800, margin: "40px auto", padding: 20 }}>
         <p>Вы не авторизованы.</p>
         <p>
-          <Link href="/auth/login">Войти</Link> /{" "}
-          <Link href="/auth/register">Регистрация</Link>
+          <Link href="/auth/register">Войти</Link>
         </p>
       </main>
     );

@@ -55,11 +55,8 @@ export default function HeroButtons({ styles }: HeroButtonsProps) {
         <Link href="/artists" className={styles.heroButton}>
           Познакомиться
         </Link>
-        <Link href="/auth/login" className={styles.heroButtonSecondary}>
-          Войти
-        </Link>
         <Link href="/auth/register" className={styles.heroButtonSecondary}>
-          Регистрация
+          Войти
         </Link>
       </div>
     );

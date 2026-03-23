@@ -51,12 +51,12 @@ export default async function Home() {
       <SectionLabels />
       {/* Hero Section */}
       <section className={styles.hero}>
-        <div className={styles.heroContent}>
+        <div className={styles.heroSidebar}>
           <span className={styles.heroLabel}>Сообщество</span>
           <h1 className={styles.heroTitle}>
             Творчество встречается с профессионализмом
           </h1>
-          <p className={styles.heroSubtitle}>
+          <p className={styles.heroText}>
             Объединяем талантливых художников, дизайнеров и 3D-специалистов в одном пространстве для роста и вдохновения
           </p>
           <HeroButtons styles={styles} />

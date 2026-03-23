@@ -7,7 +7,6 @@
 
 import Link from "next/link";
 import styles from "./page.module.css";
-import ThemeSwitcher from "../components/ThemeSwitcher";
 
 export default function WorksPage() {
   const works = [
@@ -63,7 +62,6 @@ export default function WorksPage() {
 
   return (
     <div className={styles.page}>
-      <ThemeSwitcher />
       <main className={styles.main}>
         <header className={styles.header}>
           <Link href="/" className={styles.backLink}>

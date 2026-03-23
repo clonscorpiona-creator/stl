@@ -49,11 +49,8 @@ export default function UserMenu() {
   if (!user) {
     return (
       <div className={styles.authButtons}>
-        <Link href="/auth/login" className={styles.loginButton}>
-          Вход
-        </Link>
         <Link href="/auth/register" className={styles.registerButton}>
-          Регистрация
+          Войти
         </Link>
       </div>
     );

@@ -128,18 +128,17 @@ export default function RegisterPage() {
   return (
     <main className={styles.container}>
       <div className={styles.formCard}>
-        <h1 className={styles.title}>Регистрация</h1>
-        <p className={styles.subtitle}>Создайте аккаунт в сообществе СТЛ</p>
+        <h1 className={styles.title}>Вход / Регистрация</h1>
+        <p className={styles.subtitle}>Войдите в аккаунт или создайте новый</p>
 
-        {/* Admin info banner */}
+        {/* Info banner */}
         <div className={styles.infoBox}>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <circle cx="12" cy="12" r="10"/>
             <path d="M12 16v-4M12 8h.01"/>
           </svg>
           <div>
-            <strong>Первый пользователь становится администратором</strong>
-            <p>Первый зарегистрированный пользователь автоматически получает роль администратора и доступ к админ-панели</p>
+            <p>Если у вас есть учетная запись, войдите под логином и паролем. Если нет, тогда зарегистрируйтесь.</p>
           </div>
         </div>
 
@@ -282,7 +281,7 @@ export default function RegisterPage() {
             className={styles.submitButton}
             disabled={loading || !emailValid || !usernameValid || !passwordValid || !passwordsMatch}
           >
-            {loading ? "Регистрация..." : "Создать аккаунт"}
+            {loading ? "Регистрация..." : "Зарегистрироваться"}
           </button>
 
           {/* Login link */}

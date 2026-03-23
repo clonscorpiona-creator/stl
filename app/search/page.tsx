@@ -13,7 +13,6 @@ import { useEffect, useState, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import styles from "./page.module.css";
-import ThemeSwitcher from "../components/ThemeSwitcher";
 
 type Work = {
   id: string;
@@ -225,7 +224,6 @@ function SearchContent() {
 export default function SearchPage() {
   return (
     <div className={styles.page}>
-      <ThemeSwitcher />
       <main className={styles.main}>
         <Suspense fallback={<p>Загрузка...</p>}>
           <SearchContent />

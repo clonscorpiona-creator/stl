@@ -4,7 +4,6 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import styles from "./page.module.css";
-import ThemeSwitcher from "../../../components/ThemeSwitcher";
 
 export default function NewNewsPage() {
   const router = useRouter();
@@ -52,7 +51,6 @@ export default function NewNewsPage() {
 
   return (
     <div className={styles.page}>
-      <ThemeSwitcher />
       <main className={styles.main}>
         <header className={styles.header}>
           <Link href="/news/admin" className={styles.backLink}>

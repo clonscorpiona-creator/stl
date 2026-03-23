@@ -10,7 +10,6 @@
 import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import styles from "./page.module.css";
-import ThemeSwitcher from "../components/ThemeSwitcher";
 import { getSocket } from "@/lib/socket";
 
 type Channel = {
@@ -315,7 +314,6 @@ export default function ChatPage() {
 
   return (
     <div className={styles.page}>
-      <ThemeSwitcher />
       <main className={styles.main}>
         <header className={styles.header}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>

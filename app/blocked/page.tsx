@@ -10,7 +10,6 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import styles from "./page.module.css";
-import ThemeSwitcher from "../components/ThemeSwitcher";
 
 type BlockedUser = {
   blockedId: string;
@@ -72,7 +71,6 @@ export default function BlockedUsersPage() {
   if (loading) {
     return (
       <div className={styles.page}>
-        <ThemeSwitcher />
         <main className={styles.main}>
           <p>Загрузка...</p>
         </main>
@@ -82,7 +80,6 @@ export default function BlockedUsersPage() {
 
   return (
     <div className={styles.page}>
-      <ThemeSwitcher />
       <main className={styles.main}>
         <header className={styles.header}>
           <Link href="/profile" className={styles.backLink}>

@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import styles from "./page.module.css";
-import ThemeSwitcher from "../../../../components/ThemeSwitcher";
 
 type NewsPost = {
   id: string;
@@ -104,7 +103,6 @@ export default function EditNewsPage({ params }: { params: { slug: string } }) {
   if (loading) {
     return (
       <div className={styles.page}>
-        <ThemeSwitcher />
         <main className={styles.main}>
           <p>Загрузка...</p>
         </main>
@@ -115,7 +113,6 @@ export default function EditNewsPage({ params }: { params: { slug: string } }) {
   if (!post) {
     return (
       <div className={styles.page}>
-        <ThemeSwitcher />
         <main className={styles.main}>
           <p>Новость не найдена</p>
           <Link href="/news/admin">← Назад</Link>
@@ -126,7 +123,6 @@ export default function EditNewsPage({ params }: { params: { slug: string } }) {
 
   return (
     <div className={styles.page}>
-      <ThemeSwitcher />
       <main className={styles.main}>
         <header className={styles.header}>
           <Link href="/news/admin" className={styles.backLink}>

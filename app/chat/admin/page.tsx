@@ -10,7 +10,6 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import styles from "./page.module.css";
-import ThemeSwitcher from "../../components/ThemeSwitcher";
 
 type Channel = {
   id: string;
@@ -240,7 +239,6 @@ export default function ChatAdminPage() {
 
   return (
     <div className={styles.page}>
-      <ThemeSwitcher />
       <main className={styles.main}>
         <Link href="/chat" className={styles.backLink}>
           ← Назад в чат
