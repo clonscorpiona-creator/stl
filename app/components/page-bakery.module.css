@@ -86,6 +86,11 @@
   justify-content: center;
 }
 
+.heroLeft :global(.stl-logo) {
+  width: clamp(60px, 8vw, 150px);
+  height: clamp(60px, 8vw, 150px);
+}
+
 .heroCenter {
   flex: 0 0 60%;
   display: flex;
