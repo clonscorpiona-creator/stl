@@ -1,7 +1,7 @@
 .layoutSwitcher {
   position: fixed;
   bottom: 32px;
-  right: 180px;
+  right: 20px;
   z-index: 1000;
 }
 
@@ -95,7 +95,7 @@
 @media (max-width: 768px) {
   .layoutSwitcher {
     bottom: 20px;
-    right: 140px;
+    right: 20px;
   }
 
   .toggleButton {
