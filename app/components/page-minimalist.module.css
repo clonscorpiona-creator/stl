@@ -543,13 +543,16 @@
 
 /* Stats Section */
 .statsSection {
-  padding: 80px 0;
+  padding: clamp(20px, 3vh, 80px) 0;
   background: #1A1F0F;
   color: #FFFFFF;
   width: 98%;
   max-width: 98vw;
   margin-left: auto;
   margin-right: auto;
+  height: 50vh;
+  display: flex;
+  align-items: center;
 }
 
 .statsContainer {
@@ -570,25 +573,29 @@
 .statsGrid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 40px;
+  gap: clamp(12px, 2vh, 40px);
+  height: 100%;
 }
 
 .statCard {
-  padding: 32px 24px;
+  padding: clamp(12px, 2vh, 32px) clamp(8px, 1.5vh, 24px);
   background: rgba(255, 255, 255, 0.05);
   border-radius: 12px;
   border: 1px solid rgba(189, 183, 107, 0.2);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .statNumber {
-  font-size: 48px;
+  font-size: clamp(24px, 4vh, 48px);
   font-weight: 700;
-  margin: 0 0 12px 0;
+  margin: 0 0 clamp(4px, 1vh, 12px) 0;
   color: #BDB76B;
 }
 
 .statLabel {
-  font-size: 14px;
+  font-size: clamp(10px, 1.2vh, 14px);
   color: #9CAF88;
   margin: 0;
   text-transform: uppercase;
