@@ -51,11 +51,12 @@
   width: 100%;
   max-width: 2560px;
   margin: 0 auto;
-  min-height: 200px;
+  display: flex;
+  flex-direction: column;
   background: #F0F2E8;
 }
 
-.heroSidebar {
+.heroTop {
   background: #1A1F0F;
   padding: 20px 40px;
   display: flex;
@@ -66,8 +67,21 @@
   width: 100%;
   max-width: 2560px;
   margin: 0 auto;
-  min-height: 200px;
+  flex: 4;
   gap: 20px;
+}
+
+.heroBottom {
+  background: #1A1F0F;
+  padding: 10px 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #FFFFFF;
+  width: 100%;
+  max-width: 2560px;
+  margin: 0 auto;
+  flex: 1;
 }
 
 .heroLabel {

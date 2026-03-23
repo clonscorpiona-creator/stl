@@ -51,7 +51,7 @@ export default async function Home() {
       <SectionLabels />
       {/* Hero Section */}
       <section className={styles.hero}>
-        <div className={styles.heroSidebar}>
+        <div className={styles.heroTop}>
           <span className={styles.heroLabel}>Сообщество</span>
           <h1 className={styles.heroTitle}>
             Творчество встречается с профессионализмом
@@ -59,6 +59,8 @@ export default async function Home() {
           <p className={styles.heroText}>
             Объединяем талантливых художников, дизайнеров и 3D-специалистов в одном пространстве для роста и вдохновения
           </p>
+        </div>
+        <div className={styles.heroBottom}>
           <HeroButtons styles={styles} />
         </div>
       </section>

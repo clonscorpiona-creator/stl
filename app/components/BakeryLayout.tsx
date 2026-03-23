@@ -40,7 +40,7 @@ export default async function BakeryLayout() {
       <SectionLabels />
       {/* Hero Section */}
       <section className={styles.hero}>
-        <div className={styles.heroSidebar}>
+        <div className={styles.heroTop}>
           <span className={styles.heroLabel}>Творческое сообщество</span>
           <h1 className={styles.heroTitle}>
             Тепло творчества в каждом проекте
@@ -48,6 +48,8 @@ export default async function BakeryLayout() {
           <p className={styles.heroText}>
             Присоединяйтесь к уютному сообществу художников, где каждая работа создается с душой и вдохновением
           </p>
+        </div>
+        <div className={styles.heroBottom}>
           <HeroButtons styles={styles} />
         </div>
       </section>

@@ -43,7 +43,7 @@ export default async function ModernLayout() {
       <SectionLabels />
       {/* Hero Section */}
       <section className={styles.hero}>
-        <div className={styles.heroSidebar}>
+        <div className={styles.heroTop}>
           <span className={styles.heroLabel}>Творческое сообщество</span>
           <h1 className={styles.heroTitle}>
             Вдохновлены творчеством. Заряжены идеями
@@ -51,6 +51,8 @@ export default async function ModernLayout() {
           <p className={styles.heroText}>
             Платформа для художников, дизайнеров и 3D-специалистов, где рождаются шедевры
           </p>
+        </div>
+        <div className={styles.heroBottom}>
           <HeroButtons styles={styles} />
         </div>
       </section>
