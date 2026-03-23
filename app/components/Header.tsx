@@ -9,7 +9,6 @@ export default function Header() {
   return (
     <header>
       <div className="app-container">
-        <h2>Новости</h2>
       </div>
     </header>
   );
