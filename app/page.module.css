@@ -27,7 +27,7 @@
 
 .page footer .footer-left {
   flex: 0 0 10%;
-  border-right: 2px solid rgba(0, 0, 0, 0.15);
+  border-right: 2px solid rgba(0, 125, 0, 1);
   display: flex;
   justify-content: flex-start;
   align-items: center;
@@ -36,7 +36,7 @@
 
 .page footer .footer-center {
   flex: 0 0 80%;
-  border-right: 2px solid rgba(0, 0, 0, 0.15);
+  border-right: 2px solid rgba(0, 125, 0, 1);
   display: flex;
   justify-content: center;
   align-items: center;
