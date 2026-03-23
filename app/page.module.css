@@ -51,14 +51,14 @@
 }
 
 .page footer .footer-year {
-  font-size: clamp(11px, 1.1vw, 16px);
+  font-size: clamp(9px, 1.2vw, 18px);
   font-weight: 600;
   color: #FFFFFF;
   line-height: 1.4;
 }
 
 .page footer .footer-credits {
-  font-size: clamp(9px, 0.9vw, 13px);
+  font-size: clamp(8px, 1vw, 14px);
   font-weight: 400;
   color: rgba(255, 255, 255, 0.8);
   line-height: 1.4;
@@ -75,7 +75,7 @@
 }
 
 .page footer .footer-link {
-  font-size: clamp(11px, 1.1vw, 15px);
+  font-size: clamp(10px, 1.2vw, 16px);
   font-weight: 500;
   color: rgba(255, 255, 255, 0.9);
   text-decoration: none;
@@ -98,7 +98,7 @@
 }
 
 .page footer .social-link {
-  font-size: clamp(11px, 1.1vw, 15px);
+  font-size: clamp(10px, 1.2vw, 16px);
   font-weight: 600;
   color: rgba(255, 255, 255, 0.9);
   text-decoration: none;
