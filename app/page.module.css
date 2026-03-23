@@ -28,15 +28,24 @@
 .page footer .footer-left {
   flex: 0 0 10%;
   border-right: 1px solid rgba(255, 255, 255, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .page footer .footer-center {
   flex: 0 0 80%;
   border-right: 1px solid rgba(255, 255, 255, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .page footer .footer-right {
   flex: 0 0 10%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .page footer .footer-info {
