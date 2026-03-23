@@ -543,14 +543,14 @@
 
 /* Stats Section */
 .statsSection {
-  padding: clamp(5px, 0.8vh, 20px) 0;
+  padding: clamp(3px, 0.5vh, 10px) 0;
   background: #1A1F0F;
   color: #FFFFFF;
   width: 98%;
   max-width: 98vw;
   margin-left: auto;
   margin-right: auto;
-  height: 15vh;
+  height: 20vh;
   display: flex;
   align-items: center;
 }
@@ -565,7 +565,7 @@
 .statsTitle {
   font-size: 36px;
   font-weight: 700;
-  margin: 0 0 48px 0;
+  margin: 0 0 clamp(12px, 1.5vh, 24px) 0;
   color: #FFFFFF;
   font-family: 'Georgia', serif;
 }
@@ -573,7 +573,7 @@
 .statsGrid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: clamp(4px, 0.6vh, 12px);
+  gap: clamp(3px, 0.4vh, 8px);
   height: 100%;
 }
 
