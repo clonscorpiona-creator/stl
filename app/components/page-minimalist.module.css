@@ -253,7 +253,7 @@
   font-weight: 600;
   font-size: clamp(9px, 0.864vw, 11px);
   transition: all 0.3s ease;
-  border: 0.5px solid #6B7F3D;
+  border: 0.5px solid rgba(107, 127, 61, 0.4);
   white-space: nowrap;
 }
 
@@ -274,7 +274,7 @@
   font-weight: 600;
   font-size: clamp(9px, 0.864vw, 11px);
   transition: all 0.3s ease;
-  border: 1px solid #FFFFFF;
+  border: 0.5px solid rgba(255, 255, 255, 0.4);
   white-space: nowrap;
 }
 
