@@ -56,7 +56,6 @@
 }
 
 .heroTop {
-  background: linear-gradient(135deg, #0d47a1 0%, #1565c0 50%, #1976d2 100%);
   padding: 20px 40px;
   display: flex;
   flex-direction: column;
@@ -71,7 +70,6 @@
 }
 
 .heroBottom {
-  background: linear-gradient(135deg, #0d47a1 0%, #1565c0 50%, #1976d2 100%);
   padding: 10px 40px;
   display: flex;
   justify-content: center;

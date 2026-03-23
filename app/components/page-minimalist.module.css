@@ -53,11 +53,10 @@
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  background: #F0F2E8;
+  background: #1A1F0F;
 }
 
 .heroTop {
-  background: #1A1F0F;
   padding: 20px 40px;
   display: flex;
   flex-direction: column;
@@ -72,7 +71,6 @@
 }
 
 .heroBottom {
-  background: #1A1F0F;
   padding: 10px 40px;
   display: flex;
   justify-content: center;
