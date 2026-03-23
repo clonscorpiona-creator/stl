@@ -44,13 +44,17 @@ export default async function ModernLayout() {
       {/* Hero Section */}
       <section className={styles.hero}>
         <div className={styles.heroTop}>
-          <span className={styles.heroLabel}>Творческое сообщество</span>
-          <h1 className={styles.heroTitle}>
-            Вдохновлены творчеством. Заряжены идеями
-          </h1>
-          <p className={styles.heroText}>
-            Платформа для художников, дизайнеров и 3D-специалистов, где рождаются шедевры
-          </p>
+          <div className={styles.heroLeft}></div>
+          <div className={styles.heroCenter}>
+            <span className={styles.heroLabel}>Творческое сообщество</span>
+            <h1 className={styles.heroTitle}>
+              Вдохновлены творчеством. Заряжены идеями
+            </h1>
+            <p className={styles.heroText}>
+              Платформа для художников, дизайнеров и 3D-специалистов, где рождаются шедевры
+            </p>
+          </div>
+          <div className={styles.heroRight}></div>
         </div>
         <div className={styles.topToolbar}>
           <HeroButtons styles={styles} />

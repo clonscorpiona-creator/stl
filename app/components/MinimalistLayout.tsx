@@ -41,13 +41,17 @@ export default async function MinimalistLayout() {
       {/* Hero Section */}
       <section className={styles.hero}>
         <div className={styles.heroTop}>
-          <span className={styles.heroLabel}>Творческое сообщество</span>
-          <h1 className={styles.heroTitle}>
-            Минималистичный дизайн. Максимальное творчество
-          </h1>
-          <p className={styles.heroText}>
-            Присоединяйтесь к сообществу художников, где простота формы встречается с глубиной содержания
-          </p>
+          <div className={styles.heroLeft}></div>
+          <div className={styles.heroCenter}>
+            <span className={styles.heroLabel}>Творческое сообщество</span>
+            <h1 className={styles.heroTitle}>
+              Минималистичный дизайн. Максимальное творчество
+            </h1>
+            <p className={styles.heroText}>
+              Присоединяйтесь к сообществу художников, где простота формы встречается с глубиной содержания
+            </p>
+          </div>
+          <div className={styles.heroRight}></div>
         </div>
         <div className={styles.topToolbar}>
           <HeroButtons styles={styles} />

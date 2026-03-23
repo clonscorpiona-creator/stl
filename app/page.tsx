@@ -52,13 +52,17 @@ export default async function Home() {
       {/* Hero Section */}
       <section className={styles.hero}>
         <div className={styles.heroTop}>
-          <span className={styles.heroLabel}>Сообщество</span>
-          <h1 className={styles.heroTitle}>
-            Творчество встречается с профессионализмом
-          </h1>
-          <p className={styles.heroText}>
-            Объединяем талантливых художников, дизайнеров и 3D-специалистов в одном пространстве для роста и вдохновения
-          </p>
+          <div className={styles.heroLeft}></div>
+          <div className={styles.heroCenter}>
+            <span className={styles.heroLabel}>Сообщество</span>
+            <h1 className={styles.heroTitle}>
+              Творчество встречается с профессионализмом
+            </h1>
+            <p className={styles.heroText}>
+              Объединяем талантливых художников, дизайнеров и 3D-специалистов в одном пространстве для роста и вдохновения
+            </p>
+          </div>
+          <div className={styles.heroRight}></div>
         </div>
         <div className={styles.topToolbar}>
           <HeroButtons styles={styles} />

@@ -58,15 +58,38 @@
 .heroTop {
   padding: 20px 40px;
   display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: stretch;
   color: #FFFFFF;
   width: 100%;
   max-width: 2560px;
   margin: 0 auto;
   flex: 4;
+  gap: 0;
+}
+
+.heroLeft {
+  flex: 0 0 20%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.heroCenter {
+  flex: 0 0 60%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
   gap: 20px;
+}
+
+.heroRight {
+  flex: 0 0 20%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* Top Toolbar - Button Panel

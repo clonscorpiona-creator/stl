@@ -41,13 +41,17 @@ export default async function MinimalistOliveLayout() {
       {/* Hero Section */}
       <section className={styles.hero}>
         <div className={styles.heroTop}>
-          <span className={styles.heroLabel}>Творческое сообщество</span>
-          <h1 className={styles.heroTitle}>
-            Чистота формы. Глубина содержания
-          </h1>
-          <p className={styles.heroText}>
-            Присоединяйтесь к сообществу художников, где минимализм встречается с выразительностью
-          </p>
+          <div className={styles.heroLeft}></div>
+          <div className={styles.heroCenter}>
+            <span className={styles.heroLabel}>Творческое сообщество</span>
+            <h1 className={styles.heroTitle}>
+              Чистота формы. Глубина содержания
+            </h1>
+            <p className={styles.heroText}>
+              Присоединяйтесь к сообществу художников, где минимализм встречается с выразительностью
+            </p>
+          </div>
+          <div className={styles.heroRight}></div>
         </div>
         <div className={styles.topToolbar}>
           <HeroButtons styles={styles} />
