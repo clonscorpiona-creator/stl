@@ -526,29 +526,31 @@
 
 /* Info Cards Section */
 .infoSection {
-  margin-bottom: 80px;
+  margin-bottom: clamp(24px, 3vh, 80px);
   width: 98%;
   max-width: 98vw;
   margin-left: auto;
   margin-right: auto;
+  padding: clamp(12px, 2vh, 40px) 0;
 }
 
 .infoGrid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 40px;
+  gap: clamp(12px, 1.5vh, 40px);
   margin: 0 auto;
   padding: 0 16px;
 }
 
 .infoCard {
   background: transparent;
+  padding: clamp(8px, 1vh, 20px);
 }
 
 .infoCardTitle {
-  font-size: 18px;
+  font-size: clamp(14px, 1.2vw, 18px);
   font-weight: 700;
-  margin: 0 0 16px 0;
+  margin: 0 0 clamp(6px, 0.8vh, 16px) 0;
   color: var(--color-text-dark);
   font-family: 'Georgia', serif;
 }
@@ -560,10 +562,10 @@
 }
 
 .infoCardList li {
-  font-size: 15px;
+  font-size: clamp(12px, 1vw, 15px);
   color: var(--color-text-light);
-  margin-bottom: 8px;
-  line-height: 1.6;
+  margin-bottom: clamp(3px, 0.5vh, 8px);
+  line-height: 1.4;
 }
 
 /* Responsive Design */
@@ -632,7 +634,7 @@
 
   .infoGrid {
     grid-template-columns: repeat(2, 1fr);
-    gap: 32px;
+    gap: clamp(10px, 1.2vh, 32px);
   }
 }
 
@@ -698,12 +700,10 @@
 
   .infoGrid {
     grid-template-columns: 1fr;
-    gap: 32px;
+    gap: clamp(8px, 1vh, 32px);
   }
 
-  .gridSection,
-  .aboutSection,
   .infoSection {
-    margin-bottom: 60px;
+    margin-bottom: clamp(18px, 2.5vh, 60px);
   }
 }
