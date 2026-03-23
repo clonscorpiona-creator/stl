@@ -561,7 +561,7 @@
 }
 
 .statsTitle {
-  font-size: 32px;
+  font-size: clamp(12px, 1.4vw, 16px);
   font-weight: 700;
   margin: 0 0 clamp(12px, 1.5vh, 24px) 0;
   text-align: center;
