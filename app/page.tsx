@@ -12,8 +12,6 @@ import ModernLayout from "./components/ModernLayout";
 import BakeryLayout from "./components/BakeryLayout";
 import MinimalistLayout from "./components/MinimalistLayout";
 import MinimalistOliveLayout from "./components/MinimalistOliveLayout";
-import LayoutGuide from "./components/LayoutGuide";
-import SectionLabels from "./components/SectionLabels";
 import StlLogo from "./components/StlLogo";
 import ClockCalendar from "./components/ClockCalendar";
 import HeroButtons from "./components/HeroButtons";
@@ -50,8 +48,6 @@ export default async function Home() {
 
   const defaultLayout = (
     <div className={styles.page}>
-      <LayoutGuide />
-      <SectionLabels />
       {/* Hero Section */}
       <section className={styles.hero}>
         <div className={styles.heroTop}>

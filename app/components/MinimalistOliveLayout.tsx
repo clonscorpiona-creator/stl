@@ -7,8 +7,6 @@
 
 import Link from "next/link";
 import styles from "./page-minimalist-olive.module.css";
-import LayoutGuide from "./LayoutGuide";
-import SectionLabels from "./SectionLabels";
 import StlLogo from "./StlLogo";
 import ClockCalendar from "./ClockCalendar";
 import HeroButtons from "./HeroButtons";
@@ -39,8 +37,6 @@ export default async function MinimalistOliveLayout() {
 
   return (
     <div className={styles.page}>
-      <LayoutGuide />
-      <SectionLabels />
       {/* Hero Section */}
       <section className={styles.hero}>
         <div className={styles.heroTop}>
