@@ -15,6 +15,7 @@ import MinimalistOliveLayout from "./components/MinimalistOliveLayout";
 import LayoutGuide from "./components/LayoutGuide";
 import SectionLabels from "./components/SectionLabels";
 import StlLogo from "./components/StlLogo";
+import HeroButtons from "./components/HeroButtons";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 
