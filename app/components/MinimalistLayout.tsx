@@ -49,7 +49,7 @@ export default async function MinimalistLayout() {
             Присоединяйтесь к сообществу художников, где простота формы встречается с глубиной содержания
           </p>
         </div>
-        <div className={styles.heroBottom}>
+        <div className={styles.topToolbar}>
           <HeroButtons styles={styles} />
         </div>
       </section>

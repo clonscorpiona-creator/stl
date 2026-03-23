@@ -49,7 +49,7 @@ export default async function MinimalistOliveLayout() {
             Присоединяйтесь к сообществу художников, где минимализм встречается с выразительностью
           </p>
         </div>
-        <div className={styles.heroBottom}>
+        <div className={styles.topToolbar}>
           <HeroButtons styles={styles} />
         </div>
       </section>

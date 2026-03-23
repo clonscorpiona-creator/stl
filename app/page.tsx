@@ -60,7 +60,7 @@ export default async function Home() {
             Объединяем талантливых художников, дизайнеров и 3D-специалистов в одном пространстве для роста и вдохновения
           </p>
         </div>
-        <div className={styles.heroBottom}>
+        <div className={styles.topToolbar}>
           <HeroButtons styles={styles} />
         </div>
       </section>

@@ -70,7 +70,18 @@
   gap: 20px;
 }
 
-.heroBottom {
+/* Top Toolbar - Button Panel
+ * REQUIREMENTS FOR ALL BUTTONS ADDED TO THIS TOOLBAR:
+ * 1. Must use clamp() for responsive padding: clamp(8px, 1vw, 14px) clamp(16px, 2vw, 32px)
+ * 2. Must use clamp() for responsive font-size: clamp(12px, 1.2vw, 16px)
+ * 3. Must have white-space: nowrap to prevent text wrapping
+ * 4. Must support screen sizes from mobile (320px) to 4K monitors (2560px)
+ * 5. Container max-width: min(90%, 1200px) to maintain readability
+ * 6. Gap between buttons: clamp(8px, 1vw, 16px) for responsive spacing
+ * 7. Must be centered with justify-content: center and align-items: center
+ * 8. Must support flex-wrap for multi-row layout on small screens
+ */
+.topToolbar {
   padding: 10px 40px;
   display: flex;
   justify-content: center;
@@ -426,7 +437,7 @@
     gap: 20px;
   }
 
-  .heroBottom {
+  .topToolbar {
     padding: 8px 24px;
   }
 
@@ -467,7 +478,7 @@
     gap: 16px;
   }
 
-  .heroBottom {
+  .topToolbar {
     padding: 6px 16px;
   }
 

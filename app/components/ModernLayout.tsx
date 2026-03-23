@@ -52,7 +52,7 @@ export default async function ModernLayout() {
             Платформа для художников, дизайнеров и 3D-специалистов, где рождаются шедевры
           </p>
         </div>
-        <div className={styles.heroBottom}>
+        <div className={styles.topToolbar}>
           <HeroButtons styles={styles} />
         </div>
       </section>

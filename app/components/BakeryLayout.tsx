@@ -49,7 +49,7 @@ export default async function BakeryLayout() {
             Присоединяйтесь к уютному сообществу художников, где каждая работа создается с душой и вдохновением
           </p>
         </div>
-        <div className={styles.heroBottom}>
+        <div className={styles.topToolbar}>
           <HeroButtons styles={styles} />
         </div>
       </section>
