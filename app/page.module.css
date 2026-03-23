@@ -48,6 +48,8 @@
 /* Hero Section */
 .hero {
   width: 100%;
+  max-width: 2560px;
+  margin: 0 auto;
   min-height: 200px;
   background: linear-gradient(135deg, #5C3D2E 0%, #8B6F47 50%, #D4A574 100%);
 }
@@ -61,6 +63,8 @@
   align-items: center;
   color: #FFFFFF;
   width: 100%;
+  max-width: 2560px;
+  margin: 0 auto;
   min-height: 200px;
   gap: 20px;
 }

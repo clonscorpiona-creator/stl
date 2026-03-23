@@ -49,6 +49,8 @@
 /* Hero Section */
 .hero {
   width: 100%;
+  max-width: 2560px;
+  margin: 0 auto;
   min-height: 200px;
   background: #F0F2E8;
 }
@@ -62,6 +64,8 @@
   align-items: center;
   color: #FFFFFF;
   width: 100%;
+  max-width: 2560px;
+  margin: 0 auto;
   min-height: 200px;
   gap: 20px;
 }
