@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 3001",
     "build": "next build",
+    "dev": "next dev -p 3001",
     "build:frontend": "next build",
     "build:backend": "prisma generate && next build",
     "start": "next start",
@@ -13,12 +13,17 @@
     "prisma:generate": "prisma generate",
     "prisma:push": "prisma db push",
     "prisma:studio": "prisma studio",
-    "prisma:seed": "tsx prisma/seed.ts"
+    "prisma:seed": "tsx prisma/seed.ts",
+    "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
+    "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
+    "upload": "opennextjs-cloudflare build && opennextjs-cloudflare upload",
+    "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
+    "@opennextjs/cloudflare": "^1.17.3",
     "@prisma/client": "^6.10.0",
     "@react-email/components": "^1.0.10",
     "bcryptjs": "^2.4.3",
@@ -40,6 +45,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
     "tsx": "^4.21.0",
-    "typescript": "^5"
+    "typescript": "^5",
+    "wrangler": "^4.76.0"
   }
 }
