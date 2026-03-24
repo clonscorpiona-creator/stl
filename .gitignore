@@ -50,3 +50,10 @@ prisma/dev.db-journal
 # Wrangler (Cloudflare)
 .wrangler/
 .dev.vars
+
+# OpenNext
+.open-next
+
+.dev.vars*
+!.dev.vars.example
+!.env.example
