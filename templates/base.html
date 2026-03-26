@@ -3,7 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}STL - Платформа портфолио{% endblock %}</title>
+    <title>{% block title %}СТЛ - Платформа портфолио{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -43,10 +46,43 @@
         }
 
         .logo {
-            font-size: 24px;
-            font-weight: bold;
-            color: #e60023;
+            display: flex;
+            align-items: center;
+            gap: 10px;
             text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 42px;
+            height: 42px;
+            flex-shrink: 0;
+        }
+
+        .logo-text {
+            font-family: 'Montserrat', 'Segoe UI', Roboto, sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            background: linear-gradient(135deg, #e60023 0%, #ff1a41 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-transform: uppercase;
+        }
+
+        .logo:hover .logo-icon {
+            transform: rotate(5deg) scale(1.05);
+        }
+
+        .logo:hover .logo-text {
+            background: linear-gradient(135deg, #ff1a41 0%, #e60023 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .logo-icon, .logo-text {
+            transition: all 0.3s ease;
         }
 
         .search-form {
@@ -272,7 +308,40 @@
 <body>
     <header class="header">
         <div class="header-content">
-            <a href="{% url 'core:home' %}" class="logo">STL</a>
+            <a href="{% url 'core:home' %}" class="logo" title="STL Platform - Творческая платформа">
+                <svg class="logo-icon" viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Внешний круг с градиентом -->
+                    <circle cx="21" cy="21" r="21" fill="url(#logoGradient)"/>
+
+                    <!-- Стильная буква С (творчество/creativity) -->
+                    <path d="M28 14C28 14 20 12 15 17C10 22 10 30 15 33C20 36 28 34 28 34"
+                          stroke="white"
+                          stroke-width="2.5"
+                          stroke-linecap="round"
+                          fill="none"
+                          opacity="0.9"/>
+
+                    <!-- Иконка кисти/пера (искусство) -->
+                    <path d="M22 18L26 22M26 22L20 28M26 22L28 20"
+                          stroke="white"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          opacity="0.7"/>
+
+                    <!-- Декоративная точка (акцент) -->
+                    <circle cx="29" cy="13" r="2" fill="white" opacity="0.8"/>
+
+                    <!-- Градиент для фона -->
+                    <defs>
+                        <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#e60023"/>
+                            <stop offset="100%" style="stop-color:#ff1a41"/>
+                        </linearGradient>
+                    </defs>
+                </svg>
+                <span class="logo-text">СТЛ</span>
+            </a>
 
             <form action="{% url 'core:work_list' %}" method="get" class="search-form">
                 <input type="text" name="q" placeholder="Поиск работ, авторов, тегов..." value="{{ request.GET.q }}">
@@ -322,7 +391,20 @@
     <footer class="footer">
         <div class="footer-content">
             <div class="footer-section">
-                <h4>STL Platform</h4>
+                <h4 style="display: flex; align-items: center; gap: 8px;">
+                    <svg width="24" height="24" viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="21" cy="21" r="21" fill="url(#footerLogoGradient)"/>
+                        <path d="M28 14C28 14 20 12 15 17C10 22 10 30 15 33C20 36 28 34 28 34"
+                              stroke="white" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+                        <defs>
+                            <linearGradient id="footerLogoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#e60023"/>
+                                <stop offset="100%" style="stop-color:#ff1a41"/>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                    СТЛ Platform
+                </h4>
                 <p style="color: #666; font-size: 14px;">
                     Платформа для творческих людей. Делитесь работами, находите вдохновение, создавайте сообщества.
                 </p>
