@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Чат - STL</title>
+    <style>
+        :root {
+            --bg: #0a0a0a;
+            --surface: #1a1a1a;
+            --surface-hover: #252525;
+            --border: #333;
+            --text: #fff;
+            --text-muted: #888;
+            --accent: #e60023;
+            --accent-hover: #ff1a41;
+            --radius: 12px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 28px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .channels-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .channel-card {
+            background: var(--surface);
+            border-radius: var(--radius);
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            text-decoration: none;
+            color: inherit;
+            border: 1px solid var(--border);
+        }
+
+        .channel-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+            border-color: var(--accent);
+        }
+
+        .channel-card h3 {
+            font-size: 18px;
+            margin-bottom: 8px;
+            color: var(--text);
+        }
+
+        .channel-card p {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+            line-height: 1.5;
+        }
+
+        .channel-stats {
+            display: flex;
+            gap: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .channel-stats span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .channel-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            background: rgba(230, 0, 35, 0.15);
+            color: var(--accent);
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-bottom: 12px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-muted);
+        }
+
+        .empty-state h2 {
+            color: var(--text);
+            margin-bottom: 10px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background: var(--accent);
+            color: white;
+            border-radius: var(--radius);
+            text-decoration: none;
+            font-weight: 500;
+            margin-top: 20px;
+            transition: background 0.2s;
+        }
+
+        .btn:hover {
+            background: var(--accent-hover);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Чат-каналы</h1>
+
+        {% if channels %}
+            <div class="channels-grid">
+                {% for channel in channels %}
+                    <a href="/chat/{{ channel.slug }}/" class="channel-card">
+                        {% if channel.is_public %}
+                            <span class="channel-badge">Публичный</span>
+                        {% else %}
+                            <span class="channel-badge">Приватный</span>
+                        {% endif %}
+                        <h3># {{ channel.name }}</h3>
+                        <p>{{ channel.description|truncatewords:20|default:"Нет описания" }}</p>
+                        <div class="channel-stats">
+                            <span>💬 {{ channel.messages_count }}</span>
+                            <span>👥 {{ channel.members_count }}</span>
+                        </div>
+                    </a>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <h2>Каналов пока нет</h2>
+                <p>Будьте первым, кто создаст канал!</p>
+                <a href="/admin/chat/channel/add/" class="btn">Создать канал</a>
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>

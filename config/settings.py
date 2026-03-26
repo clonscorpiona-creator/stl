@@ -41,8 +41,10 @@ INSTALLED_APPS = [
     'accounts',
     'core',
     'interactions',
+    'chat',
     # Third-party
     'taggit',
+    'channels',
 ]
 
 MIDDLEWARE = [
@@ -147,3 +149,15 @@ SESSION_COOKIE_SAMESITE = 'Lax'
 SESSION_COOKIE_SECURE = False  # True для HTTPS
 CSRF_COOKIE_SAMESITE = 'Lax'
 CSRF_COOKIE_SECURE = False  # True для HTTPS
+
+# Django Channels (WebSocket)
+ASGI_APPLICATION = 'config.asgi.application'
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+    },
+}
+
+# Chat settings
+CHAT_MESSAGES_PER_PAGE = 50
+CHAT_MAX_MESSAGE_LENGTH = 5000

@@ -14,6 +14,7 @@ urlpatterns = [
     path('auth/', include('accounts.urls')),
     path('', include('core.urls')),
     path('interactions/', include('interactions.urls')),
+    path('chat/', include('chat.urls')),
 
     # Interactions API endpoints (добавлены напрямую)
     path('interactions/api/like/<int:work_id>/', interactions_api.like_api, name='api_like'),
