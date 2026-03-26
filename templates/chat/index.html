@@ -1,159 +1,315 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Чат - STL</title>
-    <style>
-        :root {
-            --bg: #0a0a0a;
-            --surface: #1a1a1a;
-            --surface-hover: #252525;
-            --border: #333;
-            --text: #fff;
-            --text-muted: #888;
-            --accent: #e60023;
-            --accent-hover: #ff1a41;
-            --radius: 12px;
-        }
+{% extends 'base.html' %}
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+{% block title %}Чат - СТЛ Platform{% endblock %}
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            min-height: 100vh;
-            padding: 20px;
-        }
+{% block extra_css %}
+{{ block.super }}
+<style>
+    /* Чат стили для главной страницы */
+    .chat-index-page {
+        padding: 30px 20px;
+        min-height: calc(100vh - 200px);
+        width: 100%;
+    }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
+    .chat-header {
+        text-align: center;
+        margin-bottom: 40px;
+        width: 100%;
+    }
 
-        h1 {
-            font-size: 28px;
-            margin-bottom: 30px;
-            text-align: center;
-        }
+    .chat-header h1 {
+        font-size: 32px;
+        font-weight: 800;
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 50%, var(--accent) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 10px;
+    }
 
-        .channels-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
-        }
+    .chat-header p {
+        color: var(--text-light);
+        font-size: 16px;
+    }
 
-        .channel-card {
-            background: var(--surface);
-            border-radius: var(--radius);
-            padding: 24px;
-            transition: transform 0.2s, box-shadow 0.2s;
-            text-decoration: none;
-            color: inherit;
-            border: 1px solid var(--border);
-        }
+    .session-indicator {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        background: var(--white);
+        border: 1px solid #eee;
+        border-radius: 20px;
+        font-size: 14px;
+        margin-top: 15px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
 
-        .channel-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
-            border-color: var(--accent);
-        }
+    .session-indicator .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--primary);
+        animation: pulse 2s infinite;
+    }
 
-        .channel-card h3 {
-            font-size: 18px;
-            margin-bottom: 8px;
-            color: var(--text);
-        }
+    .session-indicator.expired .dot {
+        background: #ef4444;
+        animation: none;
+    }
 
-        .channel-card p {
-            font-size: 14px;
-            color: var(--text-muted);
-            margin-bottom: 16px;
-            line-height: 1.5;
-        }
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.5; }
+    }
 
-        .channel-stats {
-            display: flex;
-            gap: 16px;
-            font-size: 13px;
-            color: var(--text-muted);
-        }
+    .channels-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 24px;
+        margin-top: 30px;
+    }
 
-        .channel-stats span {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
+    .channel-card {
+        background: var(--white);
+        border-radius: 16px;
+        padding: 24px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        text-decoration: none;
+        color: inherit;
+        border: 2px solid #f0f0f0;
+        position: relative;
+        overflow: hidden;
+    }
 
-        .channel-badge {
-            display: inline-block;
-            padding: 4px 10px;
-            background: rgba(230, 0, 35, 0.15);
-            color: var(--accent);
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 500;
-            margin-bottom: 12px;
-        }
+    .channel-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--primary), var(--primary-light), var(--accent));
+        transform: scaleX(0);
+        transition: transform 0.3s ease;
+    }
 
-        .empty-state {
-            text-align: center;
-            padding: 60px 20px;
-            color: var(--text-muted);
-        }
+    .channel-card:hover::before {
+        transform: scaleX(1);
+    }
 
-        .empty-state h2 {
-            color: var(--text);
-            margin-bottom: 10px;
-        }
+    .channel-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 12px 32px rgba(156, 175, 61, 0.15);
+        border-color: var(--primary-light);
+    }
 
-        .btn {
-            display: inline-block;
-            padding: 12px 24px;
-            background: var(--accent);
-            color: white;
-            border-radius: var(--radius);
-            text-decoration: none;
-            font-weight: 500;
-            margin-top: 20px;
-            transition: background 0.2s;
-        }
+    .channel-card h3 {
+        font-size: 18px;
+        font-weight: 700;
+        margin-bottom: 8px;
+        color: var(--text);
+    }
 
-        .btn:hover {
-            background: var(--accent-hover);
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
+    .channel-card p {
+        font-size: 14px;
+        color: var(--text-light);
+        margin-bottom: 16px;
+        line-height: 1.6;
+    }
+
+    .channel-badge {
+        display: inline-block;
+        padding: 4px 12px;
+        background: linear-gradient(135deg, rgba(156, 175, 61, 0.15), rgba(184, 201, 96, 0.15));
+        color: var(--primary-dark);
+        border-radius: 16px;
+        font-size: 12px;
+        font-weight: 600;
+        margin-bottom: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .channel-stats {
+        display: flex;
+        gap: 20px;
+        font-size: 13px;
+        color: #999;
+        padding-top: 12px;
+        border-top: 1px solid #f0f0f0;
+    }
+
+    .channel-stats span {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 80px 20px;
+        color: var(--text-light);
+        background: var(--white);
+        border-radius: 16px;
+        border: 2px dashed #eee;
+    }
+
+    .empty-state h2 {
+        color: var(--text);
+        margin-bottom: 15px;
+        font-size: 24px;
+    }
+
+    .btn-create {
+        display: inline-block;
+        padding: 14px 32px;
+        background: linear-gradient(135deg, var(--primary), var(--primary-light));
+        color: white;
+        border-radius: 12px;
+        text-decoration: none;
+        font-weight: 600;
+        margin-top: 24px;
+        transition: all 0.3s;
+        box-shadow: 0 4px 12px rgba(156, 175, 61, 0.3);
+    }
+
+    .btn-create:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(156, 175, 61, 0.4);
+    }
+
+    /* Loading state */
+    .loading {
+        text-align: center;
+        padding: 60px 20px;
+    }
+
+    .spinner {
+        width: 50px;
+        height: 50px;
+        border: 4px solid #f0f0f0;
+        border-top-color: var(--primary);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 20px;
+    }
+
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="chat-index-page">
+    <div class="chat-header">
         <h1>Чат-каналы</h1>
+        <p>Выберите канал для общения или создайте новый</p>
 
-        {% if channels %}
-            <div class="channels-grid">
-                {% for channel in channels %}
-                    <a href="/chat/{{ channel.slug }}/" class="channel-card">
-                        {% if channel.is_public %}
-                            <span class="channel-badge">Публичный</span>
-                        {% else %}
-                            <span class="channel-badge">Приватный</span>
-                        {% endif %}
-                        <h3># {{ channel.name }}</h3>
-                        <p>{{ channel.description|truncatewords:20|default:"Нет описания" }}</p>
-                        <div class="channel-stats">
-                            <span>💬 {{ channel.messages_count }}</span>
-                            <span>👥 {{ channel.members_count }}</span>
-                        </div>
-                    </a>
-                {% endfor %}
-            </div>
-        {% else %}
-            <div class="empty-state">
-                <h2>Каналов пока нет</h2>
-                <p>Будьте первым, кто создаст канал!</p>
-                <a href="/admin/chat/channel/add/" class="btn">Создать канал</a>
-            </div>
-        {% endif %}
+        <!-- Индикатор сессии -->
+        <div class="session-indicator" id="sessionIndicator">
+            <span class="dot"></span>
+            <span id="sessionText">Проверка сессии...</span>
+        </div>
     </div>
-</body>
-</html>
+
+    <div id="channelsContainer">
+        <div class="loading">
+            <div class="spinner"></div>
+            <p>Загрузка каналов...</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{{ block.super }}
+<script>
+    // Проверка статуса сессии
+    async function checkSessionStatus() {
+        try {
+            const response = await fetch('/chat/api/session-status/');
+            const data = await response.json();
+
+            const indicator = document.getElementById('sessionIndicator');
+            const textEl = document.getElementById('sessionText');
+
+            if (data.authenticated) {
+                indicator.classList.remove('expired');
+                textEl.textContent = `Онлайн: ${data.username}`;
+            } else {
+                indicator.classList.add('expired');
+                textEl.textContent = 'Сессия истекла. Перенаправление...';
+                setTimeout(() => {
+                    window.location.href = '/auth/login/?next=' + encodeURIComponent('/chat/');
+                }, 2000);
+            }
+        } catch (error) {
+            console.error('[Session] Check failed:', error);
+        }
+    }
+
+    // Загрузка каналов
+    async function loadChannels() {
+        try {
+            const response = await fetch('/chat/api/channels/');
+            const data = await response.json();
+
+            const container = document.getElementById('channelsContainer');
+
+            if (data.channels && data.channels.length > 0) {
+                container.innerHTML = `
+                    <div class="channels-grid">
+                        ${data.channels.map(ch => `
+                            <a href="/chat/${ch.slug}/" class="channel-card">
+                                ${ch.is_public ? '<span class="channel-badge">Публичный</span>' : '<span class="channel-badge">Приватный</span>'}
+                                <h3># ${escapeHtml(ch.name)}</h3>
+                                <p>${escapeHtml(ch.description || 'Нет описания')}</p>
+                                <div class="channel-stats">
+                                    <span>💬 ${ch.messages_count || 0}</span>
+                                    <span>👥 ${ch.members_count || 0}</span>
+                                </div>
+                            </a>
+                        `).join('')}
+                    </div>
+                `;
+            } else {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <h2>Каналов пока нет</h2>
+                        <p>Будьте первым, кто создаст канал!</p>
+                        ${data.is_staff ? '<a href="/admin/chat/channel/add/" class="btn-create">Создать канал</a>' : ''}
+                    </div>
+                `;
+            }
+        } catch (error) {
+            console.error('[Channels] Load failed:', error);
+            document.getElementById('channelsContainer').innerHTML = `
+                <div class="empty-state">
+                    <h2>Ошибка загрузки</h2>
+                    <p>Не удалось загрузить список каналов</p>
+                    <button class="btn-create" onclick="location.reload()">Попробовать снова</button>
+                </div>
+            `;
+        }
+    }
+
+    // Утилита для экранирования HTML
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    // Инициализация при загрузке
+    document.addEventListener('DOMContentLoaded', () => {
+        checkSessionStatus();
+        loadChannels();
+
+        // Периодическая проверка сессии (каждые 30 секунд)
+        setInterval(checkSessionStatus, 30000);
+    });
+</script>
+{% endblock %}

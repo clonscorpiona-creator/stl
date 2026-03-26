@@ -101,7 +101,7 @@ def load_channel_history(channel_slug: str, limit: int = 100) -> dict:
             history = json.load(f)
 
         # Ограничиваем количество сообщений
-        if 'messages' in history:
+        if 'messages' in history and limit is not None:
             history['messages'] = history['messages'][-limit:]
 
         return history

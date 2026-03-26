@@ -20,12 +20,19 @@ from django.views.decorators.http import require_http_methods
 from django.core.paginator import Paginator
 from django.db.models import F, Exists, OuterRef
 from django.utils import timezone
+from django.utils.text import slugify
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
+from django.conf import settings
 from datetime import timedelta
 
 import json
+import base64
+import os
 
-from .models import Channel, ChannelMember, ChannelBan, Message, MessageLike
+from .models import Channel, ChannelMember, ChannelBan, Message, MessageLike, UserChannelRead
 from .history import save_message_to_history, delete_message_in_history, add_reaction_to_history
+from .messages_storage import load_messages_from_storage, get_message_count
 from django.contrib.sessions.models import Session
 from django.utils import timezone
 
@@ -93,6 +100,8 @@ def serialize_message(message, current_user=None):
         },
         'created_at': message.created_at.isoformat(),
         'edited_at': message.edited_at.isoformat() if message.edited_at else None,
+        'has_image': message.has_image,
+        'image': message.image.url if message.image and hasattr(message.image, 'url') else None,
     }
 
     # Добавляем информацию об ответе
@@ -242,21 +251,32 @@ def send_message_api(request, slug):
     data = json.loads(request.body)
     content = data.get('content', '').strip()
     reply_to_id = data.get('reply_to')
+    image_url = data.get('image_url')
 
-    if not content or len(content) > 5000:
-        return JsonResponse({'error': 'Invalid content'}, status=400)
+    if not content and not image_url:
+        return JsonResponse({'error': 'Content or image required'}, status=400)
+
+    if content and len(content) > 5000:
+        return JsonResponse({'error': 'Content too long'}, status=400)
 
     # Проверка ответа
     reply_to = None
     if reply_to_id:
         reply_to = Message.objects.filter(id=reply_to_id, channel=channel).first()
 
+    # Создаем сообщение
     message = Message.objects.create(
         channel=channel,
         user=request.user,
-        content=content,
-        reply_to=reply_to
+        content=content if content else '[Изображение]',
+        reply_to=reply_to,
+        has_image=bool(image_url),
     )
+
+    # Если есть изображение, обновляем поле image
+    if image_url:
+        message.image = image_url
+        message.save(update_fields=['image'])
 
     # Сохраняем в файл истории
     save_message_to_history(serialize_message(message, request.user), channel.slug)
@@ -576,3 +596,151 @@ def promote_moderator_api(request, slug):
     channel.moderators.add(user_id)
 
     return JsonResponse({'success': True, 'is_moderator': True})
+
+
+@login_required
+@require_http_methods(["POST"])
+def upload_image_api(request):
+    """
+    Загрузка изображения в чат.
+
+    Принимает base64 encoded изображение или файл.
+    Возвращает URL загруженного изображения.
+    """
+    if 'image' in request.FILES:
+        # Загрузка файла
+        image_file = request.FILES['image']
+        content_type = image_file.content_type
+    elif 'image' in request.POST:
+        # Загрузка base64
+        image_data = request.POST['image']
+        if ',' in image_data:
+            # Извлекаем MIME тип из data URL
+            mime_type = image_data.split(',')[0].split(':')[1].split(';')[0]
+            image_data = image_data.split(',')[1]
+        else:
+            mime_type = 'image/png'  # По умолчанию
+
+        image_file = ContentFile(base64.b64decode(image_data))
+        image_file.name = 'image.png'
+        content_type = mime_type
+    else:
+        return JsonResponse({'error': 'No image provided'}, status=400)
+
+    # Проверяем тип файла
+    allowed_types = ['image/jpeg', 'image/png', 'image/gif', 'image/webp']
+    if content_type not in allowed_types:
+        return JsonResponse({'error': 'Invalid image type'}, status=400)
+
+    # Проверяем размер (макс 5MB)
+    max_size = 5 * 1024 * 1024
+    if image_file.size > max_size:
+        return JsonResponse({'error': 'Image too large (max 5MB)'}, status=400)
+
+    # Генерируем уникальное имя
+    ext = os.path.splitext(image_file.name)[1] or '.png'
+    filename = f'chat_images/{slugify(request.user.username)}_{timezone.now().timestamp()}{ext}'
+
+    # Сохраняем файл
+    file_path = default_storage.save(filename, image_file)
+    image_url = settings.MEDIA_URL + file_path
+
+    return JsonResponse({
+        'success': True,
+        'url': image_url,
+        'filename': filename,
+    })
+
+
+@login_required
+def messages_storage_api(request, slug):
+    """
+    Загрузка сообщений из текстового хранилища.
+
+    Возвращает сообщения в формате:
+    - username: имя пользователя
+    - timestamp: время отправки
+    - content: текст сообщения
+    - attachments: список вложений
+    """
+    channel = Channel.objects.filter(slug=slug, is_active=True).first()
+
+    if not channel:
+        return JsonResponse({'error': 'Channel not found'}, status=404)
+
+    # Проверка доступа
+    if not channel.is_public:
+        member = ChannelMember.objects.filter(channel=channel, user=request.user).first()
+        if not member and not request.user.is_staff:
+            return JsonResponse({'error': 'Access denied'}, status=403)
+
+    # Проверка бана
+    ban = ChannelBan.objects.filter(channel=channel, user=request.user).first()
+    if ban and ban.is_active():
+        return JsonResponse({'error': 'Banned'}, status=403)
+
+    # Загружаем сообщения из текстового хранилища
+    limit = int(request.GET.get('limit', 100))
+    messages = load_messages_from_storage(slug, limit=limit)
+
+    return JsonResponse({
+        'channel': slug,
+        'messages': messages,
+        'count': len(messages),
+    })
+
+
+@login_required
+def unread_counts_api(request):
+    """
+    Получение количества непрочитанных сообщений по всем каналам.
+
+    Возвращает словарь: {channel_slug: unread_count}
+    """
+    # Получаем все публичные каналы
+    channels = Channel.objects.filter(is_active=True, is_public=True)
+
+    # Для каждого канала считаем разницу между общим количеством сообщений
+    # и количеством прочитанных пользователем
+    unread_data = {}
+    for channel in channels:
+        user_read = UserChannelRead.objects.filter(user=request.user, channel=channel).first()
+        read_count = user_read.read_count if user_read else 0
+        unread_count = max(0, channel.messages_count - read_count)
+        if unread_count > 0:
+            unread_data[channel.slug] = unread_count
+
+    return JsonResponse({
+        'unread_counts': unread_data,
+        'total_unread': sum(unread_data.values()),
+    })
+
+
+@login_required
+def update_read_status_api(request, slug):
+    """
+    Обновление статуса прочтения канала пользователем.
+
+    Вызывается при входе в канал и при прочтении новых сообщений.
+    """
+    channel = Channel.objects.filter(slug=slug, is_active=True).first()
+
+    if not channel:
+        return JsonResponse({'error': 'Channel not found'}, status=404)
+
+    # Получаем или создаем запись о прочтении
+    user_read, created = UserChannelRead.objects.get_or_create(
+        user=request.user,
+        channel=channel,
+        defaults={'read_count': channel.messages_count}
+    )
+
+    if not created:
+        # Обновляем счетчик прочитанных сообщений
+        user_read.read_count = channel.messages_count
+        user_read.save(update_fields=['read_count', 'updated_at'])
+
+    return JsonResponse({
+        'success': True,
+        'read_count': user_read.read_count,
+    })

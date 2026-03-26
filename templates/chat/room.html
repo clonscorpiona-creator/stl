@@ -82,6 +82,16 @@
     const channelsList = document.getElementById('channelsList');
     const membersList = document.getElementById('membersList');
     const membersCount = document.getElementById('membersCount');
+    const emojiBtn = document.getElementById('emojiBtn');
+    const imageBtn = document.getElementById('imageBtn');
+    const imageInput = document.getElementById('imageInput');
+    const imagePreview = document.getElementById('imagePreview');
+    const previewImg = document.getElementById('previewImg');
+    const removeImage = document.getElementById('removeImage');
+    const emojiPicker = document.getElementById('emojiPicker');
+
+    // Текущее изображение для отправки
+    let currentImage = null;
 
     // Авто-увеличение textarea
     messageInput.addEventListener('input', function() {
@@ -100,11 +110,14 @@
     sendBtn.addEventListener('click', sendMessage);
 
     // Резервная отправка через HTTP API
-    async function sendViaHTTP(content, replyTo = null) {
+    async function sendViaHTTP(content, replyTo = null, imageUrl = null) {
         try {
             const body = { content: content };
             if (replyTo) {
                 body.reply_to = replyTo.id;
+            }
+            if (imageUrl) {
+                body.image_url = imageUrl;
             }
 
             const response = await fetch(`/chat/api/channels/${window.CHAT.slug}/messages/`, {
@@ -123,6 +136,9 @@
                 window.CHAT.messages.push(data.message);
                 window.CHAT.lastMessageId = data.message.id;
                 saveState();
+
+                // После отправки сообщения обновляем статус прочтения
+                await updateReadStatus();
             } else {
                 console.error('[Chat] Send failed:', response.status);
             }
@@ -142,6 +158,77 @@
             saveState();
         }
     });
+
+    // Загрузка сообщений при загрузке страницы (не ждём WebSocket)
+    async function loadMessagesFromServer() {
+        try {
+            console.log('[Chat] Loading messages from server on page load...');
+            // Загружаем все сообщения из текстового хранилища (полная история)
+            const storageResponse = await fetch(`/chat/api/channels/${window.CHAT.slug}/storage/?limit=1000`);
+            const storageData = await storageResponse.json();
+
+            // Загружаем текущие сообщения из API (с метаданными: лайки, статусы)
+            const apiResponse = await fetch(`/chat/api/channels/${window.CHAT.slug}/?limit=100`);
+            const apiData = await apiResponse.json();
+
+            const apiMessages = apiData.messages || [];
+            const apiIds = new Set(apiMessages.map(m => m.id));
+
+            if (storageData.messages && storageData.messages.length > 0) {
+                // Преобразуем сообщения из текстового хранилища
+                const historicalMessages = storageData.messages.map((msg, index) => {
+                    // Проверяем, есть ли изображение во вложениях
+                    const attachments = msg.attachments || [];
+                    const imageUrl = attachments.find(att => typeof att === 'string' && att.startsWith('http'));
+
+                    return {
+                        id: 'hist_' + index,
+                        content: msg.content.replace(/\[Изображение:.*?\]/g, '').trim() || '[Изображение]',
+                        is_deleted: false,
+                        is_edited: false,
+                        likes_count: 0,
+                        liked: false,
+                        has_image: !!imageUrl,
+                        image: imageUrl || null,
+                        user: {
+                            id: 0,
+                            username: msg.username,
+                            avatar: null,
+                            is_moderator: false,
+                            is_staff: false,
+                        },
+                        created_at: msg.timestamp,
+                        edited_at: null,
+                        reply_to: null,
+                    };
+                });
+
+                // Объединяем: сначала история, потом текущие сообщения
+                const uniqueHistorical = historicalMessages.filter(m => !apiIds.has(m.id));
+                window.CHAT.messages = [...uniqueHistorical, ...apiMessages];
+                window.CHAT.lastMessageId = apiMessages.length > 0 ? apiMessages[apiMessages.length - 1].id : null;
+                saveState();
+                console.log('[Chat] Loaded', uniqueHistorical.length, 'historical +', apiMessages.length, 'API messages');
+
+                renderMessages();
+                initializeImageExpanders();
+            } else if (apiMessages.length > 0) {
+                window.CHAT.messages = apiMessages;
+                renderMessages();
+                initializeImageExpanders();
+            }
+
+            // После загрузки сообщений обновляем статус прочтения
+            await updateReadStatus();
+
+            // Обновляем счетчик непрочитанных в шапке сайта
+            if (window.loadUnreadCounts) {
+                window.loadUnreadCounts();
+            }
+        } catch (error) {
+            console.error('[Chat] Failed to load messages on page load:', error);
+        }
+    }
 
     // Подключение WebSocket
     function connectWebSocket() {
@@ -163,8 +250,13 @@
                 console.log('[Chat] Displaying saved messages while loading fresh ones');
             }
 
+            // Загружаем свежие сообщения и обновляем статус прочтения
             loadMessages();
+            updateReadStatus();
         };
+
+        // Загружаем сообщения сразу при загрузке страницы (не ждём WebSocket)
+        loadMessagesFromServer();
 
         window.CHAT.ws.onclose = function() {
             console.log('[Chat] Disconnected from WebSocket');
@@ -212,6 +304,10 @@
                     window.CHAT.messages.push(data.message);
                     window.CHAT.lastMessageId = data.message.id;
                     saveState();
+                    // Если пользователь находится в чате и вкладка активна, обновляем статус прочтения
+                    if (document.visibilityState === 'visible') {
+                        updateReadStatus();
+                    }
                 }
                 appendMessage(data.message);
                 scrollToBottom();
@@ -246,21 +342,74 @@
     // Загрузка истории сообщений
     async function loadMessages() {
         try {
-            const response = await fetch(`/chat/api/channels/${window.CHAT.slug}/`);
-            const data = await response.json();
+            // Загружаем все сообщения из текстового хранилища (полная история)
+            const storageResponse = await fetch(`/chat/api/channels/${window.CHAT.slug}/storage/?limit=1000`);
+            const storageData = await storageResponse.json();
 
-            if (data.messages) {
-                const savedIds = new Set(window.CHAT.messages.map(m => m.id));
-                const freshMessages = data.messages.filter(m => !savedIds.has(m.id));
+            // Загружаем текущие сообщения из API (с метаданными: лайки, статусы)
+            const apiResponse = await fetch(`/chat/api/channels/${window.CHAT.slug}/?limit=100`);
+            const apiData = await apiResponse.json();
 
-                if (freshMessages.length > 0) {
-                    window.CHAT.messages = [...window.CHAT.messages, ...freshMessages];
-                    window.CHAT.lastMessageId = freshMessages[freshMessages.length - 1]?.id || window.CHAT.lastMessageId;
-                    saveState();
-                    console.log('[Chat] Loaded', freshMessages.length, 'fresh messages');
-                }
+            const apiMessages = apiData.messages || [];
+            const apiIds = new Set(apiMessages.map(m => m.id));
+
+            if (storageData.messages && storageData.messages.length > 0) {
+                // Преобразуем сообщения из текстового хранилища
+                const historicalMessages = storageData.messages.map((msg, index) => {
+                    // Проверяем, есть ли изображение во вложениях
+                    const attachments = msg.attachments || [];
+                    const imageUrl = attachments.find(att => typeof att === 'string' && att.startsWith('http'));
+
+                    return {
+                        id: 'hist_' + index,
+                        content: msg.content.replace(/\[Изображение:.*?\]/g, '').trim() || '[Изображение]',
+                        is_deleted: false,
+                        is_edited: false,
+                        likes_count: 0,
+                        liked: false,
+                        has_image: !!imageUrl,
+                        image: imageUrl || null,
+                        user: {
+                            id: 0,
+                            username: msg.username,
+                            avatar: null,
+                            is_moderator: false,
+                            is_staff: false,
+                        },
+                        created_at: msg.timestamp,
+                        edited_at: null,
+                        reply_to: null,
+                    };
+                });
+
+                // Объединяем: сначала история, потом текущие сообщения
+                const uniqueHistorical = historicalMessages.filter(m => !apiIds.has(m.id));
+                window.CHAT.messages = [...uniqueHistorical, ...apiMessages];
+                window.CHAT.lastMessageId = apiMessages.length > 0 ? apiMessages[apiMessages.length - 1].id : null;
+                saveState();
+                console.log('[Chat] Loaded', uniqueHistorical.length, 'historical +', apiMessages.length, 'API messages');
 
                 renderMessages();
+                initializeImageExpanders();
+            } else if (apiMessages.length > 0) {
+                window.CHAT.messages = apiMessages;
+                renderMessages();
+                initializeImageExpanders();
+            } else {
+                messagesContainer.innerHTML = `
+                    <div class="chat-empty-state">
+                        <h3>История пуста</h3>
+                        <p>Будьте первым, кто напишет сообщение!</p>
+                    </div>
+                `;
+            }
+
+            // После загрузки сообщений обновляем статус прочтения
+            await updateReadStatus();
+
+            // Обновляем счетчик непрочитанных в шапке сайта
+            if (window.loadUnreadCounts) {
+                window.loadUnreadCounts();
             }
 
             loadMembers();
@@ -270,11 +419,10 @@
             const hasSavedState = loadSavedState();
             if (hasSavedState && window.CHAT.messages.length > 0) {
                 renderMessages();
-                messagesContainer.insertAdjacentHTML('beforeend', `
-                    <div style="text-align:center; padding:10px; color:var(--text-muted); font-size:13px;">
-                        Показаны сохраненные сообщения. Возможно, некоторые новые сообщения не загружены.
-                    </div>
-                `);
+                await updateReadStatus();
+                if (window.loadUnreadCounts) {
+                    window.loadUnreadCounts();
+                }
             } else {
                 messagesContainer.innerHTML = `
                     <div class="chat-empty-state">
@@ -396,9 +544,22 @@
                 'Content-Type': 'application/json',
             },
         })
-        .then(r => r.json())
+        .then(r => {
+            if (!r.ok) {
+                console.error('[Like] Request failed:', r.status);
+                throw new Error('Like request failed');
+            }
+            return r.json();
+        })
         .then(data => {
+            if (data.error) {
+                console.error('[Like] Server error:', data.error);
+                return;
+            }
             updateLike(messageId, data.liked, data.count);
+        })
+        .catch(error => {
+            console.error('[Like] Error:', error);
         });
     }
 
@@ -575,9 +736,21 @@
         });
     }
 
-    // Отправка сообщения с учетом ответа
+    // Отправка сообщения с учетом ответа и изображения
     function sendMessage() {
         const content = messageInput.value.trim();
+
+        // Если есть изображение, отправляем с ним
+        if (currentImage) {
+            sendMessageWithImage(content, window.CHAT.replyingTo);
+            messageInput.value = '';
+            messageInput.style.height = 'auto';
+            if (window.CHAT.replyingTo) {
+                cancelReply();
+            }
+            return;
+        }
+
         if (!content) return;
 
         // Проверяем, есть ли ответ
@@ -609,6 +782,27 @@
 
     function scrollToBottom() {
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+
+    // Обновление статуса прочтения
+    async function updateReadStatus() {
+        try {
+            const response = await fetch(`/chat/api/channels/${window.CHAT.slug}/update-read/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': window.CHAT.csrf,
+                },
+            });
+            const data = await response.json();
+            console.log('[Chat] Read status updated:', data.read_count);
+
+            // Обновляем счетчик непрочитанных в шапке сайта
+            if (window.loadUnreadCounts) {
+                window.loadUnreadCounts();
+            }
+        } catch (error) {
+            console.error('[Chat] Failed to update read status:', error);
+        }
     }
 
     // Загрузка каналов
@@ -671,7 +865,465 @@
         }
     });
 
-    // Инициализация
+    // Проверка сессии пользователя
+    async function checkSession() {
+        try {
+            const response = await fetch('/chat/api/session-status/');
+            const data = await response.json();
+            console.log('[Chat] Session status:', data);
+            if (!data.authenticated || !data.session_valid) {
+                console.warn('[Chat] Session invalid, redirecting to login');
+                // Сессия недействительна, но не перенаправляем сразу - даем загрузить сообщения
+            }
+            return data.authenticated && data.session_valid;
+        } catch (error) {
+            console.error('[Chat] Session check failed:', error);
+            return false;
+        }
+    }
+
+    // Инициализация - загружаем сообщения сразу при загрузке страницы
+    checkSession();
+    loadMessagesFromServer();
     connectWebSocket();
+
+    // ==================== ЭМОДЗИ ПИКЕР ====================
+    const emojiList = ['😀', '😂', '😍', '🥰', '😎', '🤔', '👍', '👎', '❤️', '🔥', '🎉', '👏', '🙏', '💪', '🤣', '😊', '🥳', '😭', '😱', '🙄', '😴', '🤷', '👀', '💯', '✨', '🎵', '🌟', '✅', '❌', '💬', '📌', '🔔', '⭐', '🌈', '🍕', '☕', '🎮', '🚀', '💡', '🎯'];
+
+    // Создаем сетку эмодзи
+    emojiList.forEach(emoji => {
+        const btn = document.createElement('button');
+        btn.textContent = emoji;
+        btn.style.cssText = `
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            font-size: 18px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        `;
+        btn.onmouseover = () => btn.style.background = 'var(--chat-surface-hover)';
+        btn.onmouseout = () => btn.style.background = 'transparent';
+        btn.onclick = () => insertEmoji(emoji);
+        emojiPicker.appendChild(btn);
+    });
+
+    // Показ/скрытие эмодзи пикера
+    emojiBtn?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        emojiPicker.style.display = emojiPicker.style.display === 'grid' ? 'none' : 'grid';
+    });
+
+    // Закрытие при клике вне
+    document.addEventListener('click', (e) => {
+        if (!emojiPicker.contains(e.target) && e.target !== emojiBtn) {
+            emojiPicker.style.display = 'none';
+        }
+    });
+
+    // Вставка эмодзи в поле ввода
+    function insertEmoji(emoji) {
+        const start = messageInput.selectionStart;
+        const end = messageInput.selectionEnd;
+        const text = messageInput.value;
+        messageInput.value = text.substring(0, start) + emoji + text.substring(end);
+        messageInput.selectionStart = messageInput.selectionEnd = start + emoji.length;
+        messageInput.focus();
+        emojiPicker.style.display = 'none';
+    }
+
+    // ==================== ЗАГРУЗКА ИЗОБРАЖЕНИЙ ====================
+    imageBtn?.addEventListener('click', () => imageInput?.click());
+
+    imageInput?.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        // Проверка типа
+        if (!file.type.startsWith('image/')) {
+            alert('Пожалуйста, выберите изображение');
+            return;
+        }
+
+        // Проверка размера (5MB max)
+        if (file.size > 5 * 1024 * 1024) {
+            alert('Размер файла не должен превышать 5MB');
+            return;
+        }
+
+        // Чтение файла
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            currentImage = event.target.result;
+            previewImg.src = currentImage;
+            imagePreview.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+    });
+
+    removeImage?.addEventListener('click', () => {
+        currentImage = null;
+        imagePreview.style.display = 'none';
+        previewImg.src = '';
+        imageInput.value = '';
+    });
+
+    // Загрузка изображения на сервер
+    async function uploadImage(file) {
+        const formData = new FormData();
+        formData.append('image', file);
+
+        try {
+            const response = await fetch('/chat/api/upload-image/', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': window.CHAT.csrf,
+                },
+                body: formData,
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                return data.url;
+            } else {
+                console.error('[Image] Upload failed:', response.status);
+                return null;
+            }
+        } catch (error) {
+            console.error('[Image] Upload error:', error);
+            return null;
+        }
+    }
+
+    // Отправка сообщения с изображением
+    async function sendMessageWithImage(content, replyTo = null) {
+        if (!currentImage) return;
+
+        // Конвертируем base64 в Blob для отправки
+        const response = await fetch(currentImage);
+        const blob = await response.blob();
+        const file = new File([blob], 'image.png', { type: 'image/png' });
+
+        // Сначала загружаем изображение
+        const imageUrl = await uploadImage(file);
+        if (!imageUrl) {
+            alert('Ошибка загрузки изображения');
+            return;
+        }
+
+        // Отправляем сообщение через WebSocket или HTTP
+        const payload = {
+            content: content || '[Изображение]',
+            image_url: imageUrl,
+        };
+        if (replyTo) {
+            payload.reply_to = replyTo.id;
+        }
+
+        if (window.CHAT.ws?.readyState === WebSocket.OPEN) {
+            window.CHAT.ws.send(JSON.stringify({
+                type: 'message',
+                ...payload,
+            }));
+        } else {
+            await sendViaHTTP(payload.content, replyTo, payload.image_url);
+        }
+
+        // Очищаем
+        currentImage = null;
+        imagePreview.style.display = 'none';
+        imageInput.value = '';
+    }
+
+    // Обновленная функция отправки сообщений с поддержкой изображений
+    const originalSendMessage = sendMessage;
+    sendMessage = function() {
+        const content = messageInput.value.trim();
+
+        // Если есть изображение, отправляем с ним
+        if (currentImage) {
+            sendMessageWithImage(content, window.CHAT.replyingTo);
+            messageInput.value = '';
+            messageInput.style.height = 'auto';
+            if (window.CHAT.replyingTo) {
+                cancelReply();
+            }
+            return;
+        }
+
+        if (!content) return;
+
+        // Проверяем, есть ли ответ
+        const replyTo = window.CHAT.replyingTo;
+
+        console.log('[Chat] Sending message:', { content: content.substring(0, 50), replyTo: replyTo?.id });
+
+        if (window.CHAT.ws?.readyState === WebSocket.OPEN) {
+            const payload = {
+                type: 'message',
+                content: content,
+                reply_to: replyTo ? replyTo.id : null,
+                image_url: null,
+            };
+            console.log('[Chat] WebSocket send:', payload);
+            window.CHAT.ws.send(JSON.stringify(payload));
+
+            // После отправки обновляем статус прочтения
+            updateReadStatus();
+        } else {
+            console.log('[Chat] WebSocket not connected, sending via HTTP');
+            sendViaHTTP(content, replyTo);
+        }
+
+        messageInput.value = '';
+        messageInput.style.height = 'auto';
+
+        // Сбрасываем ответ
+        if (replyTo) {
+            cancelReply();
+        }
+    };
+
+    // Обновленная функция appendMessage с поддержкой изображений
+    appendMessage = function(msg, scroll = true) {
+        const existing = document.querySelector(`[data-message-id="${msg.id}"]`);
+        if (existing) return;
+
+        const messageEl = document.createElement('div');
+        messageEl.className = 'chat-message';
+        messageEl.dataset.messageId = msg.id;
+
+        const isOwn = msg.user.id === window.CHAT.user.id;
+        const avatar = msg.user.avatar || '/static/placeholder-avatar.png';
+
+        let roleHtml = '';
+        if (msg.user.is_staff) {
+            roleHtml = '<span class="chat-message-role staff">ADMIN</span>';
+        } else if (msg.user.is_moderator) {
+            roleHtml = '<span class="chat-message-role moderator">MOD</span>';
+        }
+
+        let replyQuoteHtml = '';
+        if (msg.reply_to) {
+            replyQuoteHtml = `
+                <div class="chat-message-reply-quote">
+                    <div class="quote-author">${escapeHtml(msg.reply_to.username)}</div>
+                    <div>${escapeHtml(msg.reply_to.content)}</div>
+                </div>
+            `;
+        }
+
+        // Изображение в сообщении
+        let imageHtml = '';
+        if (msg.has_image && msg.image) {
+            imageHtml = `
+                <div class="chat-image-container" style="
+                    position: relative;
+                    display: inline-block;
+                    margin-top: 8px;
+                ">
+                    <img src="${msg.image}" alt="Image" style="
+                        max-width: 720px;
+                        max-height: 460px;
+                        width: auto;
+                        height: auto;
+                        border-radius: 8px;
+                        display: block;
+                        cursor: pointer;
+                    ">
+                </div>
+            `;
+        }
+
+        let actionsHtml = '';
+        if (!msg.is_deleted) {
+            actionsHtml += `
+                <button class="chat-message-action" onclick="replyToMessage(${msg.id}, '${escapeHtml(msg.user.username)}')">
+                    💬 Ответить
+                </button>
+                <button class="chat-message-action ${msg.liked ? 'liked' : ''}" onclick="toggleLike(${msg.id})">
+                    ${msg.liked ? '❤️' : '🤍'} ${msg.likes_count}
+                </button>
+            `;
+
+            if (isOwn) {
+                actionsHtml += `
+                    <div class="chat-message-actions-divider"></div>
+                    <button class="chat-message-action edit" onclick="editMessage(${msg.id})">
+                        ✏️ Редактировать
+                    </button>
+                    <button class="chat-message-action danger" onclick="deleteMessage(${msg.id})">
+                        🗑️ Удалить
+                    </button>
+                `;
+            } else if (window.CHAT.user.isModerator || window.CHAT.user.isStaff) {
+                // Только одна кнопка удалить для модераторов/админов
+                actionsHtml += `
+                    <div class="chat-message-actions-divider"></div>
+                    <button class="chat-message-action danger" onclick="deleteMessage(${msg.id})">
+                        🗑️ Удалить
+                    </button>
+                    <button class="chat-message-action danger" onclick="banUser(${msg.user.id}, '${escapeHtml(msg.user.username)}')">
+                        🚫 Бан
+                    </button>
+                `;
+            }
+        }
+
+        messageEl.innerHTML = `
+            <div class="chat-message-frame">
+                <div class="chat-message-header">
+                    <img src="${avatar}" alt="${escapeHtml(msg.user.username)}" class="chat-message-avatar">
+                    <span class="chat-message-author">${escapeHtml(msg.user.username)}</span>
+                    ${roleHtml}
+                    <span class="chat-message-time">${formatTime(msg.created_at)}</span>
+                </div>
+                <div class="chat-message-content-frame">
+                    ${replyQuoteHtml}
+                    <div class="chat-message-content ${msg.is_deleted ? 'deleted' : ''}">
+                        ${escapeHtml(msg.content)}
+                        ${imageHtml}
+                    </div>
+                </div>
+                ${actionsHtml ? `<div class="chat-message-actions">${actionsHtml}</div>` : ''}
+            </div>
+        `;
+
+        messagesContainer.appendChild(messageEl);
+        if (scroll) scrollToBottom();
+    };
+
+    // Инициализация кнопок расширения изображений
+    function initializeImageExpanders() {
+        document.querySelectorAll('.chat-image-container').forEach(container => {
+            if (container.querySelector('.expand-btn')) return; // Уже инициализировано
+
+            const img = container.querySelector('img');
+            if (!img) return;
+
+            // Создаем кнопку развернуть
+            const expandBtn = document.createElement('button');
+            expandBtn.className = 'expand-btn';
+            expandBtn.innerHTML = '⛶';
+            expandBtn.style.cssText = `
+                position: absolute;
+                top: 8px;
+                right: 8px;
+                width: 32px;
+                height: 32px;
+                border-radius: 6px;
+                background: rgba(0, 0, 0, 0.6);
+                color: white;
+                border: none;
+                font-size: 16px;
+                cursor: pointer;
+                opacity: 0;
+                transition: opacity 0.2s;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 10;
+            `;
+
+            container.style.position = 'relative';
+            container.appendChild(expandBtn);
+
+            // Показываем кнопку при наведении
+            container.addEventListener('mouseenter', () => {
+                expandBtn.style.opacity = '1';
+            });
+            container.addEventListener('mouseleave', () => {
+                expandBtn.style.opacity = '0';
+            });
+
+            // Развернуть при клике
+            expandBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                openImageModal(img.src);
+            });
+
+            // Развернуть при клике на изображение
+            img.addEventListener('click', () => {
+                openImageModal(img.src);
+            });
+        });
+    }
+
+    // Модальное окно для просмотра изображений
+    function openImageModal(src) {
+        let modal = document.getElementById('imageModal');
+        if (!modal) {
+            modal = document.createElement('div');
+            modal.id = 'imageModal';
+            modal.style.cssText = `
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.9);
+                z-index: 10000;
+                justify-content: center;
+                align-items: center;
+                flex-direction: column;
+            `;
+            document.body.appendChild(modal);
+        }
+
+        modal.innerHTML = `
+            <button id="closeImageModal" style="
+                position: absolute;
+                top: 20px;
+                right: 20px;
+                width: 48px;
+                height: 48px;
+                border-radius: 50%;
+                background: rgba(255, 255, 255, 0.2);
+                color: white;
+                border: none;
+                font-size: 28px;
+                cursor: pointer;
+                z-index: 10001;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            ">×</button>
+            <img src="${src}" alt="Full size" style="
+                max-width: 90%;
+                max-height: 90%;
+                object-fit: contain;
+            ">
+        `;
+
+        modal.style.display = 'flex';
+
+        // Закрытие
+        document.getElementById('closeImageModal').addEventListener('click', () => {
+            modal.style.display = 'none';
+            modal.remove();
+        });
+
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.style.display = 'none';
+                modal.remove();
+            }
+        });
+
+        // Закрытие по Esc
+        const escHandler = (e) => {
+            if (e.key === 'Escape') {
+                modal.style.display = 'none';
+                modal.remove();
+                document.removeEventListener('keydown', escHandler);
+            }
+        };
+        document.addEventListener('keydown', escHandler);
+    }
 </script>
 {% endblock %}

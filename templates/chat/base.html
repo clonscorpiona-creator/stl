@@ -4,20 +4,21 @@
 
 {% block extra_css %}
 <style>
-    /* Тёмная тема для чата (осветлённая на 5 тонов) */
+    /* Тёмная тема для чата */
     :root {
-        --chat-bg: #1a1a1a;
-        --chat-surface: #2a2a2a;
-        --chat-surface-hover: #353535;
-        --chat-border: #444;
+        --chat-bg: #0f0f1a;
+        --chat-surface: #1a1a2e;
+        --chat-surface-hover: #252540;
+        --chat-border: #3d3d5c;
         --chat-text: #fff;
-        --chat-text-muted: #aaa;
-        --chat-accent: #e60023;
-        --chat-accent-hover: #ff1a41;
+        --chat-text-muted: #b8b8d0;
+        --chat-accent: #7d5fb8;
+        --chat-accent-hover: #9a7cc9;
         --chat-success: #22c55e;
         --chat-warning: #f59e0b;
         --chat-danger: #ef4444;
         --chat-radius: 8px;
+        --coffee-white: #f5f0eb;
     }
 
     body {
@@ -36,6 +37,7 @@
     .chat-page-layout {
         display: flex;
         height: calc(100vh - 140px);
+        width: 100%;
         overflow: hidden;
     }
 
@@ -71,7 +73,7 @@
         gap: 10px;
         padding: 10px 12px;
         border-radius: var(--chat-radius);
-        color: var(--chat-text-muted);
+        color: var(--white);
         text-decoration: none;
         transition: all 0.2s;
         cursor: pointer;
@@ -80,11 +82,11 @@
 
     .channel-item:hover {
         background: var(--chat-surface-hover);
-        color: var(--chat-text);
+        color: var(--white);
     }
 
     .channel-item.active {
-        background: rgba(230, 0, 35, 0.15);
+        background: rgba(125, 95, 184, 0.2);
         color: var(--chat-accent);
     }
 
@@ -114,11 +116,13 @@
         justify-content: space-between;
         border-bottom: 1px solid var(--chat-border);
         background: var(--chat-surface);
+        width: 100%;
     }
 
     .chat-room-title {
         font-size: 16px;
         font-weight: 600;
+        color: var(--white);
     }
 
     .chat-room-description {
@@ -137,6 +141,7 @@
         flex: 1;
         overflow-y: auto;
         padding: 20px;
+        width: 100%;
         display: flex;
         flex-direction: column;
         gap: 16px;
@@ -144,9 +149,9 @@
 
     /* Основной контейнер сообщения */
     .chat-message {
-        width: 90%;
-        max-width: 900px;
-        margin: 0 auto;
+        width: 100%;
+        max-width: 100%;
+        margin: 0;
         animation: chatFadeIn 0.2s ease;
         position: relative;
     }
@@ -242,6 +247,99 @@
         border-radius: 4px;
     }
 
+    /* Изображения в сообщениях */
+    .chat-image-container {
+        position: relative;
+        display: inline-block;
+        margin-top: 8px;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .chat-image-container img {
+        max-width: 720px;
+        max-height: 460px;
+        width: auto;
+        height: auto;
+        display: block;
+        transition: filter 0.2s, transform 0.2s;
+    }
+
+    .chat-image-container:hover img {
+        filter: brightness(0.85);
+        transform: scale(1.01);
+    }
+
+    .chat-image-container .expand-btn {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        width: 32px;
+        height: 32px;
+        border-radius: 6px;
+        background: rgba(0, 0, 0, 0.6);
+        color: white;
+        border: none;
+        font-size: 16px;
+        cursor: pointer;
+        opacity: 0;
+        transition: opacity 0.2s, background 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10;
+        backdrop-filter: blur(4px);
+    }
+
+    .chat-image-container .expand-btn:hover {
+        background: rgba(0, 0, 0, 0.8);
+    }
+
+    .chat-image-container:hover .expand-btn {
+        opacity: 1;
+    }
+
+    /* Полноэкранное модальное окно для изображений */
+    #imageModal {
+        animation: modalFadeIn 0.3s ease;
+    }
+
+    @keyframes modalFadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+
+    #imageModal img {
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        border-radius: 8px;
+        animation: imageZoomIn 0.3s ease;
+    }
+
+    @keyframes imageZoomIn {
+        from {
+            transform: scale(0.9);
+            opacity: 0;
+        }
+        to {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+
+    #closeImageModal {
+        transition: background 0.2s, transform 0.2s;
+    }
+
+    #closeImageModal:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: scale(1.1);
+    }
+
     /* Панель действий под сообщением */
     .chat-message-actions {
         display: flex;
@@ -257,7 +355,7 @@
         align-items: center;
         gap: 6px;
         font-size: 12px;
-        color: var(--chat-text-muted);
+        color: var(--white);
         cursor: pointer;
         padding: 6px 12px;
         border-radius: 6px;
@@ -273,8 +371,8 @@
     }
 
     .chat-message-action.liked {
-        background: rgba(230, 0, 35, 0.15);
-        color: var(--chat-accent);
+        background: rgba(125, 95, 184, 0.2);
+        color: var(--white);
         border-color: var(--chat-accent);
     }
 
@@ -316,18 +414,18 @@
 
     /* Цитата/ответ в сообщении */
     .chat-message-reply-quote {
-        background: rgba(230, 0, 35, 0.08);
-        border-left: 3px solid var(--chat-accent);
+        background: rgba(144, 190, 100, 0.15);
+        border-left: 3px solid #90be64;
         padding: 8px 12px;
         margin-bottom: 10px;
         border-radius: 4px;
         font-size: 13px;
-        color: var(--chat-text-muted);
+        color: #1a3a5c;
     }
 
     .chat-message-reply-quote .quote-author {
         font-weight: 600;
-        color: var(--chat-accent);
+        color: #0d2137;
         margin-bottom: 4px;
     }
 
@@ -341,8 +439,7 @@
     .chat-input-wrapper {
         display: flex;
         gap: 12px;
-        max-width: 800px;
-        margin: 0 auto;
+        width: 100%;
     }
 
     .chat-input {
@@ -402,6 +499,7 @@
         border-bottom: 1px solid var(--chat-border);
         font-weight: 600;
         font-size: 14px;
+        color: var(--white);
     }
 
     .members-list {
@@ -417,6 +515,7 @@
         padding: 8px 12px;
         border-radius: var(--chat-radius);
         transition: all 0.2s;
+        color: var(--white);
     }
 
     .member-item:hover {
@@ -433,6 +532,7 @@
     .member-name {
         font-size: 13px;
         flex: 1;
+        color: var(--white);
     }
 
     .member-role {
@@ -596,15 +696,91 @@
 
         {% block chat_input %}
         <div class="chat-input-container">
-            <div class="chat-input-wrapper">
+            <div class="chat-input-wrapper" style="flex-wrap: wrap; gap: 8px;">
+                <!-- Кнопки эмодзи и изображений -->
+                <div style="display: flex; gap: 8px; align-items: flex-end;">
+                    <button type="button" id="emojiBtn" style="
+                        width: 40px;
+                        height: 40px;
+                        border-radius: 8px;
+                        background: var(--chat-surface-hover);
+                        border: 1px solid var(--chat-border);
+                        color: var(--chat-text);
+                        font-size: 18px;
+                        cursor: pointer;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                    " title="Эмодзи">😊</button>
+                    <button type="button" id="imageBtn" style="
+                        width: 40px;
+                        height: 40px;
+                        border-radius: 8px;
+                        background: var(--chat-surface-hover);
+                        border: 1px solid var(--chat-border);
+                        color: var(--chat-text);
+                        font-size: 18px;
+                        cursor: pointer;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                    " title="Изображение">🖼️</button>
+                    <input type="file" id="imageInput" accept="image/*" style="display: none;">
+                </div>
+                <!-- Текстовое поле -->
                 <textarea
                     class="chat-input"
                     id="messageInput"
                     placeholder="Напишите сообщение..."
                     rows="1"
+                    style="flex: 1; min-width: 200px;"
                 ></textarea>
                 <button class="chat-send-btn" id="sendBtn">➤</button>
             </div>
+            <!-- Превью изображения -->
+            <div id="imagePreview" style="
+                display: none;
+                margin-top: 8px;
+                padding: 8px;
+                background: var(--chat-surface-hover);
+                border-radius: 8px;
+                border: 1px solid var(--chat-border);
+            ">
+                <div style="position: relative; display: inline-block;">
+                    <img id="previewImg" src="" alt="Preview" style="max-height: 100px; border-radius: 4px;">
+                    <button type="button" id="removeImage" style="
+                        position: absolute;
+                        top: -8px;
+                        right: -8px;
+                        width: 24px;
+                        height: 24px;
+                        border-radius: 50%;
+                        background: var(--chat-danger);
+                        color: white;
+                        border: none;
+                        font-size: 16px;
+                        cursor: pointer;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                    ">×</button>
+                </div>
+            </div>
+            <!-- Панель эмодзи -->
+            <div id="emojiPicker" style="
+                display: none;
+                position: absolute;
+                bottom: 80px;
+                left: 20px;
+                background: var(--chat-surface);
+                border: 1px solid var(--chat-border);
+                border-radius: 8px;
+                padding: 12px;
+                grid-template-columns: repeat(8, 1fr);
+                gap: 4px;
+                z-index: 1000;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            "></div>
         </div>
         {% endblock %}
     </main>

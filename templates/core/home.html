@@ -4,21 +4,225 @@
 
 {% block content %}
 <!-- Герой секция -->
-<div style="text-align: center; padding: 60px 20px; background: linear-gradient(135deg, #e60023 0%, #ff6b6b 100%); border-radius: 16px; margin-bottom: 40px; color: white;">
-    <h1 style="font-size: 48px; margin-bottom: 20px;">Добро пожаловать в STL</h1>
-    <p style="font-size: 20px; margin-bottom: 30px; opacity: 0.9;">
-        Платформа для дизайнеров и 3D-специалистов. Делитесь работами, находите вдохновение.
-    </p>
-    {% if not user.is_authenticated %}
-        <a href="{% url 'accounts:register' %}" class="btn" style="background: white; color: #e60023; font-size: 18px; padding: 15px 40px;">
-            Начать творить
-        </a>
-    {% else %}
-        <a href="{% url 'core:work_create' %}" class="btn" style="background: white; color: #e60023; font-size: 18px; padding: 15px 40px;">
-            Опубликовать работу
-        </a>
-    {% endif %}
-</div>
+<section class="hero-section">
+    <div class="hero-content">
+        <div class="hero-bg-shapes">
+            <div class="shape shape-1"></div>
+            <div class="shape shape-2"></div>
+            <div class="shape shape-3"></div>
+        </div>
+        <h1 class="hero-title">
+            сообщество<br>творческих людей
+        </h1>
+        <p class="hero-subtitle">
+            Платформа для дизайнеров, 3D-специалистов и других творцов.
+            Делитесь работами, находите вдохновение, общайтесь в чате.
+        </p>
+        <div class="hero-buttons">
+            {% if not user.is_authenticated %}
+                <a href="{% url 'accounts:register' %}" class="hero-btn hero-btn-primary">
+                    Начать творить
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </a>
+            {% else %}
+                <a href="{% url 'core:work_create' %}" class="hero-btn hero-btn-primary">
+                    Опубликовать работу
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </a>
+            {% endif %}
+            <a href="{% url 'chat:room' 'general' %}" class="hero-btn hero-btn-secondary">
+                Перейти в чат
+            </a>
+        </div>
+        <div class="hero-stats">
+            <div class="hero-stat">
+                <span class="hero-stat-number">{{ works.count }}+</span>
+                <span class="hero-stat-label">работ</span>
+            </div>
+            <div class="hero-stat">
+                <span class="hero-stat-number">4</span>
+                <span class="hero-stat-label">чата</span>
+            </div>
+            <div class="hero-stat">
+                <span class="hero-stat-number">∞</span>
+                <span class="hero-stat-label">вдохновения</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+.hero-section {
+    position: relative;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 50%, var(--accent) 100%);
+    border-radius: 20px;
+    overflow: hidden;
+    margin-bottom: 40px;
+    box-shadow: 0 8px 32px rgba(125, 95, 184, 0.3);
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+    padding: 48px 40px;
+    text-align: center;
+    color: white;
+}
+
+.hero-bg-shapes {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.shape {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    animation: float 6s ease-in-out infinite;
+}
+
+.shape-1 {
+    width: 200px;
+    height: 200px;
+    top: -50px;
+    left: -50px;
+    animation-delay: 0s;
+}
+
+.shape-2 {
+    width: 150px;
+    height: 150px;
+    bottom: -30px;
+    right: -30px;
+    animation-delay: 2s;
+}
+
+.shape-3 {
+    width: 100px;
+    height: 100px;
+    top: 50%;
+    right: 10%;
+    animation-delay: 4s;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-20px) rotate(10deg); }
+}
+
+.hero-title {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 52px;
+    font-weight: 800;
+    line-height: 1.2;
+    margin-bottom: 20px;
+    text-transform: lowercase;
+    letter-spacing: -1px;
+    text-shadow: 0 6px 24px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.hero-subtitle {
+    font-size: 18px;
+    line-height: 1.6;
+    margin-bottom: 35px;
+    opacity: 0.95;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.hero-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 40px;
+}
+
+.hero-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 32px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.hero-btn-primary {
+    background: white;
+    color: var(--primary);
+}
+
+.hero-btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(255, 255, 255, 0.3);
+}
+
+.hero-btn-secondary {
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.hero-btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: translateY(-3px);
+}
+
+.hero-stats {
+    display: flex;
+    gap: 40px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.hero-stat {
+    text-align: center;
+}
+
+.hero-stat-number {
+    display: block;
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.hero-stat-label {
+    font-size: 14px;
+    opacity: 0.85;
+}
+
+@media (max-width: 768px) {
+    .hero-content {
+        padding: 40px 20px;
+    }
+
+    .hero-title {
+        font-size: 36px;
+    }
+
+    .hero-subtitle {
+        font-size: 16px;
+    }
+
+    .hero-stat-number {
+        font-size: 24px;
+    }
+}
+</style>
 
 <!-- Категории -->
 <div style="margin-bottom: 40px;">

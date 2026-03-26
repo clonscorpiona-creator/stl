@@ -4,6 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}СТЛ - Платформа портфолио{% endblock %}</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/static/apple-touch-icon.png">
+    <link rel="manifest" href="/static/site.webmanifest">
+
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
@@ -22,7 +31,7 @@
         }
 
         .container {
-            max-width: 1200px;
+            width: 100%;
             margin: 0 auto;
             padding: 0 20px;
         }
@@ -41,48 +50,66 @@
             justify-content: space-between;
             align-items: center;
             padding: 15px 20px;
-            max-width: 1200px;
-            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* Цветовая схема */
+        :root {
+            --primary: #5a3f8a;
+            --primary-light: #7a5c99;
+            --primary-dark: #3d2a5f;
+            --accent: #9a7bb9;
+            --text: #333;
+            --text-light: #666;
+            --bg-light: #f5f5f5;
+            --white: #fff;
+            --coffee-white: #f5f0eb;
         }
 
         .logo {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
             text-decoration: none;
         }
 
         .logo-icon {
-            width: 42px;
-            height: 42px;
+            width: 44px;
+            height: 44px;
             flex-shrink: 0;
+            filter: drop-shadow(0 2px 4px rgba(156, 175, 61, 0.3));
         }
 
         .logo-text {
             font-family: 'Montserrat', 'Segoe UI', Roboto, sans-serif;
-            font-size: 28px;
+            font-size: 14px;
             font-weight: 700;
-            letter-spacing: 2px;
-            background: linear-gradient(135deg, #e60023 0%, #ff1a41 100%);
+            letter-spacing: 0.5px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 50%, var(--accent) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            text-transform: uppercase;
+            text-transform: lowercase;
+            position: relative;
+            line-height: 1.4;
+            max-width: 200px;
         }
 
         .logo:hover .logo-icon {
-            transform: rotate(5deg) scale(1.05);
+            transform: scale(1.08);
+            filter: drop-shadow(0 4px 8px rgba(156, 175, 61, 0.5))
+                    drop-shadow(0 0 12px rgba(197, 216, 109, 0.4));
         }
 
         .logo:hover .logo-text {
-            background: linear-gradient(135deg, #ff1a41 0%, #e60023 100%);
+            background: linear-gradient(135deg, var(--primary-light) 0%, var(--accent) 50%, var(--primary) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
 
         .logo-icon, .logo-text {
-            transition: all 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .search-form {
@@ -102,11 +129,16 @@
 
         .search-form button {
             padding: 10px 20px;
-            background: #e60023;
+            background: var(--primary);
             color: white;
             border: none;
             border-radius: 0 8px 8px 0;
             cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .search-form button:hover {
+            background: var(--primary-dark);
         }
 
         .nav-links {
@@ -116,13 +148,13 @@
         }
 
         .nav-links a {
-            color: #333;
+            color: var(--primary-dark);
             text-decoration: none;
             font-weight: 500;
         }
 
         .nav-links a:hover {
-            color: #e60023;
+            color: var(--primary);
         }
 
         .btn {
@@ -136,8 +168,12 @@
         }
 
         .btn-primary {
-            background: #e60023;
+            background: var(--primary);
             color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
         }
 
         .btn-secondary {
@@ -254,8 +290,7 @@
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 30px;
-            max-width: 1200px;
-            margin: 0 auto;
+            width: 100%;
             padding: 0 20px;
         }
 
@@ -266,13 +301,13 @@
 
         .footer-section a {
             display: block;
-            color: #666;
+            color: var(--primary-dark);
             text-decoration: none;
             margin-bottom: 8px;
         }
 
         .footer-section a:hover {
-            color: #e60023;
+            color: var(--primary);
         }
 
         /* Flash messages */
@@ -308,39 +343,62 @@
 <body>
     <header class="header">
         <div class="header-content">
-            <a href="{% url 'core:home' %}" class="logo" title="STL Platform - Творческая платформа">
-                <svg class="logo-icon" viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <!-- Внешний круг с градиентом -->
-                    <circle cx="21" cy="21" r="21" fill="url(#logoGradient)"/>
+            <a href="{% url 'core:home' %}" class="logo" title="СТЛ Platform - Творческая платформа">
+                <svg class="logo-icon" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Sci-fi гексагон (основа) -->
+                    <path d="M22 2L40 12V32L22 42L4 32V12L22 2Z"
+                          fill="url(#primaryGradient)"
+                          stroke="url(#primaryStroke)"
+                          stroke-width="1.5"/>
 
-                    <!-- Стильная буква С (творчество/creativity) -->
-                    <path d="M28 14C28 14 20 12 15 17C10 22 10 30 15 33C20 36 28 34 28 34"
-                          stroke="white"
-                          stroke-width="2.5"
-                          stroke-linecap="round"
-                          fill="none"
+                    <!-- Внутренний гексагон (контур) -->
+                    <path d="M22 8L34 15V29L22 36L10 29V15L22 8Z"
+                          stroke="url(#innerGradient)"
+                          stroke-width="1.5"
+                          fill="none"/>
+
+                    <!-- Центральный элемент (звезда/кристалл) -->
+                    <path d="M22 14L26 20L22 26L18 20L22 14Z"
+                          fill="#fff"
                           opacity="0.9"/>
 
-                    <!-- Иконка кисти/пера (искусство) -->
-                    <path d="M22 18L26 22M26 22L20 28M26 22L28 20"
-                          stroke="white"
-                          stroke-width="2"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          opacity="0.7"/>
+                    <!-- Орбитальные кольца -->
+                    <circle cx="22" cy="22" r="16"
+                            stroke="url(#ringGradient)"
+                            stroke-width="0.5"
+                            fill="none"
+                            opacity="0.4"/>
 
-                    <!-- Декоративная точка (акцент) -->
-                    <circle cx="29" cy="13" r="2" fill="white" opacity="0.8"/>
+                    <!-- Технологические точки -->
+                    <circle cx="22" cy="6" r="1.5" fill="#fff" opacity="0.8"/>
+                    <circle cx="38" cy="22" r="1.5" fill="#fff" opacity="0.8"/>
+                    <circle cx="22" cy="38" r="1.5" fill="#fff" opacity="0.8"/>
+                    <circle cx="6" cy="22" r="1.5" fill="#fff" opacity="0.8"/>
 
-                    <!-- Градиент для фона -->
+                    <!-- Градиенты -->
                     <defs>
-                        <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" style="stop-color:#e60023"/>
-                            <stop offset="100%" style="stop-color:#ff1a41"/>
+                        <linearGradient id="primaryGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#7d5fb8"/>
+                            <stop offset="50%" stop-color="#9a7cc9"/>
+                            <stop offset="100%" stop-color="#b899d9"/>
                         </linearGradient>
+                        <linearGradient id="primaryStroke" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#5d428a"/>
+                            <stop offset="100%" stop-color="#7d5fb8"/>
+                        </linearGradient>
+                        <linearGradient id="innerGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#b899d9"/>
+                            <stop offset="100%" stop-color="#7d5fb8"/>
+                        </linearGradient>
+                        <radialGradient id="ringGradient" cx="50%" cy="50%" r="50%">
+                            <stop offset="0%" stop-color="#9a7cc9"/>
+                            <stop offset="100%" stop-color="#5d428a"/>
+                        </radialGradient>
                     </defs>
                 </svg>
-                <span class="logo-text">СТЛ</span>
+                <div>
+                    <span class="logo-text">сообщество<br>творческих людей</span>
+                </div>
             </a>
 
             <form action="{% url 'core:work_list' %}" method="get" class="search-form">
@@ -352,11 +410,14 @@
                 {% if user.is_authenticated %}
                     <a href="{% url 'core:feed' %}">Лента</a>
                     <a href="{% url 'core:work_list' %}">Работы</a>
-                    <a href="{% url 'chat:index' %}" style="color: #e60023;">💬 Чат</a>
+                    <a href="{% url 'chat:index' %}" style="color: var(--primary); position: relative;">
+                        💬 Чат
+                        <span id="chatNotificationBadge" style="display: none; position: absolute; top: -8px; right: -12px; background: #ef4444; color: white; border-radius: 50%; min-width: 18px; height: 18px; font-size: 10px; font-weight: 700; text-align: center; line-height: 18px; padding: 0 4px; box-shadow: 0 2px 4px rgba(239, 68, 68, 0.4);">+0</span>
+                    </a>
                     {% if user.is_staff %}
-                        <a href="{% url 'admin:index' %}" style="color: #e60023; font-weight: 600;">Админ-панель</a>
+                        <a href="{% url 'admin:index' %}" style="color: var(--primary-dark); font-weight: 600;">Админ-панель</a>
                     {% endif %}
-                    <a href="{% url 'core:work_create' %}" class="btn btn-primary">Создать</a>
+                    <a href="{% url 'core:work_create' %}" class="btn btn-primary" style="color: #ffd700 !important;">Создать</a>
                     <a href="{% url 'interactions:notifications' %}">Уведомления</a>
                     <a href="{% url 'accounts:profile' username=user.username %}">
                         {% if user.avatar %}
@@ -392,18 +453,54 @@
         <div class="footer-content">
             <div class="footer-section">
                 <h4 style="display: flex; align-items: center; gap: 8px;">
-                    <svg width="24" height="24" viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="21" cy="21" r="21" fill="url(#footerLogoGradient)"/>
-                        <path d="M28 14C28 14 20 12 15 17C10 22 10 30 15 33C20 36 28 34 28 34"
-                              stroke="white" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+                    <svg width="24" height="24" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Sci-fi гексагон (основа) -->
+                        <path d="M22 2L40 12V32L22 42L4 32V12L22 2Z"
+                              fill="url(#primaryGradient)"
+                              stroke="url(#primaryStroke)"
+                              stroke-width="1.5"/>
+                        <!-- Внутренний гексагон (контур) -->
+                        <path d="M22 8L34 15V29L22 36L10 29V15L22 8Z"
+                              stroke="url(#innerGradient)"
+                              stroke-width="1.5"
+                              fill="none"/>
+                        <!-- Центральный элемент (звезда/кристалл) -->
+                        <path d="M22 14L26 20L22 26L18 20L22 14Z"
+                              fill="#fff"
+                              opacity="0.9"/>
+                        <!-- Орбитальные кольца -->
+                        <circle cx="22" cy="22" r="16"
+                                stroke="url(#ringGradient)"
+                                stroke-width="0.5"
+                                fill="none"
+                                opacity="0.4"/>
+                        <!-- Технологические точки -->
+                        <circle cx="22" cy="6" r="1.5" fill="#fff" opacity="0.8"/>
+                        <circle cx="38" cy="22" r="1.5" fill="#fff" opacity="0.8"/>
+                        <circle cx="22" cy="38" r="1.5" fill="#fff" opacity="0.8"/>
+                        <circle cx="6" cy="22" r="1.5" fill="#fff" opacity="0.8"/>
+                        <!-- Градиенты -->
                         <defs>
-                            <linearGradient id="footerLogoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" style="stop-color:#e60023"/>
-                                <stop offset="100%" style="stop-color:#ff1a41"/>
+                            <linearGradient id="primaryGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#7d5fb8"/>
+                                <stop offset="50%" stop-color="#9a7cc9"/>
+                                <stop offset="100%" stop-color="#b899d9"/>
                             </linearGradient>
+                            <linearGradient id="primaryStroke" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#5d428a"/>
+                                <stop offset="100%" stop-color="#7d5fb8"/>
+                            </linearGradient>
+                            <linearGradient id="innerGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#b899d9"/>
+                                <stop offset="100%" stop-color="#7d5fb8"/>
+                            </linearGradient>
+                            <radialGradient id="ringGradient" cx="50%" cy="50%" r="50%">
+                                <stop offset="0%" stop-color="#9a7cc9"/>
+                                <stop offset="100%" stop-color="#5d428a"/>
+                            </radialGradient>
                         </defs>
                     </svg>
-                    СТЛ Platform
+                    сообщество творческих людей
                 </h4>
                 <p style="color: #666; font-size: 14px;">
                     Платформа для творческих людей. Делитесь работами, находите вдохновение, создавайте сообщества.
@@ -433,5 +530,42 @@
     </footer>
 
     {% block extra_js %}{% endblock %}
+
+    {% if user.is_authenticated %}
+    <script>
+        // Загрузка количества непрочитанных сообщений в чатах (глобальная функция)
+        window.loadUnreadCounts = async function() {
+            try {
+                const response = await fetch('/chat/api/unread-counts/');
+                const data = await response.json();
+
+                const badge = document.getElementById('chatNotificationBadge');
+                if (badge) {
+                    if (data.total_unread > 0) {
+                        badge.textContent = '+' + data.total_unread;
+                        badge.style.display = 'inline-block';
+                    } else {
+                        badge.style.display = 'none';
+                    }
+                }
+            } catch (error) {
+                console.error('[Unread Counts] Load failed:', error);
+            }
+        };
+
+        // Загружаем при загрузке страницы и обновляем каждые 5 секунд
+        document.addEventListener('DOMContentLoaded', () => {
+            loadUnreadCounts();
+            setInterval(loadUnreadCounts, 5000); // Проверка каждые 5 секунд
+        });
+
+        // Обновляем счетчик при возврате на вкладку
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') {
+                loadUnreadCounts();
+            }
+        });
+    </script>
+    {% endif %}
 </body>
 </html>

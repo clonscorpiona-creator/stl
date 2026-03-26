@@ -1,0 +1,162 @@
+{
+  "channel_slug": "testovaya-komnata",
+  "messages": [
+    {
+      "id": 8,
+      "content": "привет",
+      "is_deleted": false,
+      "is_edited": false,
+      "likes_count": 0,
+      "liked": false,
+      "user": {
+        "id": 2,
+        "username": "Admin",
+        "avatar": "/media/avatars/d06f34a026f211f1a833b67183aea4e3_5.jpg",
+        "is_moderator": false
+      },
+      "created_at": "2026-03-26T19:29:55.899345+00:00",
+      "edited_at": null
+    },
+    {
+      "id": 10,
+      "content": "Добрый вечер.Это тестовый чат и это тестовое сообщение",
+      "is_deleted": false,
+      "is_edited": false,
+      "likes_count": 0,
+      "liked": false,
+      "likes": [],
+      "user": {
+        "id": 2,
+        "username": "Admin",
+        "avatar": "/media/avatars/d06f34a026f211f1a833b67183aea4e3_5.jpg",
+        "is_moderator": false,
+        "is_staff": true
+      },
+      "created_at": "2026-03-26T20:04:28.377198+00:00",
+      "edited_at": null
+    },
+    {
+      "id": 11,
+      "content": "Привет.Это тестовое сообщение",
+      "is_deleted": false,
+      "is_edited": false,
+      "likes_count": 0,
+      "liked": false,
+      "likes": [],
+      "user": {
+        "id": 2,
+        "username": "Admin",
+        "avatar": "/media/avatars/d06f34a026f211f1a833b67183aea4e3_5.jpg",
+        "is_moderator": false,
+        "is_staff": true
+      },
+      "created_at": "2026-03-26T21:01:57.537340+00:00",
+      "edited_at": null
+    },
+    {
+      "id": 12,
+      "content": "прикольно",
+      "is_deleted": false,
+      "is_edited": false,
+      "likes_count": 0,
+      "liked": false,
+      "likes": [],
+      "user": {
+        "id": 2,
+        "username": "Admin",
+        "avatar": "/media/avatars/d06f34a026f211f1a833b67183aea4e3_5.jpg",
+        "is_moderator": false,
+        "is_staff": true
+      },
+      "created_at": "2026-03-26T21:02:12.152982+00:00",
+      "edited_at": null,
+      "reply_to": {
+        "id": 11,
+        "username": "Admin",
+        "content": "Привет.Это тестовое сообщение"
+      }
+    },
+    {
+      "id": 13,
+      "content": "А теперь еще сообщение",
+      "is_deleted": false,
+      "is_edited": false,
+      "likes_count": 0,
+      "liked": false,
+      "likes": [],
+      "user": {
+        "id": 2,
+        "username": "Admin",
+        "avatar": "/media/avatars/d06f34a026f211f1a833b67183aea4e3_5.jpg",
+        "is_moderator": false,
+        "is_staff": true
+      },
+      "created_at": "2026-03-26T21:03:16.724301+00:00",
+      "edited_at": null
+    },
+    {
+      "id": 14,
+      "content": "И еще одно,чтобы проверить скроллинг сообщений",
+      "is_deleted": false,
+      "is_edited": false,
+      "likes_count": 0,
+      "liked": false,
+      "likes": [],
+      "user": {
+        "id": 2,
+        "username": "Admin",
+        "avatar": "/media/avatars/d06f34a026f211f1a833b67183aea4e3_5.jpg",
+        "is_moderator": false,
+        "is_staff": true
+      },
+      "created_at": "2026-03-26T21:03:48.342811+00:00",
+      "edited_at": null,
+      "reply_to": {
+        "id": 12,
+        "username": "Admin",
+        "content": "Очень прикольно"
+      }
+    },
+    {
+      "id": 15,
+      "content": "[Изображение]",
+      "is_deleted": false,
+      "is_edited": false,
+      "likes_count": 0,
+      "liked": false,
+      "likes": [],
+      "user": {
+        "id": 2,
+        "username": "Admin",
+        "avatar": "/media/avatars/d06f34a026f211f1a833b67183aea4e3_5.jpg",
+        "is_moderator": false,
+        "is_staff": true
+      },
+      "created_at": "2026-03-26T21:23:39.897155+00:00",
+      "edited_at": null,
+      "has_image": true,
+      "image": "/media/media/chat_images/admin_1774560219.885102.png"
+    },
+    {
+      "id": 16,
+      "content": "😀 привет",
+      "is_deleted": false,
+      "is_edited": false,
+      "likes_count": 0,
+      "liked": false,
+      "likes": [],
+      "user": {
+        "id": 2,
+        "username": "Admin",
+        "avatar": "/media/avatars/d06f34a026f211f1a833b67183aea4e3_5.jpg",
+        "is_moderator": false,
+        "is_staff": true
+      },
+      "created_at": "2026-03-26T21:23:56.560179+00:00",
+      "edited_at": null,
+      "has_image": false,
+      "image": null
+    }
+  ],
+  "last_updated": "2026-03-26T21:23:56.570569+00:00"
+}

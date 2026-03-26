@@ -248,3 +248,27 @@ class MessageLike(models.Model):
         Message.objects.filter(pk=message_id).update(
             likes_count=models.F('likes_count') - 1
         )
+
+
+class UserChannelRead(models.Model):
+    """
+    Отслеживание прочитанных сообщений пользователем в канале.
+
+    Сохраняет последнее прочитанное сообщение и количество прочитанных сообщений.
+    """
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='channel_read_status')
+    channel = models.ForeignKey(Channel, on_delete=models.CASCADE, related_name='user_read_status')
+    last_read_message_id = models.PositiveIntegerField('ID последнего прочитанного сообщения', default=0)
+    read_count = models.PositiveIntegerField('Количество прочитанных сообщений', default=0)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = 'Статус прочтения канала'
+        verbose_name_plural = 'Статусы прочтения каналов'
+        unique_together = ['user', 'channel']
+        indexes = [
+            models.Index(fields=['user', 'channel']),
+        ]
+
+    def __str__(self):
+        return f'{self.user} - {self.channel} (прочитано: {self.read_count})'

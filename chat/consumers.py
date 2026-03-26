@@ -16,9 +16,11 @@ import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
 from django.contrib.auth import get_user_model
+from django.utils import timezone
 
 from .models import Channel, ChannelMember, ChannelBan, Message, MessageLike
 from .history import save_message_to_history, delete_message_in_history, add_reaction_to_history
+from .messages_storage import save_message_to_storage
 
 User = get_user_model()
 
@@ -126,11 +128,19 @@ class ChatConsumer(AsyncWebsocketConsumer):
         """Обработка нового сообщения"""
         content = data.get('content', '').strip()
         reply_to_id = data.get('reply_to')
+        image_url = data.get('image_url')
 
-        if not content or len(content) > 5000:
+        if not content and not image_url:
             await self.send(text_data=json.dumps({
                 'type': 'error',
-                'message': 'Invalid message content'
+                'message': 'Content or image required'
+            }))
+            return
+
+        if content and len(content) > 5000:
+            await self.send(text_data=json.dumps({
+                'type': 'error',
+                'message': 'Content too long'
             }))
             return
 
@@ -144,7 +154,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             return
 
         # Сохраняем сообщение
-        message = await self.create_message(content, reply_to_id)
+        message = await self.create_message(content, reply_to_id, image_url)
 
         if message:
             # Отправляем сообщение всем в группе
@@ -243,7 +253,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         return member and member.is_muted
 
     @database_sync_to_async
-    def create_message(self, content, reply_to_id=None):
+    def create_message(self, content, reply_to_id=None, image_url=None):
         """Создание сообщения"""
         channel = Channel.objects.filter(slug=self.slug, is_active=True).first()
         if not channel:
@@ -260,19 +270,37 @@ class ChatConsumer(AsyncWebsocketConsumer):
         if reply_to_id:
             reply_to = Message.objects.filter(id=reply_to_id, channel=channel).first()
 
+        # Создаем сообщение
         message = Message.objects.create(
             channel=channel,
             user=self.user,
-            content=content,
-            reply_to=reply_to
+            content=content if content else '[Изображение]',
+            reply_to=reply_to,
+            has_image=bool(image_url),
         )
+
+        # Если есть изображение, обновляем поле image
+        if image_url:
+            message.image = image_url
+            message.save(update_fields=['image'])
 
         # Сериализуем сообщение с информацией об ответе
         from .api import serialize_message
         message_data = serialize_message(message, self.user)
 
-        # Сохраняем в файл истории
+        # Сохраняем в файл истории (JSON)
         save_message_to_history(message_data, channel.slug)
+
+        # Сохраняем в текстовое хранилище (формат базы данных)
+        timestamp = timezone.now().isoformat()
+        attachments = image_url if image_url else ''
+        save_message_to_storage(
+            username=self.user.username,
+            content=content if content else f'[Изображение: {image_url}]',
+            timestamp=timestamp,
+            attachments=attachments,
+            channel_slug=channel.slug
+        )
 
         return message_data
 
