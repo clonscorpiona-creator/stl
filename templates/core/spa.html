@@ -658,51 +658,52 @@
             }
 
             // Генерируем HTML для кнопок категорий
-            const categoryButtons = window.STL.categories.map(cat => {
-                const isActive = (window.currentFilter.type === 'category' && window.currentFilter.value === cat.slug) ||
-                                 (cat.slug === '' && window.currentFilter.type === 'all');
-                return `<button class="filter-chip ${isActive ? 'active' : ''}" data-category="${cat.slug}">${cat.name}</button>`;
+            const categoryButtons = window.STL.categories.map(function(cat) {
+                var isActive = (window.currentFilter.type === 'category' && window.currentFilter.value === cat.slug) ||
+                               (cat.slug === '' && window.currentFilter.type === 'all');
+                return '<button class="filter-chip ' + (isActive ? 'active' : '') + '" data-category="' + cat.slug + '">' + cat.name + '</button>';
             }).join('');
 
-            content.innerHTML = `
-                <div class="filters-bar">
-                    ${categoryButtons}
-                    <button class="filter-chip ${window.currentFilter.type === 'popular' ? 'active' : ''}" data-filter="popular">Популярные</button>
-                    <button class="filter-chip ${window.currentFilter.type === 'newest' ? 'active' : ''}" data-filter="newest">Свежие</button>
-                </div>
-                <div class="works-grid">
-                    ${works.map(work => {
-                        // Безопасное получение данных с fallback значениями
-                        const author = typeof work.author === 'object' ? work.author.username : work.author;
-                        const cover = work.cover || '/static/placeholder.png';
-                        const stats = work.stats || {likes: 0, views: 0, comments: 0};
+            var popularActive = window.currentFilter.type === 'popular' ? 'active' : '';
+            var newestActive = window.currentFilter.type === 'newest' ? 'active' : '';
 
-                        return `
-                        <div class="work-card" data-id="${work.id}">
-                            <img src="${cover}" alt="${work.title || 'Work'}" class="work-card-image" loading="lazy">
-                            <div class="work-card-body">
-                                <h3 class="work-card-title">${work.title || 'Без названия'}</h3>
-                                <p class="work-card-author">от <a href="/profile/${author}">${author}</a></p>
-                                <div class="work-stats">
-                                    <span>❤️ ${stats.likes}</span>
-                                    <span>👁️ ${stats.views}</span>
-                                    <span>💬 ${stats.comments}</span>
-                                </div>
-                            </div>
-                        </div>
-                        `;
-                    }).join('')}
-                </div>
-            `;
+            // Генерируем карточки работ
+            var worksHtml = works.map(function(work) {
+                var author = typeof work.author === 'object' ? work.author.username : work.author;
+                var cover = work.cover || '/static/placeholder.png';
+                var stats = work.stats || {likes: 0, views: 0, comments: 0};
+
+                return '<div class="work-card" data-id="' + work.id + '">' +
+                    '<img src="' + cover + '" alt="' + (work.title || 'Work') + '" class="work-card-image" loading="lazy">' +
+                    '<div class="work-card-body">' +
+                        '<h3 class="work-card-title">' + (work.title || 'Без названия') + '</h3>' +
+                        '<p class="work-card-author">от <a href="/profile/' + author + '">' + author + '</a></p>' +
+                        '<div class="work-stats">' +
+                            '<span>❤️ ' + stats.likes + '</span>' +
+                            '<span>👁️ ' + stats.views + '</span>' +
+                            '<span>💬 ' + stats.comments + '</span>' +
+                        '</div>' +
+                    '</div>' +
+                '</div>';
+            }).join('');
+
+            content.innerHTML = '<div class="filters-bar">' +
+                categoryButtons +
+                '<button class="filter-chip ' + popularActive + '" data-filter="popular">Популярные</button>' +
+                '<button class="filter-chip ' + newestActive + '" data-filter="newest">Свежие</button>' +
+                '</div>' +
+                '<div class="works-grid">' + worksHtml + '</div>';
 
             // Навешиваем обработчики на кнопки фильтров
-            document.querySelectorAll('.filter-chip').forEach(btn => {
+            document.querySelectorAll('.filter-chip').forEach(function(btn) {
                 btn.addEventListener('click', function() {
-                    const category = this.dataset.category;
-                    const filter = this.dataset.filter;
+                    var category = this.dataset.category;
+                    var filter = this.dataset.filter;
 
                     // Снимаем активный класс со всех кнопок
-                    document.querySelectorAll('.filter-chip').forEach(b => b.classList.remove('active'));
+                    document.querySelectorAll('.filter-chip').forEach(function(b) {
+                        b.classList.remove('active');
+                    });
                     this.classList.add('active');
 
                     if (category !== undefined) {
