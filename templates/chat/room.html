@@ -550,15 +550,50 @@
 
         function sendMessage() {
             const content = messageInput.value.trim();
-            if (!content || window.CHAT.ws?.readyState !== WebSocket.OPEN) return;
+            if (!content) return;
 
-            window.CHAT.ws.send(JSON.stringify({
-                type: 'message',
-                content: content,
-            }));
+            // Если WebSocket подключен - отправляем через него
+            if (window.CHAT.ws?.readyState === WebSocket.OPEN) {
+                window.CHAT.ws.send(JSON.stringify({
+                    type: 'message',
+                    content: content,
+                }));
+            } else {
+                // Резервная отправка через HTTP API
+                sendViaHTTP(content);
+            }
 
             messageInput.value = '';
             messageInput.style.height = 'auto';
+        }
+
+        // Резервная отправка через HTTP API
+        async function sendViaHTTP(content) {
+            try {
+                const response = await fetch(`/chat/api/channels/${window.CHAT.slug}/messages/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': window.CHAT.csrf,
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ content: content }),
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    // Добавляем сообщение в UI
+                    appendMessage(data.message);
+                    scrollToBottom();
+                    // Сохраняем в localStorage
+                    window.CHAT.messages.push(data.message);
+                    window.CHAT.lastMessageId = data.message.id;
+                    saveState();
+                } else {
+                    console.error('[Chat] Send failed:', response.status);
+                }
+            } catch (error) {
+                console.error('[Chat] Send error:', error);
+            }
         }
 
         // Сохранение состояния при закрытии страницы
@@ -578,11 +613,13 @@
             const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
             const wsUrl = `${protocol}//${window.location.host}/ws/chat/${window.CHAT.slug}/`;
 
+            console.log('[Chat] Connecting to WebSocket:', wsUrl);
             window.CHAT.ws = new WebSocket(wsUrl);
 
             window.CHAT.ws.onopen = function() {
                 console.log('[Chat] Connected to WebSocket');
                 window.CHAT.reconnectAttempts = 0;
+                updateConnectionStatus(true);
 
                 // Восстанавливаем сообщения из localStorage сразу
                 const hasSavedState = loadSavedState();
@@ -598,6 +635,7 @@
 
             window.CHAT.ws.onclose = function() {
                 console.log('[Chat] Disconnected from WebSocket');
+                updateConnectionStatus(false);
                 // Попытка переподключения
                 if (window.CHAT.reconnectAttempts < 5) {
                     window.CHAT.reconnectAttempts++;
@@ -607,12 +645,33 @@
 
             window.CHAT.ws.onerror = function(error) {
                 console.error('[Chat] WebSocket error:', error);
+                updateConnectionStatus(false);
             };
 
             window.CHAT.ws.onmessage = function(event) {
                 const data = JSON.parse(event.data);
                 handleWebSocketMessage(data);
             };
+        }
+
+        // Индикатор подключения
+        function updateConnectionStatus(connected) {
+            let indicator = document.getElementById('connectionStatus');
+            if (!indicator) {
+                indicator = document.createElement('div');
+                indicator.id = 'connectionStatus';
+                indicator.style.cssText = 'position:fixed;bottom:10px;right:10px;padding:8px 12px;border-radius:8px;font-size:12px;z-index:1000;';
+                document.body.appendChild(indicator);
+            }
+            if (connected) {
+                indicator.textContent = '🟢 Подключено';
+                indicator.style.background = 'rgba(34, 197, 94, 0.2)';
+                indicator.style.color = '#22c55e';
+            } else {
+                indicator.textContent = '🔴 Нет соединения';
+                indicator.style.background = 'rgba(230, 0, 35, 0.2)';
+                indicator.style.color = '#e60023';
+            }
         }
 
         function handleWebSocketMessage(data) {
