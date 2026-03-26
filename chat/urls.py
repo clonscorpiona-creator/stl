@@ -22,6 +22,7 @@ urlpatterns = [
     path('api/channels/<str:slug>/messages/', api.send_message_api, name='api_send_message'),
     path('api/messages/<int:message_id>/like/', api.like_message_api, name='api_like_message'),
     path('api/messages/<int:message_id>/delete/', api.delete_message_api, name='api_delete_message'),
+    path('api/messages/<int:message_id>/edit/', api.edit_message_api, name='api_edit_message'),
 
     # Moderation
     path('api/channels/<str:slug>/ban/', api.ban_user_api, name='api_ban_user'),

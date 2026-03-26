@@ -67,7 +67,7 @@ def serialize_message(message, current_user=None):
 
     Оптимизация: минимальный набор полей для уменьшения размера ответа.
     """
-    return {
+    data = {
         'id': message.id,
         'content': message.content if not message.is_deleted else '[Сообщение удалено]',
         'is_deleted': message.is_deleted,
@@ -78,11 +78,22 @@ def serialize_message(message, current_user=None):
             'id': message.user.id,
             'username': message.user.username,
             'avatar': message.user.avatar.url if message.user.avatar else None,
-            'is_moderator': False,  # Заполняется отдельно
+            'is_moderator': getattr(message.user, 'is_moderator', False),
+            'is_staff': message.user.is_staff,
         },
         'created_at': message.created_at.isoformat(),
         'edited_at': message.edited_at.isoformat() if message.edited_at else None,
     }
+
+    # Добавляем информацию об ответе
+    if message.reply_to_id:
+        data['reply_to'] = {
+            'id': message.reply_to.id,
+            'username': message.reply_to.user.username,
+            'content': message.reply_to.content[:100] if not message.reply_to.is_deleted else '[Сообщение удалено]',
+        }
+
+    return data
 
 
 def serialize_channel(channel, current_user=None):
@@ -165,7 +176,7 @@ def channel_detail_api(request, slug):
     messages = Message.objects.filter(
         channel=channel,
         is_deleted=False
-    ).select_related('user').prefetch_related('likes').order_by('-created_at')
+    ).select_related('user', 'reply_to', 'reply_to__user').prefetch_related('likes').order_by('-created_at')
 
     paginator = Paginator(messages, 50)
     page_obj = paginator.get_page(page)
@@ -220,14 +231,21 @@ def send_message_api(request, slug):
 
     data = json.loads(request.body)
     content = data.get('content', '').strip()
+    reply_to_id = data.get('reply_to')
 
     if not content or len(content) > 5000:
         return JsonResponse({'error': 'Invalid content'}, status=400)
 
+    # Проверка ответа
+    reply_to = None
+    if reply_to_id:
+        reply_to = Message.objects.filter(id=reply_to_id, channel=channel).first()
+
     message = Message.objects.create(
         channel=channel,
         user=request.user,
-        content=content
+        content=content,
+        reply_to=reply_to
     )
 
     # Сохраняем в файл истории
@@ -301,6 +319,41 @@ def delete_message_api(request, message_id):
 
     # Сохраняем удаление в историю
     delete_message_in_history(message.id, message.channel.slug)
+
+    return JsonResponse({'success': True})
+
+
+@login_required
+@require_http_methods(["POST"])
+def edit_message_api(request, message_id):
+    """
+    Редактирование сообщения.
+
+    Только автор или модератор может редактировать.
+    """
+    message = Message.objects.filter(id=message_id).select_related('channel', 'user').first()
+
+    if not message:
+        return JsonResponse({'error': 'Message not found'}, status=404)
+
+    # Проверка прав
+    is_author = message.user == request.user
+    is_moderator = message.channel.moderators.filter(id=request.user.id).exists()
+    is_staff = request.user.is_staff
+
+    if not (is_author or is_moderator or is_staff):
+        return JsonResponse({'error': 'Access denied'}, status=403)
+
+    data = json.loads(request.body)
+    content = data.get('content', '').strip()
+
+    if not content or len(content) > 5000:
+        return JsonResponse({'error': 'Invalid content'}, status=400)
+
+    message.content = content
+    message.is_edited = True
+    message.edited_at = timezone.now()
+    message.save(update_fields=['content', 'is_edited', 'edited_at'])
 
     return JsonResponse({'success': True})
 

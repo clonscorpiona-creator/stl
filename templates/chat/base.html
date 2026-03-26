@@ -142,11 +142,13 @@
         gap: 16px;
     }
 
+    /* Основной контейнер сообщения */
     .chat-message {
-        display: flex;
-        gap: 12px;
-        max-width: 800px;
+        width: 90%;
+        max-width: 900px;
+        margin: 0 auto;
         animation: chatFadeIn 0.2s ease;
+        position: relative;
     }
 
     @keyframes chatFadeIn {
@@ -154,38 +156,60 @@
         to { opacity: 1; transform: translateY(0); }
     }
 
+    /* Внешняя рамка сообщения */
+    .chat-message-frame {
+        border: 2px solid var(--chat-border);
+        border-radius: var(--chat-radius);
+        overflow: hidden;
+        background: var(--chat-surface);
+    }
+
+    /* Шапка сообщения с аватаром, именем и временем */
+    .chat-message-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 16px;
+        background: var(--chat-surface-hover);
+        border-bottom: 1px solid var(--chat-border);
+    }
+
     .chat-message-avatar {
         width: 40px;
         height: 40px;
         border-radius: 50%;
         object-fit: cover;
+        border: 2px solid var(--chat-accent);
         flex-shrink: 0;
-    }
-
-    .chat-message-body {
-        flex: 1;
-        min-width: 0;
-    }
-
-    .chat-message-header {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        margin-bottom: 6px;
     }
 
     .chat-message-author {
         font-weight: 600;
         font-size: 14px;
+        color: var(--chat-text);
     }
 
-    .chat-message-moderator {
-        background: var(--chat-accent);
-        color: white;
+    .chat-message-role {
         font-size: 10px;
-        padding: 2px 6px;
+        padding: 2px 8px;
         border-radius: 4px;
         font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    .chat-message-role.moderator {
+        background: var(--chat-accent);
+        color: white;
+    }
+
+    .chat-message-role.admin {
+        background: #7c3aed;
+        color: white;
+    }
+
+    .chat-message-role.staff {
+        background: #f59e0b;
+        color: white;
     }
 
     .chat-message-time {
@@ -194,45 +218,117 @@
         margin-left: auto;
     }
 
+    /* Внутренняя рамка с контентом (белая заливка) */
+    .chat-message-content-frame {
+        background: #ffffff;
+        margin: 12px 16px;
+        padding: 14px 18px;
+        border-radius: 6px;
+        border: 1px solid #e0e0e0;
+    }
+
     .chat-message-content {
         font-size: 14px;
-        line-height: 1.5;
+        line-height: 1.6;
         word-wrap: break-word;
-        color: var(--chat-text);
+        color: #1a1a1a;
     }
 
     .chat-message-content.deleted {
-        color: var(--chat-text-muted);
+        color: #999;
         font-style: italic;
+        background: #f5f5f5;
+        padding: 10px;
+        border-radius: 4px;
     }
 
+    /* Панель действий под сообщением */
     .chat-message-actions {
         display: flex;
-        gap: 12px;
-        margin-top: 8px;
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 10px 16px 14px;
+        border-top: 1px solid var(--chat-border);
+        background: var(--chat-surface);
     }
 
     .chat-message-action {
         display: flex;
         align-items: center;
-        gap: 4px;
+        gap: 6px;
         font-size: 12px;
         color: var(--chat-text-muted);
         cursor: pointer;
-        padding: 4px 8px;
-        border-radius: 4px;
+        padding: 6px 12px;
+        border-radius: 6px;
         transition: all 0.2s;
-        background: transparent;
-        border: none;
+        background: var(--chat-surface-hover);
+        border: 1px solid transparent;
     }
 
     .chat-message-action:hover {
-        background: var(--chat-surface-hover);
-        color: var(--chat-text);
+        background: var(--chat-accent);
+        color: white;
+        border-color: var(--chat-accent);
     }
 
     .chat-message-action.liked {
+        background: rgba(230, 0, 35, 0.15);
         color: var(--chat-accent);
+        border-color: var(--chat-accent);
+    }
+
+    .chat-message-action.disliked {
+        background: rgba(100, 100, 100, 0.2);
+        color: var(--chat-text-muted);
+        border-color: var(--chat-border);
+    }
+
+    .chat-message-action.danger {
+        background: transparent;
+        color: var(--chat-danger);
+        border-color: var(--chat-danger);
+    }
+
+    .chat-message-action.danger:hover {
+        background: var(--chat-danger);
+        color: white;
+    }
+
+    .chat-message-action.edit {
+        background: transparent;
+        color: var(--chat-warning);
+        border-color: var(--chat-warning);
+    }
+
+    .chat-message-action.edit:hover {
+        background: var(--chat-warning);
+        color: white;
+    }
+
+    /* Разделитель между группами кнопок */
+    .chat-message-actions-divider {
+        width: 1px;
+        height: 24px;
+        background: var(--chat-border);
+        margin: 0 4px;
+    }
+
+    /* Цитата/ответ в сообщении */
+    .chat-message-reply-quote {
+        background: rgba(230, 0, 35, 0.08);
+        border-left: 3px solid var(--chat-accent);
+        padding: 8px 12px;
+        margin-bottom: 10px;
+        border-radius: 4px;
+        font-size: 13px;
+        color: var(--chat-text-muted);
+    }
+
+    .chat-message-reply-quote .quote-author {
+        font-weight: 600;
+        color: var(--chat-accent);
+        margin-bottom: 4px;
     }
 
     /* Область ввода */

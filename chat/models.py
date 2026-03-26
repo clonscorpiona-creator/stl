@@ -149,6 +149,15 @@ class Message(models.Model):
 
     content = models.TextField('Текст сообщения')
 
+    # Ответ на сообщение
+    reply_to = models.ForeignKey(
+        'self',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='replies'
+    )
+
     # Вложения
     has_image = models.BooleanField(default=False)
     image = models.ImageField(upload_to='chat/images/', null=True, blank=True)

@@ -19,13 +19,15 @@
         user: {
             id: {{ user.id }},
             username: '{{ user.username }}',
-            isModerator: {{ is_moderator|lower }}
+            isModerator: {{ is_moderator|lower }},
+            isStaff: {{ user.is_staff|lower }}
         },
         csrf: '{{ csrf_token }}',
         messages: [],
         ws: null,
         reconnectAttempts: 0,
         lastMessageId: null,
+        replyingTo: null,
     };
 
     // Ключ для localStorage
@@ -97,33 +99,21 @@
 
     sendBtn.addEventListener('click', sendMessage);
 
-    function sendMessage() {
-        const content = messageInput.value.trim();
-        if (!content) return;
-
-        if (window.CHAT.ws?.readyState === WebSocket.OPEN) {
-            window.CHAT.ws.send(JSON.stringify({
-                type: 'message',
-                content: content,
-            }));
-        } else {
-            sendViaHTTP(content);
-        }
-
-        messageInput.value = '';
-        messageInput.style.height = 'auto';
-    }
-
     // Резервная отправка через HTTP API
-    async function sendViaHTTP(content) {
+    async function sendViaHTTP(content, replyTo = null) {
         try {
+            const body = { content: content };
+            if (replyTo) {
+                body.reply_to = replyTo.id;
+            }
+
             const response = await fetch(`/chat/api/channels/${window.CHAT.slug}/messages/`, {
                 method: 'POST',
                 headers: {
                     'X-CSRFToken': window.CHAT.csrf,
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ content: content }),
+                body: JSON.stringify(body),
             });
 
             if (response.ok) {
@@ -312,28 +302,85 @@
 
         const isOwn = msg.user.id === window.CHAT.user.id;
         const avatar = msg.user.avatar || '/static/placeholder-avatar.png';
+        const isAdmin = window.CHAT.user.isModerator || window.CHAT.user.isAdmin;
+        const isStaff = window.CHAT.user.isStaff || false;
+
+        // Определяем роль для отображения
+        let roleHtml = '';
+        if (msg.user.is_staff || isStaff && msg.user.id === window.CHAT.user.id) {
+            roleHtml = '<span class="chat-message-role staff">ADMIN</span>';
+        } else if (msg.user.is_moderator) {
+            roleHtml = '<span class="chat-message-role moderator">MOD</span>';
+        }
+
+        // Цитата для ответа
+        let replyQuoteHtml = '';
+        if (msg.reply_to) {
+            replyQuoteHtml = `
+                <div class="chat-message-reply-quote">
+                    <div class="quote-author">${escapeHtml(msg.reply_to.username)}</div>
+                    <div>${escapeHtml(msg.reply_to.content)}</div>
+                </div>
+            `;
+        }
+
+        // Кнопки действий
+        let actionsHtml = '';
+        if (!msg.is_deleted) {
+            actionsHtml += `
+                <button class="chat-message-action" onclick="replyToMessage(${msg.id}, '${escapeHtml(msg.user.username)}')">
+                    💬 Ответить
+                </button>
+                <button class="chat-message-action ${msg.liked ? 'liked' : ''}" onclick="toggleLike(${msg.id})">
+                    ${msg.liked ? '❤️' : '🤍'} ${msg.likes_count}
+                </button>
+            `;
+
+            // Кнопки для автора сообщения
+            if (isOwn) {
+                actionsHtml += `
+                    <div class="chat-message-actions-divider"></div>
+                    <button class="chat-message-action edit" onclick="editMessage(${msg.id})">
+                        ✏️ Редактировать
+                    </button>
+                    <button class="chat-message-action danger" onclick="deleteMessage(${msg.id})">
+                        🗑️ Удалить
+                    </button>
+                `;
+            }
+
+            // Кнопки для модерации и администрации
+            if (isAdmin && !isOwn) {
+                actionsHtml += `
+                    <div class="chat-message-actions-divider"></div>
+                    <button class="chat-message-action danger" onclick="deleteMessage(${msg.id})">
+                        🗑️ Удалить
+                    </button>
+                    <button class="chat-message-action danger" onclick="banUser(${msg.user.id}, '${escapeHtml(msg.user.username)}')">
+                        🚫 Бан
+                    </button>
+                    <button class="chat-message-action edit" onclick="editMessage(${msg.id})">
+                        ✏️ Редактировать
+                    </button>
+                `;
+            }
+        }
 
         messageEl.innerHTML = `
-            <img src="${avatar}" alt="${msg.user.username}" class="chat-message-avatar">
-            <div class="chat-message-body">
+            <div class="chat-message-frame">
                 <div class="chat-message-header">
+                    <img src="${avatar}" alt="${escapeHtml(msg.user.username)}" class="chat-message-avatar">
                     <span class="chat-message-author">${escapeHtml(msg.user.username)}</span>
-                    ${msg.user.is_moderator ? '<span class="chat-message-moderator">MOD</span>' : ''}
+                    ${roleHtml}
                     <span class="chat-message-time">${formatTime(msg.created_at)}</span>
                 </div>
-                <div class="chat-message-content ${msg.is_deleted ? 'deleted' : ''}">
-                    ${escapeHtml(msg.content)}
+                <div class="chat-message-content-frame">
+                    ${replyQuoteHtml}
+                    <div class="chat-message-content ${msg.is_deleted ? 'deleted' : ''}">
+                        ${escapeHtml(msg.content)}
+                    </div>
                 </div>
-                ${!msg.is_deleted ? `
-                <div class="chat-message-actions">
-                    <button class="chat-message-action ${msg.liked ? 'liked' : ''}" onclick="toggleLike(${msg.id})">
-                        ${msg.liked ? '❤️' : '🤍'} ${msg.likes_count}
-                    </button>
-                    ${(isOwn || window.CHAT.user.isModerator) ? `
-                    <button class="chat-message-action" onclick="deleteMessage(${msg.id})">🗑️</button>
-                    ` : ''}
-                </div>
-                ` : ''}
+                ${actionsHtml ? `<div class="chat-message-actions">${actionsHtml}</div>` : ''}
             </div>
         `;
 
@@ -396,7 +443,164 @@
         }
     }
 
-    function scrollToBottom() {
+    // Ответ на сообщение
+    function replyToMessage(messageId, username) {
+        const msg = window.CHAT.messages.find(m => m.id === messageId);
+        if (!msg) return;
+
+        // Сохраняем информацию об ответе
+        window.CHAT.replyingTo = {
+            id: messageId,
+            username: username,
+            content: msg.content
+        };
+
+        // Показываем цитату над полем ввода
+        let replyQuote = document.getElementById('replyQuote');
+        if (!replyQuote) {
+            const inputContainer = document.querySelector('.chat-input-container');
+            replyQuote = document.createElement('div');
+            replyQuote.id = 'replyQuote';
+            replyQuote.className = 'chat-reply-quote';
+            replyQuote.style.cssText = `
+                background: rgba(230, 0, 35, 0.1);
+                border-left: 3px solid var(--chat-accent);
+                padding: 10px 20px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+            `;
+            inputContainer.insertBefore(replyQuote, inputContainer.firstChild);
+        }
+
+        replyQuote.innerHTML = `
+            <div>
+                <strong>Ответ ${escapeHtml(username)}:</strong>
+                <span style="color: var(--chat-text-muted); margin-left: 10px;">${escapeHtml(msg.content.substring(0, 100))}${msg.content.length > 100 ? '...' : ''}</span>
+            </div>
+            <button onclick="cancelReply()" style="
+                background: transparent;
+                border: none;
+                color: var(--chat-text-muted);
+                cursor: pointer;
+                font-size: 18px;
+                padding: 0 4px;
+            ">×</button>
+        `;
+
+        messageInput.focus();
+    }
+
+    // Отмена ответа
+    function cancelReply() {
+        window.CHAT.replyingTo = null;
+        const replyQuote = document.getElementById('replyQuote');
+        if (replyQuote) {
+            replyQuote.remove();
+        }
+        messageInput.focus();
+    }
+
+    // Бан пользователя
+    function banUser(userId, username) {
+        if (!confirm(`Заблокировать пользователя ${username}?`)) return;
+
+        const reason = prompt('Причина блокировки:', 'Нарушение правил чата');
+        if (!reason) return;
+
+        const durationDays = prompt('Длительность бана (дней, оставьте пустым для вечного):', '7');
+
+        fetch(`/chat/api/channels/${window.CHAT.slug}/ban/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': window.CHAT.csrf,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                user_id: userId,
+                reason: reason,
+                duration_days: durationDays ? parseInt(durationDays) : null
+            }),
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.banned) {
+                alert(`Пользователь ${username} заблокирован`);
+            } else {
+                alert('Ошибка при блокировке: ' + (data.error || 'Неизвестная ошибка'));
+            }
+        })
+        .catch(error => {
+            console.error('[Chat] Ban error:', error);
+            alert('Ошибка при блокировке');
+        });
+    }
+
+    // Редактирование сообщения
+    function editMessage(messageId) {
+        const msg = window.CHAT.messages.find(m => m.id === messageId);
+        if (!msg) return;
+
+        const newContent = prompt('Редактировать сообщение:', msg.content);
+        if (!newContent || newContent === msg.content) return;
+
+        fetch(`/chat/api/messages/${messageId}/edit/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': window.CHAT.csrf,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ content: newContent }),
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                const msgEl = document.querySelector(`[data-message-id="${messageId}"]`);
+                if (msgEl) {
+                    const content = msgEl.querySelector('.chat-message-content');
+                    if (content) {
+                        content.textContent = newContent;
+                    }
+                }
+                // Обновляем в локальном состоянии
+                msg.content = newContent;
+                msg.is_edited = true;
+            } else {
+                alert('Ошибка при редактировании: ' + (data.error || 'Неизвестная ошибка'));
+            }
+        })
+        .catch(error => {
+            console.error('[Chat] Edit error:', error);
+            alert('Ошибка при редактировании');
+        });
+    }
+
+    // Отправка сообщения с учетом ответа
+    function sendMessage() {
+        const content = messageInput.value.trim();
+        if (!content) return;
+
+        // Проверяем, есть ли ответ
+        const replyTo = window.CHAT.replyingTo;
+
+        if (window.CHAT.ws?.readyState === WebSocket.OPEN) {
+            window.CHAT.ws.send(JSON.stringify({
+                type: 'message',
+                content: content,
+                reply_to: replyTo ? replyTo.id : null,
+            }));
+        } else {
+            sendViaHTTP(content, replyTo);
+        }
+
+        messageInput.value = '';
+        messageInput.style.height = 'auto';
+
+        // Сбрасываем ответ
+        if (replyTo) {
+            cancelReply();
+        }
+    }
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
 
