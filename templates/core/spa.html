@@ -18,7 +18,7 @@
             --accent: #e60023;
             --accent-hover: #ff1a41;
             --success: #22c55e;
-            --radius: 12px;
+            --radius: 8px;
             --shadow: 0 4px 24px rgba(0,0,0,0.4);
         }
 
@@ -32,51 +32,62 @@
             overflow-x: hidden;
         }
 
-        /* Минималистичный header */
+        /* Скрытый header - появляется при наведении */
         .header {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
-            height: 60px;
-            background: rgba(10, 10, 10, 0.8);
+            height: 48px;
+            background: rgba(10, 10, 10, 0.95);
             backdrop-filter: blur(12px);
             border-bottom: 1px solid var(--border);
             z-index: 1000;
             display: flex;
             align-items: center;
-            padding: 0 20px;
+            padding: 0 12px;
+            transition: transform 0.3s ease;
+        }
+
+        .header.hidden {
+            transform: translateY(-100%);
         }
 
         .header-content {
             display: flex;
             align-items: center;
-            gap: 20px;
-            max-width: 100%;
+            gap: 12px;
+            width: 100%;
         }
 
         .logo {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 700;
             color: var(--accent);
             text-decoration: none;
             letter-spacing: -0.5px;
+            opacity: 0.8;
+            transition: opacity 0.2s;
         }
 
+        .logo:hover { opacity: 1; }
+
+        /* Поиск - скрыт по умолчанию */
         .search-bar {
             flex: 1;
-            max-width: 400px;
+            max-width: 320px;
             position: relative;
+            transition: opacity 0.2s;
         }
 
         .search-bar input {
             width: 100%;
-            padding: 10px 15px 10px 40px;
+            padding: 6px 12px 6px 32px;
             background: var(--surface);
             border: 1px solid var(--border);
-            border-radius: 8px;
+            border-radius: 6px;
             color: var(--text);
-            font-size: 14px;
+            font-size: 13px;
             transition: border-color 0.2s;
         }
 
@@ -88,83 +99,68 @@
         .search-bar::before {
             content: "🔍";
             position: absolute;
-            left: 12px;
+            left: 10px;
             top: 50%;
             transform: translateY(-50%);
-            font-size: 14px;
+            font-size: 12px;
             opacity: 0.5;
         }
 
+        /* Минималистичные кнопки навигации */
         .nav-actions {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 8px;
             margin-left: auto;
         }
 
-        .btn {
-            padding: 8px 16px;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            border: none;
-            transition: all 0.2s;
-        }
-
-        .btn-ghost {
-            background: transparent;
-            color: var(--text);
-        }
-
-        .btn-ghost:hover {
-            background: var(--surface);
-        }
-
-        .btn-primary {
-            background: var(--accent);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: var(--accent-hover);
-        }
-
         .icon-btn {
-            width: 36px;
-            height: 36px;
+            width: 32px;
+            height: 32px;
             display: flex;
             align-items: center;
             justify-content: center;
             background: transparent;
             border: none;
-            border-radius: 8px;
+            border-radius: 6px;
             cursor: pointer;
-            color: var(--text);
-            font-size: 18px;
-            transition: background 0.2s;
+            color: var(--text-muted);
+            font-size: 16px;
+            transition: all 0.2s;
+            position: relative;
         }
 
         .icon-btn:hover {
             background: var(--surface);
+            color: var(--text);
         }
 
         .icon-btn.active {
             color: var(--accent);
         }
 
-        /* Боковая панель (скрываемая) */
+        .icon-btn .badge {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            width: 8px;
+            height: 8px;
+            background: var(--accent);
+            border-radius: 50%;
+        }
+
+        /* Скрытая боковая панель */
         .sidebar {
             position: fixed;
             left: 0;
-            top: 60px;
-            width: 240px;
-            height: calc(100vh - 60px);
+            top: 48px;
+            width: 200px;
+            height: calc(100vh - 48px);
             background: var(--surface);
             border-right: 1px solid var(--border);
-            padding: 20px 0;
+            padding: 8px 0;
             transform: translateX(-100%);
-            transition: transform 0.3s ease;
+            transition: transform 0.25s ease;
             z-index: 999;
             overflow-y: auto;
         }
@@ -176,10 +172,11 @@
         .sidebar-item {
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 12px 20px;
+            gap: 10px;
+            padding: 8px 12px;
             color: var(--text-muted);
             text-decoration: none;
+            font-size: 14px;
             transition: all 0.2s;
         }
 
@@ -193,23 +190,31 @@
             background: rgba(230, 0, 35, 0.1);
         }
 
-        /* Основной контент */
+        /* Основной контент - максимум пространства */
         .main {
-            margin-top: 60px;
-            min-height: calc(100vh - 60px);
-            padding: 20px;
+            margin-top: 48px;
+            min-height: calc(100vh - 48px);
+            padding: 8px;
         }
 
         .content-wrapper {
-            max-width: 1600px;
-            margin: 0 auto;
+            width: 100%;
+            max-width: none;
         }
 
-        /* Grid для работ */
+        /* Grid для работ - адаптивный */
         .works-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 16px;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 8px;
+        }
+
+        @media (min-width: 768px) {
+            .works-grid { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+        }
+
+        @media (min-width: 1200px) {
+            .works-grid { grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; }
         }
 
         .work-card {
@@ -221,7 +226,7 @@
         }
 
         .work-card:hover {
-            transform: translateY(-4px);
+            transform: translateY(-2px);
             box-shadow: var(--shadow);
         }
 
@@ -233,22 +238,22 @@
         }
 
         .work-card-body {
-            padding: 16px;
+            padding: 10px;
         }
 
         .work-card-title {
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 600;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
 
         .work-card-author {
-            font-size: 13px;
+            font-size: 12px;
             color: var(--text-muted);
-            margin-bottom: 12px;
+            margin-bottom: 8px;
         }
 
         .work-card-author a {
@@ -258,8 +263,8 @@
 
         .work-stats {
             display: flex;
-            gap: 16px;
-            font-size: 13px;
+            gap: 12px;
+            font-size: 12px;
             color: var(--text-muted);
         }
 
@@ -267,14 +272,14 @@
         .modal-overlay {
             position: fixed;
             inset: 0;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.85);
             display: flex;
             align-items: center;
             justify-content: center;
             z-index: 2000;
             opacity: 0;
             visibility: hidden;
-            transition: all 0.3s;
+            transition: all 0.25s;
         }
 
         .modal-overlay.active {
@@ -288,8 +293,8 @@
             max-width: 90vw;
             max-height: 90vh;
             overflow: auto;
-            transform: scale(0.9);
-            transition: transform 0.3s;
+            transform: scale(0.95);
+            transition: transform 0.25s;
         }
 
         .modal-overlay.active .modal {
@@ -297,7 +302,7 @@
         }
 
         .modal-header {
-            padding: 20px;
+            padding: 16px 20px;
             border-bottom: 1px solid var(--border);
             display: flex;
             justify-content: space-between;
@@ -311,28 +316,33 @@
         .modal-close {
             background: transparent;
             border: none;
-            color: var(--text);
+            color: var(--text-muted);
             font-size: 24px;
             cursor: pointer;
-            width: 32px;
-            height: 32px;
+            width: 28px;
+            height: 28px;
+            transition: color 0.2s;
         }
+
+        .modal-close:hover { color: var(--text); }
 
         /* Уведомления */
         .toast-container {
             position: fixed;
-            bottom: 20px;
-            right: 20px;
+            bottom: 12px;
+            right: 12px;
             z-index: 3000;
         }
 
         .toast {
             background: var(--surface);
             border: 1px solid var(--border);
-            padding: 12px 20px;
-            border-radius: 8px;
-            margin-top: 10px;
-            animation: slideIn 0.3s ease;
+            padding: 10px 16px;
+            border-radius: 6px;
+            margin-top: 8px;
+            font-size: 13px;
+            animation: slideIn 0.25s ease;
+            max-width: 300px;
         }
 
         .toast.success { border-left: 3px solid var(--success); }
@@ -347,7 +357,7 @@
         .skeleton {
             background: linear-gradient(90deg, var(--surface) 25%, var(--surface-hover) 50%, var(--surface) 75%);
             background-size: 200% 100%;
-            animation: shimmer 1.5s infinite;
+            animation: shimmer 1.2s infinite;
         }
 
         @keyframes shimmer {
@@ -355,31 +365,49 @@
             100% { background-position: -200% 0; }
         }
 
-        /* Адаптивность */
-        @media (max-width: 768px) {
-            .search-bar { display: none; }
-            .sidebar { width: 100%; }
-            .works-grid { grid-template-columns: repeat(2, 1fr); }
+        /* Filters bar - компактный */
+        .filters-bar {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+            padding: 8px 0;
         }
 
-        /* Скрытие скроллбара */
-        ::-webkit-scrollbar { width: 8px; height: 8px; }
-        ::-webkit-scrollbar-track { background: var(--bg); }
-        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+        .filter-chip {
+            padding: 6px 12px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            font-size: 12px;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
 
-        /* Floating action button */
+        .filter-chip:hover {
+            background: var(--surface-hover);
+            color: var(--text);
+        }
+
+        .filter-chip.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+
+        /* Кнопка создания - компактная */
         .fab {
             position: fixed;
-            bottom: 24px;
-            right: 24px;
-            width: 56px;
-            height: 56px;
+            bottom: 16px;
+            right: 16px;
+            width: 48px;
+            height: 48px;
             border-radius: 50%;
             background: var(--accent);
             color: white;
             border: none;
-            font-size: 24px;
+            font-size: 22px;
             cursor: pointer;
             box-shadow: var(--shadow);
             transition: transform 0.2s, background 0.2s;
@@ -387,45 +415,19 @@
         }
 
         .fab:hover {
-            transform: scale(1.1);
+            transform: scale(1.05);
             background: var(--accent-hover);
         }
 
-        /* Filters bar */
-        .filters-bar {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
+        /* Скрытие скроллбара */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg); }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
 
-        .filter-chip {
-            padding: 8px 16px;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            font-size: 13px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .filter-chip:hover, .filter-chip.active {
-            background: var(--accent);
-            border-color: var(--accent);
-        }
-
-        /* Lazy load placeholder */
-        .lazy-image {
-            background: var(--surface);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .lazy-image::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: var(--surface-hover);
+        /* Скрываем header при скролле вниз */
+        body.scroll-down .header {
+            transform: translateY(-100%);
         }
     </style>
 </head>
@@ -439,14 +441,14 @@
                 <input type="text" id="searchInput" placeholder="Поиск работ, авторов, тегов...">
             </div>
             <div class="nav-actions">
-                <button class="icon-btn" id="notificationsBtn" aria-label="Notifications">🔔</button>
-                <button class="icon-btn" id="savedBtn" aria-label="Saved">🔖</button>
                 {% if user.is_authenticated %}
-                    <button class="btn btn-primary" id="createBtn">+ Создать</button>
-                    <a href="/profile/{{ user.username }}" class="icon-btn">👤</a>
+                    <button class="icon-btn" id="notificationsBtn" aria-label="Notifications">
+                        🔔<span class="badge" id="notifBadge" style="display:none;"></span>
+                    </button>
+                    <a href="/profile/{{ user.username }}" class="icon-btn" title="Профиль">👤</a>
+                    <button class="icon-btn" id="createBtn" title="Создать работу">+</button>
                 {% else %}
-                    <a href="/auth/login/" class="btn btn-ghost">Вход</a>
-                    <a href="/auth/register/" class="btn btn-primary">Регистрация</a>
+                    <a href="/auth/login/" class="icon-btn" title="Вход">🔑</a>
                 {% endif %}
             </div>
         </div>
@@ -520,14 +522,33 @@
         // Текущий выбранный фильтр
         window.currentFilter = { type: 'all', value: '' };
 
-        // Sidebar toggle
+        // Скрытие header при скролле - максимум пространства для контента
+        let lastScrollY = window.scrollY;
+        let scrollTimeout;
+
+        window.addEventListener('scroll', () => {
+            clearTimeout(scrollTimeout);
+            scrollTimeout = setTimeout(() => {
+                const header = document.querySelector('.header');
+                if (header) {
+                    if (window.scrollY > lastScrollY && window.scrollY > 100) {
+                        document.body.classList.add('scroll-down');
+                    } else {
+                        document.body.classList.remove('scroll-down');
+                    }
+                }
+                lastScrollY = window.scrollY;
+            }, 100);
+        }, { passive: true });
+
+        // Sidebar toggle - боковая панель скрыта по умолчанию
         const sidebar = document.getElementById('sidebar');
         const menuToggle = document.getElementById('menuToggle');
         menuToggle?.addEventListener('click', () => sidebar.classList.toggle('open'));
 
-        // Close sidebar on outside click
+        // Закрыть sidebar при клике вне его
         document.addEventListener('click', (e) => {
-            if (!sidebar.contains(e.target) && !menuToggle.contains(e.target)) {
+            if (sidebar && !sidebar.contains(e.target) && menuToggle && !menuToggle.contains(e.target)) {
                 sidebar.classList.remove('open');
             }
         });
