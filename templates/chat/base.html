@@ -543,6 +543,66 @@
         color: white;
     }
 
+    /* Онлайн-индикатор */
+    .online-indicator {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--chat-success);
+        box-shadow: 0 0 4px var(--chat-success);
+    }
+
+    .online-member {
+        position: relative;
+    }
+
+    /* Каналы с изображениями */
+    .channel-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 12px;
+        border-radius: var(--chat-radius);
+        color: var(--white);
+        text-decoration: none;
+        transition: all 0.2s;
+        cursor: pointer;
+        margin-bottom: 4px;
+    }
+
+    .channel-image {
+        width: 36px;
+        height: 36px;
+        border-radius: 6px;
+        object-fit: cover;
+        flex-shrink: 0;
+    }
+
+    .channel-info {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex: 1;
+        min-width: 0;
+    }
+
+    .channel-name {
+        font-size: 13px;
+        font-weight: 500;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .channel-badge {
+        font-size: 10px;
+        padding: 2px 6px;
+        border-radius: 10px;
+        background: var(--chat-accent);
+        color: white;
+        flex-shrink: 0;
+    }
+
     /* Индикатор подключения */
     .connection-status {
         position: fixed;
@@ -788,10 +848,18 @@
     <!-- Sidebar участников -->
     <aside class="chat-members-sidebar" id="membersSidebar">
         <div class="members-header">
-            Участники (<span id="membersCount">0</span>)
+            <div style="margin-bottom: 12px;">
+                Онлайн (<span id="onlineCount">0</span>)
+            </div>
+            <div style="font-size: 12px; opacity: 0.7;">
+                Участники (<span id="membersCount">0</span>)
+            </div>
         </div>
-        <div class="members-list" id="membersList">
-            <!-- Загружается через JS -->
+        <div class="members-list" id="onlineUsersList" style="border-bottom: 1px solid var(--chat-border); padding-bottom: 8px; margin-bottom: 8px;">
+            <!-- Онлайн пользователи загружаются через JS -->
+        </div>
+        <div class="members-list" id="membersList" style="flex: 1; overflow-y: auto;">
+            <!-- Все участники загружаются через JS -->
         </div>
     </aside>
 </div>

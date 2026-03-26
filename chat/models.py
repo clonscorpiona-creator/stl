@@ -24,6 +24,7 @@ class Channel(models.Model):
     name = models.CharField('Название', max_length=100)
     slug = models.SlugField(unique=True, blank=True)
     description = models.TextField('Описание', blank=True)
+    image = models.ImageField('Изображение канала', upload_to='chat/channel_images/', null=True, blank=True)
 
     # Доступ
     is_public = models.BooleanField('Публичный', default=True)
@@ -272,3 +273,30 @@ class UserChannelRead(models.Model):
 
     def __str__(self):
         return f'{self.user} - {self.channel} (прочитано: {self.read_count})'
+
+
+class ChannelOnline(models.Model):
+    """
+    Отслеживание онлайн-пользователей в канале.
+
+    Пользователь считается онлайн, если его last_activity было в последние 5 минут.
+    """
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='channel_online_status')
+    channel = models.ForeignKey(Channel, on_delete=models.CASCADE, related_name='online_users')
+    last_activity = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = 'Онлайн пользователь в канале'
+        verbose_name_plural = 'Онлайн пользователи в каналах'
+        unique_together = ['user', 'channel']
+        indexes = [
+            models.Index(fields=['channel', 'last_activity']),
+        ]
+
+    def __str__(self):
+        return f'{self.user} online in {self.channel}'
+
+    def is_online(self):
+        """Проверка, считается ли пользователь онлайн (активность в последние 5 минут)"""
+        from django.utils import timezone
+        return (timezone.now() - self.last_activity).total_seconds() < 300

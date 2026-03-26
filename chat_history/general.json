@@ -513,7 +513,27 @@
       "edited_at": null,
       "has_image": true,
       "image": "/media/media/chat_images/myadmin_1774565134.067354.png"
+    },
+    {
+      "id": 35,
+      "content": "Еще один тест",
+      "is_deleted": false,
+      "is_edited": false,
+      "likes_count": 0,
+      "liked": false,
+      "likes": [],
+      "user": {
+        "id": 2,
+        "username": "Admin",
+        "avatar": "/media/avatars/d06f34a026f211f1a833b67183aea4e3_5.jpg",
+        "is_moderator": false,
+        "is_staff": true
+      },
+      "created_at": "2026-03-26T22:53:23.333839+00:00",
+      "edited_at": null,
+      "has_image": true,
+      "image": "/media/media/chat_images/admin_1774565603.32134.png"
     }
   ],
-  "last_updated": "2026-03-26T22:45:34.089167+00:00"
+  "last_updated": "2026-03-26T22:53:23.348037+00:00"
 }

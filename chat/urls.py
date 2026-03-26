@@ -17,6 +17,7 @@ urlpatterns = [
     path('api/channels/<str:slug>/join/', api.join_channel_api, name='api_join_channel'),
     path('api/channels/<str:slug>/leave/', api.leave_channel_api, name='api_leave_channel'),
     path('api/channels/<str:slug>/members/', api.channel_members_api, name='api_channel_members'),
+    path('api/channels/<str:slug>/online/', api.channel_online_api, name='api_channel_online'),
 
     # Messages
     path('api/channels/<str:slug>/messages/', api.send_message_api, name='api_send_message'),

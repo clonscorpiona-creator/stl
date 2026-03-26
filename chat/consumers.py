@@ -18,7 +18,7 @@ from channels.db import database_sync_to_async
 from django.contrib.auth import get_user_model
 from django.utils import timezone
 
-from .models import Channel, ChannelMember, ChannelBan, Message, MessageLike
+from .models import Channel, ChannelMember, ChannelBan, Message, MessageLike, ChannelOnline
 from .history import save_message_to_history, delete_message_in_history, add_reaction_to_history
 from .messages_storage import save_message_to_storage
 
@@ -80,22 +80,31 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         await self.accept()
 
+        # Обновляем онлайн-статус
+        await self.update_online_status()
+
         # Отправляем приветственное сообщение
         await self.send(text_data=json.dumps({
             'type': 'connected',
             'channel': self.slug,
         }))
 
+        # Отправляем список онлайн-пользователей
+        await self.send_online_users()
+
     async def disconnect(self, close_code):
         """
         Отключение от WebSocket.
 
-        Очищаем группу канала.
+        Очищаем группу канала и удаляем онлайн-статус.
         """
         await self.channel_layer.group_discard(
             self.room_group_name,
             self.channel_name
         )
+
+        # Удаляем онлайн-статус
+        await self.remove_online_status()
 
     async def receive(self, text_data):
         """
@@ -351,3 +360,61 @@ class ChatConsumer(AsyncWebsocketConsumer):
         delete_message_in_history(message.id, message.channel.slug)
 
         return True
+
+    @database_sync_to_async
+    def update_online_status(self):
+        """Обновить онлайн-статус пользователя в канале"""
+        channel = Channel.objects.filter(slug=self.slug, is_active=True).first()
+        if channel:
+            ChannelOnline.objects.update_or_create(
+                user=self.user,
+                channel=channel,
+            )
+
+    @database_sync_to_async
+    def remove_online_status(self):
+        """Удалить онлайн-статус пользователя"""
+        channel = Channel.objects.filter(slug=self.slug, is_active=True).first()
+        if channel:
+            ChannelOnline.objects.filter(user=self.user, channel=channel).delete()
+
+    @database_sync_to_async
+    def get_online_users(self):
+        """Получить список онлайн-пользователей в канале"""
+        from django.utils import timezone
+        from datetime import timedelta
+
+        channel = Channel.objects.filter(slug=self.slug, is_active=True).first()
+        if not channel:
+            return []
+
+        # Считаем онлайн тех, у кого last_activity в последние 5 минут
+        five_minutes_ago = timezone.now() - timedelta(minutes=5)
+        online_users = ChannelOnline.objects.filter(
+            channel=channel,
+            last_activity__gte=five_minutes_ago
+        ).select_related('user')[:50]
+
+        return [
+            {
+                'id': ou.user.id,
+                'username': ou.user.username,
+                'avatar': ou.user.avatar.url if ou.user.avatar else None,
+            }
+            for ou in online_users
+        ]
+
+    async def send_online_users(self):
+        """Отправить список онлайн-пользователей"""
+        online_users = await self.get_online_users()
+        await self.send(text_data=json.dumps({
+            'type': 'online_users',
+            'users': online_users,
+        }))
+
+    async def online_status_update(self, event):
+        """Обновление статуса онлайн-пользователя (рассылка группе)"""
+        await self.send(text_data=json.dumps({
+            'type': 'online_users',
+            'users': event.get('users', []),
+        }))

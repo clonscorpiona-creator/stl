@@ -30,7 +30,7 @@ import json
 import base64
 import os
 
-from .models import Channel, ChannelMember, ChannelBan, Message, MessageLike, UserChannelRead
+from .models import Channel, ChannelMember, ChannelBan, Message, MessageLike, UserChannelRead, ChannelOnline
 from .history import save_message_to_history, delete_message_in_history, add_reaction_to_history
 from .messages_storage import load_messages_from_storage, get_message_count
 from django.contrib.sessions.models import Session
@@ -129,6 +129,7 @@ def serialize_channel(channel, current_user=None):
         'name': channel.name,
         'slug': channel.slug,
         'description': channel.description,
+        'image': channel.image.url if channel.image else None,
         'is_public': channel.is_public,
         'messages_count': channel.messages_count or 0,
         'members_count': channel.members_count or 0,
@@ -524,6 +525,35 @@ def channel_members_api(request, slug):
                 'joined_at': m.joined_at.isoformat(),
             }
             for m in members
+        ]
+    })
+
+
+@login_required
+def channel_online_api(request, slug):
+    """Получить список онлайн-пользователей в канале"""
+    from django.utils import timezone
+    from datetime import timedelta
+
+    channel = Channel.objects.filter(slug=slug, is_active=True).first()
+    if not channel:
+        return JsonResponse({'error': 'Channel not found'}, status=404)
+
+    # Считаем онлайн тех, у кого last_activity в последние 5 минут
+    five_minutes_ago = timezone.now() - timedelta(minutes=5)
+    online_users = ChannelOnline.objects.filter(
+        channel=channel,
+        last_activity__gte=five_minutes_ago
+    ).select_related('user')[:50]
+
+    return JsonResponse({
+        'users': [
+            {
+                'id': ou.user.id,
+                'username': ou.user.username,
+                'avatar': ou.user.avatar.url if ou.user.avatar else None,
+            }
+            for ou in online_users
         ]
     })
 

@@ -296,6 +296,12 @@
         switch(data.type) {
             case 'connected':
                 console.log('[Chat] Connected to channel', data.channel);
+                // Загружаем онлайн-пользователей после подключения
+                loadOnlineUsers();
+                break;
+
+            case 'online_users':
+                updateOnlineUsers(data.users);
                 break;
 
             case 'message':
@@ -813,8 +819,11 @@
 
             channelsList.innerHTML = data.channels.map(ch => `
                 <a href="/chat/${ch.slug}/" class="channel-item ${ch.slug === window.CHAT.slug ? 'active' : ''}">
-                    # ${escapeHtml(ch.name)}
-                    ${ch.messages_count > 0 ? `<span class="badge">${ch.messages_count}</span>` : ''}
+                    ${ch.image ? `<img src="${ch.image}" alt="${escapeHtml(ch.name)}" class="channel-image">` : ''}
+                    <div class="channel-info">
+                        <span class="channel-name">${escapeHtml(ch.name)}</span>
+                        ${ch.messages_count > 0 ? `<span class="channel-badge">${ch.messages_count}</span>` : ''}
+                    </div>
                 </a>
             `).join('');
         } catch (error) {
@@ -839,6 +848,36 @@
             membersCount.textContent = data.members.length;
         } catch (error) {
             console.error('[Chat] Failed to load members:', error);
+        }
+    }
+
+    // Загрузка онлайн-участников
+    async function loadOnlineUsers() {
+        try {
+            const response = await fetch(`/chat/api/channels/${window.CHAT.slug}/online/`);
+            const data = await response.json();
+
+            updateOnlineUsers(data.users);
+        } catch (error) {
+            console.error('[Chat] Failed to load online users:', error);
+        }
+    }
+
+    // Обновление списка онлайн-пользователей
+    function updateOnlineUsers(users) {
+        const onlineList = document.getElementById('onlineUsersList');
+        const onlineCount = document.getElementById('onlineCount');
+
+        if (onlineList && users) {
+            onlineList.innerHTML = users.map(u => `
+                <div class="member-item online-member">
+                    <img src="${u.avatar || '/static/placeholder-avatar.png'}" alt="${u.username}" class="member-avatar">
+                    <span class="member-name">${escapeHtml(u.username)}</span>
+                    <span class="online-indicator" title="Онлайн"></span>
+                </div>
+            `).join('');
+
+            onlineCount.textContent = users.length;
         }
     }
 
