@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест авторизации чата</title>
+    <style>
+        body {
+            font-family: monospace;
+            background: #1a1a1a;
+            color: #fff;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        h1 { color: #e60023; }
+        .status { padding: 10px; border-radius: 8px; margin: 10px 0; }
+        .success { background: #22c55e33; color: #22c55e; }
+        .error { background: #ef444433; color: #ef4444; }
+        .info { background: #3b82f633; color: #3b82f6; }
+        .log {
+            background: #000;
+            padding: 15px;
+            border-radius: 8px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-size: 12px;
+        }
+        .log-entry { margin: 5px 0; }
+        .log-entry.ws { color: #f59e0b; }
+        .log-entry.auth { color: #22c55e; }
+        .log-entry.error { color: #ef4444; }
+        button {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            margin: 5px;
+        }
+        .btn-primary { background: #e60023; color: white; }
+        .btn-secondary { background: #333; color: white; }
+    </style>
+</head>
+<body>
+    <h1>🔐 Тест авторизации WebSocket чата</h1>
+
+    <div id="status" class="status info">
+        <strong>Статус:</strong> <span id="statusText">Ожидание...</span>
+    </div>
+
+    <div>
+        <h3>Информация о подключении:</h3>
+        <p>CSRF Token: <code id="csrfToken">-</code></p>
+        <p>Session Cookie: <code id="sessionCookie">-</code></p>
+        <p>WebSocket URL: <code id="wsUrl">-</code></p>
+    </div>
+
+    <div>
+        <h3>Действия:</h3>
+        <button class="btn-primary" onclick="connectWebSocket()">🔌 Подключить WebSocket</button>
+        <button class="btn-secondary" onclick="sendMessage()">📤 Отправить сообщение</button>
+        <button class="btn-secondary" onclick="disconnectWebSocket()">❌ Отключить</button>
+        <button class="btn-secondary" onclick="clearLog()">🗑️ Очистить лог</button>
+    </div>
+
+    <div>
+        <h3>Лог событий:</h3>
+        <div class="log" id="logContainer"></div>
+    </div>
+
+    <script>
+        let ws = null;
+        const CHANNEL_SLUG = 'general';
+
+        // Получаем CSRF токен из cookie
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        function log(message, type = '') {
+            const logContainer = document.getElementById('logContainer');
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            const timestamp = new Date().toLocaleTimeString();
+            entry.textContent = `[${timestamp}] ${message}`;
+            logContainer.appendChild(entry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+
+        function updateStatus(text, type) {
+            const statusDiv = document.getElementById('status');
+            const statusText = document.getElementById('statusText');
+            statusDiv.className = `status ${type}`;
+            statusText.textContent = text;
+        }
+
+        // Отображаем информацию
+        document.getElementById('csrfToken').textContent = getCookie('csrftoken') || 'не найден';
+        document.getElementById('sessionCookie').textContent = getCookie('sessionid') ?
+            getCookie('sessionid').substring(0, 10) + '...' : 'не найден';
+        document.getElementById('wsUrl').textContent = `ws://${window.location.host}/ws/chat/${CHANNEL_SLUG}/`;
+
+        function connectWebSocket() {
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsUrl = `${protocol}//${window.location.host}/ws/chat/${CHANNEL_SLUG}/`;
+
+            log(`Подключение к ${wsUrl}`, 'ws');
+            updateStatus('Подключение...', 'info');
+
+            ws = new WebSocket(wsUrl);
+
+            ws.onopen = function() {
+                log('✅ WebSocket подключен', 'auth');
+                updateStatus('Подключено', 'success');
+            };
+
+            ws.onclose = function(event) {
+                log(`❌ WebSocket отключен (код: ${event.code})`, 'error');
+                updateStatus('Отключено', 'error');
+            };
+
+            ws.onerror = function(error) {
+                log(`⚠️ Ошибка WebSocket: ${error}`, 'error');
+                updateStatus('Ошибка', 'error');
+            };
+
+            ws.onmessage = function(event) {
+                const data = JSON.parse(event.data);
+                log(`📨 Получено: ${JSON.stringify(data)}`, 'ws');
+
+                if (data.type === 'connected') {
+                    log('✅ Авторизация успешна! Вы подключены к каналу.', 'auth');
+                    updateStatus('Авторизация успешна', 'success');
+                } else if (data.type === 'error') {
+                    log(`❌ Ошибка сервера: ${data.message}`, 'error');
+                    updateStatus('Ошибка авторизации', 'error');
+                }
+            };
+        }
+
+        function sendMessage() {
+            if (!ws || ws.readyState !== WebSocket.OPEN) {
+                log('❌ Сначала подключитесь к WebSocket', 'error');
+                return;
+            }
+
+            const content = `Тестовое сообщение ${new Date().toLocaleTimeString()}`;
+            const message = {
+                type: 'message',
+                content: content
+            };
+
+            log(`📤 Отправка: ${content}`, 'ws');
+            ws.send(JSON.stringify(message));
+        }
+
+        function disconnectWebSocket() {
+            if (ws) {
+                ws.close();
+                log('🔌 Отключение от WebSocket', 'ws');
+            }
+        }
+
+        function clearLog() {
+            document.getElementById('logContainer').innerHTML = '';
+            log('Лог очищен', 'info');
+        }
+
+        // Авто-подключение при загрузке
+        window.addEventListener('load', () => {
+            log('Страница загружена. Нажмите "Подключить WebSocket" для теста.', 'info');
+
+            // Проверяем, авторизован ли пользователь
+            const sessionid = getCookie('sessionid');
+            if (sessionid) {
+                log(`✅ Найдена сессия: ${sessionid.substring(0, 10)}...`, 'auth');
+                setTimeout(connectWebSocket, 500);
+            } else {
+                log('❌ Сессия не найдена. Войдите в систему сначала.', 'error');
+                updateStatus('Требуется вход в систему', 'error');
+            }
+        });
+    </script>
+</body>
+</html>

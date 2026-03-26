@@ -25,8 +25,40 @@ from datetime import timedelta
 import json
 
 from .models import Channel, ChannelMember, ChannelBan, Message, MessageLike
+from .history import save_message_to_history, delete_message_in_history, add_reaction_to_history
+from django.contrib.sessions.models import Session
+from django.utils import timezone
 
 User = get_user_model()
+
+
+def session_status_api(request):
+    """
+    Проверка статуса сессии пользователя.
+
+    Возвращает:
+    - authenticated: bool
+    - username: str
+    - session_valid: bool
+    """
+    if request.user.is_authenticated:
+        # Проверяем, действительна ли сессия
+        session_key = request.session.session_key
+        is_valid = Session.objects.filter(
+            session_key=session_key,
+            expire_date__gt=timezone.now()
+        ).exists()
+
+        return JsonResponse({
+            'authenticated': True,
+            'username': request.user.username,
+            'session_valid': is_valid,
+        })
+    else:
+        return JsonResponse({
+            'authenticated': False,
+            'session_valid': False,
+        })
 
 
 def serialize_message(message, current_user=None):
@@ -198,6 +230,9 @@ def send_message_api(request, slug):
         content=content
     )
 
+    # Сохраняем в файл истории
+    save_message_to_history(serialize_message(message, request.user), channel.slug)
+
     return JsonResponse({
         'message': serialize_message(message, request.user),
     }, status=201)
@@ -230,6 +265,9 @@ def like_message_api(request, message_id):
     message.likes_count = MessageLike.objects.filter(message=message).count()
     message.save(update_fields=['likes_count'])
 
+    # Сохраняем реакцию в историю
+    add_reaction_to_history(message.id, request.user.id, message.channel.slug, liked)
+
     return JsonResponse({
         'liked': liked,
         'count': message.likes_count,
@@ -260,6 +298,9 @@ def delete_message_api(request, message_id):
         return JsonResponse({'error': 'Access denied'}, status=403)
 
     message.delete()  # Мягкое удаление
+
+    # Сохраняем удаление в историю
+    delete_message_in_history(message.id, message.channel.slug)
 
     return JsonResponse({'success': True})
 
@@ -402,3 +443,73 @@ def channel_members_api(request, slug):
             for m in members
         ]
     })
+
+
+@login_required
+@require_http_methods(["POST"])
+def mute_user_api(request, slug):
+    """Заглушить пользователя"""
+    channel = Channel.objects.filter(slug=slug, is_active=True).first()
+    if not channel:
+        return JsonResponse({'error': 'Channel not found'}, status=404)
+
+    is_moderator = channel.moderators.filter(id=request.user.id).exists()
+    if not is_moderator and not request.user.is_staff:
+        return JsonResponse({'error': 'Access denied'}, status=403)
+
+    data = json.loads(request.body)
+    user_id = data.get('user_id')
+
+    member, created = ChannelMember.objects.get_or_create(channel=channel, user_id=user_id)
+    member.is_muted = True
+    member.save(update_fields=['is_muted'])
+
+    return JsonResponse({'success': True, 'muted': True})
+
+
+@login_required
+@require_http_methods(["POST"])
+def unmute_user_api(request, slug):
+    """Разглушить пользователя"""
+    channel = Channel.objects.filter(slug=slug, is_active=True).first()
+    if not channel:
+        return JsonResponse({'error': 'Channel not found'}, status=404)
+
+    is_moderator = channel.moderators.filter(id=request.user.id).exists()
+    if not is_moderator and not request.user.is_staff:
+        return JsonResponse({'error': 'Access denied'}, status=403)
+
+    data = json.loads(request.body)
+    user_id = data.get('user_id')
+
+    member = ChannelMember.objects.filter(channel=channel, user_id=user_id).first()
+    if member:
+        member.is_muted = False
+        member.save(update_fields=['is_muted'])
+
+    return JsonResponse({'success': True, 'muted': False})
+
+
+@login_required
+@require_http_methods(["POST"])
+def promote_moderator_api(request, slug):
+    """Назначить модератором"""
+    channel = Channel.objects.filter(slug=slug, is_active=True).first()
+    if not channel:
+        return JsonResponse({'error': 'Channel not found'}, status=404)
+
+    # Только администраторы или суперпользователи могут назначать модераторов
+    if not request.user.is_staff:
+        return JsonResponse({'error': 'Access denied'}, status=403)
+
+    data = json.loads(request.body)
+    user_id = data.get('user_id')
+
+    member, created = ChannelMember.objects.get_or_create(channel=channel, user_id=user_id)
+    member.is_moderator = True
+    member.save(update_fields=['is_moderator'])
+
+    # Добавляем в модераторы канала
+    channel.moderators.add(user_id)
+
+    return JsonResponse({'success': True, 'is_moderator': True})

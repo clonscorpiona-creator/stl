@@ -18,6 +18,7 @@ from channels.db import database_sync_to_async
 from django.contrib.auth import get_user_model
 
 from .models import Channel, ChannelMember, ChannelBan, Message, MessageLike
+from .history import save_message_to_history, delete_message_in_history, add_reaction_to_history
 
 User = get_user_model()
 
@@ -46,11 +47,16 @@ class ChatConsumer(AsyncWebsocketConsumer):
         self.room_group_name = f'chat_{self.slug}'
 
         # Проверка авторизации
-        if not self.scope.get("user") or not self.scope["user"].is_authenticated:
+        user = self.scope.get("user")
+        print(f'[WebSocket] Connect attempt - User: {user}, Authenticated: {user.is_authenticated if user else False}')
+
+        if not user or not user.is_authenticated:
+            print(f'[WebSocket] Rejected - Not authenticated')
             await self.close()
             return
 
-        self.user = self.scope["user"]
+        self.user = user
+        print(f'[WebSocket] Connected - User: {self.user.username}')
 
         # Проверка доступа к каналу
         channel = await self.get_channel()
@@ -254,7 +260,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             content=content
         )
 
-        return {
+        message_data = {
             'id': message.id,
             'content': message.content,
             'is_deleted': False,
@@ -270,6 +276,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
             'created_at': message.created_at.isoformat(),
             'edited_at': None,
         }
+
+        # Сохраняем в файл истории
+        save_message_to_history(message_data, channel.slug)
+
+        return message_data
 
     @database_sync_to_async
     def toggle_like(self, message_id):
@@ -292,6 +303,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
         message.likes_count = MessageLike.objects.filter(message=message).count()
         message.save(update_fields=['likes_count'])
 
+        # Сохраняем реакцию в историю
+        add_reaction_to_history(message.id, self.user.id, message.channel.slug, liked)
+
         return {'liked': liked, 'count': message.likes_count}
 
     @database_sync_to_async
@@ -310,4 +324,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
             return None
 
         message.delete()  # Мягкое удаление
+
+        # Сохраняем удаление в историю
+        delete_message_in_history(message.id, message.channel.slug)
+
         return True
