@@ -1,0 +1,352 @@
+Connected to SQLite database
+Avatar column already exists or added
+Tables initialized
+Default channels created
+Default settings created
+Server starting on http://localhost:4000
+Server running on http://localhost:4000
+[ChatController] User: {
+  id: 6,
+  email: 'testuser@stl.local',
+  username: 'TestUser123',
+  role: 'USER',
+  layout: 'layout-1'
+}
+[ChatController] Channels: 3
+[ChatController] Current channel: {
+  id: 1,
+  name: 'Общий',
+  slug: 'general',
+  description: 'Общий чат для всех',
+  created_at: '2026-03-25 18:12:51'
+}
+[ChatController] User: {
+  id: 6,
+  email: 'testuser@stl.local',
+  username: 'TestUser123',
+  role: 'USER',
+  layout: 'layout-1'
+}
+[ChatController] Channels: 3
+[ChatController] Current channel: {
+  id: 1,
+  name: 'Общий',
+  slug: 'general',
+  description: 'Общий чат для всех',
+  created_at: '2026-03-25 18:12:51'
+}
+[ChatController] User: {
+  id: 6,
+  email: 'testuser@stl.local',
+  username: 'TestUser123',
+  role: 'USER',
+  layout: 'layout-1'
+}
+[ChatController] Channels: 3
+[ChatController] Current channel: {
+  id: 1,
+  name: 'Общий',
+  slug: 'general',
+  description: 'Общий чат для всех',
+  created_at: '2026-03-25 18:12:51'
+}
+[ChatController] User: {
+  id: 6,
+  email: 'testuser@stl.local',
+  username: 'TestUser123',
+  role: 'USER',
+  layout: 'layout-1'
+}
+[ChatController] Channels: 3
+[ChatController] Current channel: {
+  id: 1,
+  name: 'Общий',
+  slug: 'general',
+  description: 'Общий чат для всех',
+  created_at: '2026-03-25 18:12:51'
+}
+[ChatController] User: {
+  id: 6,
+  email: 'testuser@stl.local',
+  username: 'TestUser123',
+  role: 'USER',
+  layout: 'layout-1'
+}
+[ChatController] Channels: 3
+[ChatController] Current channel: {
+  id: 1,
+  name: 'Общий',
+  slug: 'general',
+  description: 'Общий чат для всех',
+  created_at: '2026-03-25 18:12:51'
+}
+[ChatController] User: {
+  id: 6,
+  email: 'testuser@stl.local',
+  username: 'TestUser123',
+  role: 'USER',
+  layout: 'layout-1'
+}
+[ChatController] Channels: 3
+[ChatController] Current channel: {
+  id: 1,
+  name: 'Общий',
+  slug: 'general',
+  description: 'Общий чат для всех',
+  created_at: '2026-03-25 18:12:51'
+}
+[ChatController] User: {
+  id: 6,
+  email: 'testuser@stl.local',
+  username: 'TestUser123',
+  role: 'USER',
+  layout: 'layout-1'
+}
+[ChatController] Channels: 3
+[ChatController] Current channel: {
+  id: 1,
+  name: 'Общий',
+  slug: 'general',
+  description: 'Общий чат для всех',
+  created_at: '2026-03-25 18:12:51'
+}
+[ChatController] User: {
+  id: 6,
+  email: 'testuser@stl.local',
+  username: 'TestUser123',
+  role: 'USER',
+  layout: 'layout-1'
+}
+[ChatController] Channels: 3
+[ChatController] Current channel: {
+  id: 1,
+  name: 'Общий',
+  slug: 'general',
+  description: 'Общий чат для всех',
+  created_at: '2026-03-25 18:12:51'
+}
+[ChatController] User: {
+  id: 6,
+  email: 'testuser@stl.local',
+  username: 'TestUser123',
+  role: 'USER',
+  layout: 'layout-1'
+}
+[ChatController] Channels: 3
+[ChatController] Current channel: {
+  id: 1,
+  name: 'Общий',
+  slug: 'general',
+  description: 'Общий чат для всех',
+  created_at: '2026-03-25 18:12:51'
+}
+[ChatController] User: {
+  id: 6,
+  email: 'testuser@stl.local',
+  username: 'TestUser123',
+  role: 'USER',
+  layout: 'layout-1'
+}
+[ChatController] Channels: 3
+[ChatController] Current channel: {
+  id: 1,
+  name: 'Общий',
+  slug: 'general',
+  description: 'Общий чат для всех',
+  created_at: '2026-03-25 18:12:51'
+}
+[ChatController] User: {
+  id: 6,
+  email: 'testuser@stl.local',
+  username: 'TestUser123',
+  role: 'USER',
+  layout: 'layout-1'
+}
+[ChatController] Channels: 3
+[ChatController] Current channel: {
+  id: 1,
+  name: 'Общий',
+  slug: 'general',
+  description: 'Общий чат для всех',
+  created_at: '2026-03-25 18:12:51'
+}
+[ChatController] User: {
+  id: 6,
+  email: 'testuser@stl.local',
+  username: 'TestUser123',
+  role: 'USER',
+  layout: 'layout-1'
+}
+[ChatController] Channels: 3
+[ChatController] Current channel: {
+  id: 1,
+  name: 'Общий',
+  slug: 'general',
+  description: 'Общий чат для всех',
+  created_at: '2026-03-25 18:12:51'
+}
+[ChatController] User: {
+  id: 6,
+  email: 'testuser@stl.local',
+  username: 'TestUser123',
+  role: 'USER',
+  layout: 'layout-1'
+}
+[ChatController] Channels: 3
+[ChatController] Current channel: {
+  id: 1,
+  name: 'Общий',
+  slug: 'general',
+  description: 'Общий чат для всех',
+  created_at: '2026-03-25 18:12:51'
+}
+[ChatController] User: {
+  id: 6,
+  email: 'testuser@stl.local',
+  username: 'TestUser123',
+  role: 'USER',
+  layout: 'layout-1'
+}
+[ChatController] Channels: 3
+[ChatController] Current channel: {
+  id: 1,
+  name: 'Общий',
+  slug: 'general',
+  description: 'Общий чат для всех',
+  created_at: '2026-03-25 18:12:51'
+}
+[ChatController] User: {
+  id: 6,
+  email: 'testuser@stl.local',
+  username: 'TestUser123',
+  role: 'USER',
+  layout: 'layout-1'
+}
+[ChatController] Channels: 3
+[ChatController] Current channel: {
+  id: 1,
+  name: 'Общий',
+  slug: 'general',
+  description: 'Общий чат для всех',
+  created_at: '2026-03-25 18:12:51'
+}
+[ChatController] User: {
+  id: 6,
+  email: 'testuser@stl.local',
+  username: 'TestUser123',
+  role: 'USER',
+  layout: 'layout-1'
+}
+[ChatController] Channels: 3
+[ChatController] Current channel: {
+  id: 1,
+  name: 'Общий',
+  slug: 'general',
+  description: 'Общий чат для всех',
+  created_at: '2026-03-25 18:12:51'
+}
+[ChatController] User: {
+  id: 6,
+  email: 'testuser@stl.local',
+  username: 'TestUser123',
+  role: 'USER',
+  layout: 'layout-1'
+}
+[ChatController] Channels: 3
+[ChatController] Current channel: {
+  id: 1,
+  name: 'Общий',
+  slug: 'general',
+  description: 'Общий чат для всех',
+  created_at: '2026-03-25 18:12:51'
+}
+[ChatController] User: {
+  id: 6,
+  email: 'testuser@stl.local',
+  username: 'TestUser123',
+  role: 'USER',
+  layout: 'layout-1'
+}
+[ChatController] Channels: 3
+[ChatController] Current channel: {
+  id: 1,
+  name: 'Общий',
+  slug: 'general',
+  description: 'Общий чат для всех',
+  created_at: '2026-03-25 18:12:51'
+}
+[ChatController] User: {
+  id: 6,
+  email: 'testuser@stl.local',
+  username: 'TestUser123',
+  role: 'USER',
+  layout: 'layout-1'
+}
+[ChatController] Channels: 3
+[ChatController] Current channel: {
+  id: 1,
+  name: 'Общий',
+  slug: 'general',
+  description: 'Общий чат для всех',
+  created_at: '2026-03-25 18:12:51'
+}
+[ChatController] User: {
+  id: 6,
+  email: 'testuser@stl.local',
+  username: 'TestUser123',
+  role: 'USER',
+  layout: 'layout-1'
+}
+[ChatController] Channels: 3
+[ChatController] Current channel: {
+  id: 1,
+  name: 'Общий',
+  slug: 'general',
+  description: 'Общий чат для всех',
+  created_at: '2026-03-25 18:12:51'
+}
+[ChatController] User: {
+  id: 6,
+  email: 'testuser@stl.local',
+  username: 'TestUser123',
+  role: 'USER',
+  layout: 'layout-1'
+}
+[ChatController] Channels: 3
+[ChatController] Current channel: {
+  id: 1,
+  name: 'Общий',
+  slug: 'general',
+  description: 'Общий чат для всех',
+  created_at: '2026-03-25 18:12:51'
+}
+[ChatController] User: {
+  id: 6,
+  email: 'testuser@stl.local',
+  username: 'TestUser123',
+  role: 'USER',
+  layout: 'layout-1'
+}
+[ChatController] Channels: 3
+[ChatController] Current channel: {
+  id: 1,
+  name: 'Общий',
+  slug: 'general',
+  description: 'Общий чат для всех',
+  created_at: '2026-03-25 18:12:51'
+}
+[ChatController] User: {
+  id: 6,
+  email: 'testuser@stl.local',
+  username: 'TestUser123',
+  role: 'USER',
+  layout: 'layout-1'
+}
+[ChatController] Channels: 3
+[ChatController] Current channel: {
+  id: 1,
+  name: 'Общий',
+  slug: 'general',
+  description: 'Общий чат для всех',
+  created_at: '2026-03-25 18:12:51'
+}

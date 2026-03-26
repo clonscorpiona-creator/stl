@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block title %}Лента - STL{% endblock %}
+
+{% block content %}
+<div style="display: grid; grid-template-columns: 1fr 300px; gap: 30px;">
+    <!-- Основная лента -->
+    <div>
+        <h1 style="margin-bottom: 20px;">Ваша лента</h1>
+
+        {% if following_works %}
+            <h2 style="font-size: 18px; margin-bottom: 15px; color: #666;">От подписок</h2>
+            <div class="works-grid" style="grid-template-columns: 1fr 1fr;">
+                {% for work in following_works %}
+                    <div class="work-card">
+                        {% if work.cover %}
+                            <a href="{% url 'core:work_detail' work.author.username work.slug %}">
+                                <img src="{{ work.cover.url }}" alt="{{ work.title }}">
+                            </a>
+                        {% endif %}
+                        <div class="work-card-body">
+                            <h3 class="work-card-title">{{ work.title }}</h3>
+                            <p class="work-card-author">
+                                от <a href="{% url 'accounts:profile' work.author.username %}">{{ work.author.username }}</a>
+                            </p>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div style="background: white; padding: 40px; border-radius: 12px; text-align: center;">
+                <h2 style="margin-bottom: 15px;">Вы пока ни на кого не подписаны</h2>
+                <p style="color: #666; margin-bottom: 20px;">
+                    Подпишитесь на авторов, чтобы видеть их работы в ленте
+                </p>
+                <a href="{% url 'core:work_list' %}" class="btn btn-primary">Смотреть работы</a>
+            </div>
+        {% endif %}
+
+        {% if recommended %}
+            <h2 style="font-size: 18px; margin: 40px 0 15px; color: #666;">Рекомендации для вас</h2>
+            <div class="works-grid">
+                {% for work in recommended %}
+                    <div class="work-card">
+                        {% if work.cover %}
+                            <a href="{% url 'core:work_detail' work.author.username work.slug %}">
+                                <img src="{{ work.cover.url }}" alt="{{ work.title }}">
+                            </a>
+                        {% endif %}
+                        <div class="work-card-body">
+                            <h3 class="work-card-title">{{ work.title }}</h3>
+                            <p class="work-card-author">
+                                от <a href="{% url 'accounts:profile' work.author.username %}">{{ work.author.username }}</a>
+                            </p>
+                            <div class="work-stats">
+                                <span>❤️ {{ work.likes_count }}</span>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Сайдбар -->
+    <aside>
+        <div style="background: white; padding: 20px; border-radius: 12px; margin-bottom: 20px;">
+            <h3 style="margin-bottom: 15px;">Категории</h3>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+                {% for category in categories %}
+                    <a href="{% url 'core:work_list' %}?category={{ category.slug }}"
+                        style="color: #333; text-decoration: none; padding: 8px; border-radius: 8px; background: #f5f5f5;">
+                        {{ category.name }}
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+    </aside>
+</div>
+{% endblock %}

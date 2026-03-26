@@ -1,0 +1,54 @@
+/* Layout 3: Минимализм */
+.layout-3 .main-content-centered {
+  min-height: calc(100vh - 120px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.layout-3 .content-wrapper {
+  max-width: 600px;
+  width: 100%;
+}
+
+/* Auth container для минимализма */
+.layout-3 .auth-container {
+  width: 100%;
+  padding: 2rem;
+  background-color: var(--card-bg);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+}
+
+.layout-3 .auth-container h1 {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: var(--primary-color);
+}
+
+/* Error страницы */
+.layout-3 .error-container {
+  text-align: center;
+  padding: 3rem 1rem;
+}
+
+.layout-3 .error-code {
+  font-size: 6rem;
+  color: var(--primary-color);
+  line-height: 1;
+  margin-bottom: 0.5rem;
+}
+
+.layout-3 .error-title {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.layout-3 .error-message {
+  color: var(--text-muted);
+  margin-bottom: 1.5rem;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}

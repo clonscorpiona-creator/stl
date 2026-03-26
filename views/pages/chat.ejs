@@ -1,0 +1,23 @@
+<%
+  const layoutFile = pjax ? null : (layout || 'layout-1');
+
+  // Рендерим chat-content с переменными
+  var chatContent = include('../content/chat-content', {
+    channels: channels,
+    currentChannel: currentChannel,
+    user: user,
+    locals: locals
+  });
+%>
+
+<% if (pjax) { %>
+  <%- chatContent %>
+<% } else { %>
+  <%- include('../layouts/' + layoutFile, {
+    title: 'Чат',
+    user: user,
+    channels: channels,
+    currentChannel: currentChannel,
+    body: chatContent
+  }) %>
+<% } %>

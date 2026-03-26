@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="csrf-token" content="<%= typeof csrfToken !== 'undefined' ? csrfToken : '' %>">
+  <title><%= title %> - Админ-панель</title>
+  <link rel="stylesheet" href="/css/global.css">
+  <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body class="admin-body">
+  <nav class="admin-sidebar">
+    <div class="admin-logo">STL Admin</div>
+    <ul class="admin-nav">
+      <li><a href="/admin" class="<%= typeof currentPath !== 'undefined' && currentPath === '/admin' ? 'active' : '' %>">Dashboard</a></li>
+      <li><a href="/admin/settings" class="<%= typeof currentPath !== 'undefined' && currentPath === '/admin/settings' ? 'active' : '' %>">Настройки</a></li>
+      <li><a href="/admin/modules" class="<%= typeof currentPath !== 'undefined' && currentPath === '/admin/modules' ? 'active' : '' %>">Модули</a></li>
+      <li><a href="/admin/users" class="<%= typeof currentPath !== 'undefined' && currentPath === '/admin/users' ? 'active' : '' %>">Пользователи</a></li>
+      <li><a href="/">На сайт</a></li>
+      <li><a href="/auth/logout">Выйти</a></li>
+    </ul>
+  </nav>
+
+  <main class="admin-main">
+    <% if (typeof flash !== 'undefined' && flash) { %>
+      <% if (flash.success) { %>
+        <div class="flash flash-success"><%= flash.success %></div>
+      <% } %>
+      <% if (flash.error) { %>
+        <div class="flash flash-error"><%= flash.error %></div>
+      <% } %>
+    <% } %>
+
+    <%- body %>
+  </main>
+</body>
+</html>

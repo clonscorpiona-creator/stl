@@ -1,0 +1,49 @@
+<%
+  // Get settings values
+  const getSetting = (key, defaultVal) => {
+    const s = settings.find(s => s.key === key);
+    return s ? s.value : defaultVal;
+  };
+
+  // Generate settings form HTML
+  let settingsHtml = '<h1>Настройки сайта</h1>';
+  settingsHtml += '<form action="/admin/settings" method="POST" class="settings-form">';
+  settingsHtml += `<input type="hidden" name="_csrf" value="${typeof csrfToken !== 'undefined' ? csrfToken : ''}">`;
+
+  settingsHtml += `
+    <div class="form-group">
+      <label for="site_name">Название сайта</label>
+      <input type="text" id="site_name" name="site_name" value="${getSetting('site_name', '')}">
+      <input type="hidden" name="_type_site_name" value="string">
+    </div>
+
+    <div class="form-group">
+      <label for="header_text">Текст в шапке</label>
+      <input type="text" id="header_text" name="header_text" value="${getSetting('header_text', '')}">
+      <input type="hidden" name="_type_header_text" value="string">
+    </div>
+
+    <div class="form-group">
+      <label for="footer_text">Текст в футере</label>
+      <input type="text" id="footer_text" name="footer_text" value="${getSetting('footer_text', '')}">
+      <input type="hidden" name="_type_footer_text" value="string">
+    </div>
+
+    <div class="form-group">
+      <label for="max_file_size_mb">Макс. размер файла (МБ)</label>
+      <input type="number" id="max_file_size_mb" name="max_file_size_mb" value="${getSetting('max_file_size_mb', '10')}">
+      <input type="hidden" name="_type_max_file_size_mb" value="number">
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">Сохранить</button>
+    </div>
+  </form>
+  `;
+%>
+
+<%- include('../layouts/admin-layout', {
+  title: title,
+  currentPath: '/admin/settings',
+  body: settingsHtml
+}) %>

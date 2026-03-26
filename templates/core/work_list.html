@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+
+{% block title %}Работы - STL{% endblock %}
+
+{% block content %}
+<div style="display: grid; grid-template-columns: 1fr 250px; gap: 30px;">
+    <!-- Работы -->
+    <div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h1 style="font-size: 28px;">
+                {% if query %}Поиск: {{ query }}{% elif current_category %}Категория: {{ current_category }}{% else %}Все работы{% endif %}
+            </h1>
+            <select onchange="location.href=this.value" style="padding: 10px; border-radius: 8px; border: 2px solid #ddd;">
+                <option value="{% url 'core:work_list' %}?sort=-created_at&category={{ current_category }}&tag={{ current_tag }}&q={{ query }}" {% if current_sort == '-created_at' %}selected{% endif %}>Свежие</option>
+                <option value="{% url 'core:work_list' %}?sort=-likes_count&category={{ current_category }}&tag={{ current_tag }}&q={{ query }}" {% if current_sort == '-likes_count' %}selected{% endif %}>Популярные</option>
+                <option value="{% url 'core:work_list' %}?sort=-views_count&category={{ current_category }}&tag={{ current_tag }}&q={{ query }}" {% if current_sort == '-views_count' %}selected{% endif %}>Просмотры</option>
+            </select>
+        </div>
+
+        <div class="works-grid">
+            {% for work in works %}
+                <div class="work-card">
+                    {% if work.cover %}
+                        <a href="{% url 'core:work_detail' work.author.username work.slug %}">
+                            <img src="{{ work.cover.url }}" alt="{{ work.title }}">
+                        </a>
+                    {% endif %}
+                    <div class="work-card-body">
+                        <h3 class="work-card-title">
+                            <a href="{% url 'core:work_detail' work.author.username work.slug %}" style="color: inherit; text-decoration: none;">
+                                {{ work.title }}
+                            </a>
+                        </h3>
+                        <p class="work-card-author">
+                            от <a href="{% url 'accounts:profile' work.author.username %}">{{ work.author.username }}</a>
+                        </p>
+                        <div class="work-stats">
+                            <span>❤️ {{ work.likes_count }}</span>
+                            <span>👁️ {{ work.views_count }}</span>
+                            <span>💬 {{ work.comments_count }}</span>
+                        </div>
+                        {% if work.tags.all %}
+                            <div class="tags">
+                                {% for tag in work.tags.all|slice:":3" %}
+                                    <a href="{% url 'core:tag_detail' tag.slug %}" class="tag">{{ tag.name }}</a>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% empty %}
+                <p style="grid-column: 1/-1; text-align: center; padding: 40px; color: #666;">
+                    Работ не найдено
+                </p>
+            {% endfor %}
+        </div>
+
+        <!-- Пагинация -->
+        {% if works.has_other_pages %}
+            <div style="display: flex; justify-content: center; gap: 10px; margin-top: 30px;">
+                {% if works.has_previous %}
+                    <a href="?page={{ works.previous_page_number }}" class="btn btn-secondary">Назад</a>
+                {% endif %}
+                <span style="padding: 10px 20px;">Стр. {{ works.number }} из {{ works.paginator.num_pages }}</span>
+                {% if works.has_next %}
+                    <a href="?page={{ works.next_page_number }}" class="btn btn-secondary">Вперёд</a>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Сайдбар -->
+    <aside>
+        <!-- Категории -->
+        <div style="background: white; padding: 20px; border-radius: 12px; margin-bottom: 20px;">
+            <h3 style="margin-bottom: 15px;">Категории</h3>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+                <a href="{% url 'core:work_list' %}" style="color: {% if not current_category %}#e60023{% else %}#333{% endif %}; text-decoration: none; padding: 8px;">
+                    Все
+                </a>
+                {% for category in categories %}
+                    <a href="?category={{ category.slug }}&tag={{ current_tag }}"
+                        style="color: {% if current_category == category.slug %}#e60023{% else %}#333{% endif %}; text-decoration: none; padding: 8px;">
+                        {{ category.name }}
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Популярные теги -->
+        {% if popular_tags %}
+            <div style="background: white; padding: 20px; border-radius: 12px;">
+                <h3 style="margin-bottom: 15px;">Популярные теги</h3>
+                <div class="tags">
+                    {% for tag in popular_tags %}
+                        <a href="?tag={{ tag.slug }}&category={{ current_category }}" class="tag">
+                            {{ tag.name }} ({{ tag.count }})
+                        </a>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+    </aside>
+</div>
+{% endblock %}

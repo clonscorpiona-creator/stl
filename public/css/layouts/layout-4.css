@@ -1,0 +1,18 @@
+/* Layout 4: Сетка */
+.layout-4 .layout-grid {
+  display: grid;
+  grid-template-columns: var(--sidebar-width) 1fr;
+  min-height: calc(100vh - var(--header-height) - var(--footer-height));
+  margin-top: var(--header-height);
+}
+
+.layout-4 .grid-wrapper {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+  padding: 2rem;
+}
+
+.layout-4 .main-content {
+  background-color: var(--bg-color);
+}

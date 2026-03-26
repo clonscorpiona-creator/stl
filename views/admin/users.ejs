@@ -1,0 +1,61 @@
+<%
+  // Generate users table HTML
+  let usersHtml = '<h1>Пользователи</h1>';
+  usersHtml += '<table class="users-table">';
+  usersHtml += '<thead><tr><th>ID</th><th>Email</th><th>Username</th><th>Role</th><th>Created</th><th>Actions</th></tr></thead>';
+  usersHtml += '<tbody>';
+
+  users.forEach(user => {
+    const badgeClass = user.role.toLowerCase();
+    const userDate = new Date(user.created_at).toLocaleDateString('ru-RU');
+    const userOption = user.role === 'USER' ? 'selected' : '';
+    const adminOption = user.role === 'ADMIN' ? 'selected' : '';
+
+    usersHtml += `
+      <tr>
+        <td>${user.id}</td>
+        <td>${user.email}</td>
+        <td>${user.username}</td>
+        <td><span class="badge badge-${badgeClass}">${user.role}</span></td>
+        <td>${userDate}</td>
+        <td>
+          <select onchange="changeRole(${user.id}, this.value)" class="role-select">
+            <option value="USER" ${userOption}>USER</option>
+            <option value="ADMIN" ${adminOption}>ADMIN</option>
+          </select>
+        </td>
+      </tr>
+    `;
+  });
+
+  usersHtml += '</tbody></table>';
+
+  usersHtml += `
+    <script>
+      const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || '';
+
+      async function changeRole(userId, newRole) {
+        const res = await fetch('/admin/users/' + userId + '/role', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'CSRF-Token': csrfToken
+          },
+          body: JSON.stringify({ role: newRole })
+        });
+        const data = await res.json();
+        if (data.success) {
+          location.reload();
+        } else {
+          alert('Error: ' + data.error);
+        }
+      }
+    </script>
+  `;
+%>
+
+<%- include('../layouts/admin-layout', {
+  title: title,
+  currentPath: '/admin/users',
+  body: usersHtml
+}) %>

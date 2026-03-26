@@ -1,0 +1,14 @@
+<%
+  const layoutFile = pjax ? null : (layout || 'layout-1');
+  const isLoggedIn = typeof user !== 'undefined' && user !== null;
+%>
+
+<% if (pjax) { %>
+  <%- include('../content/home-content') %>
+<% } else { %>
+  <%- include('../layouts/' + layoutFile, {
+    title: 'Главная',
+    user: user,
+    body: include('../content/home-content')
+  }) %>
+<% } %>

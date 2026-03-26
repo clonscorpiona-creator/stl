@@ -4,7 +4,27 @@
 
 ## 🚀 Быстрый старт
 
-### Локальная разработка
+### Django версия (быстрый прототип)
+
+```bash
+# Установите зависимости
+pip install django pillow django-taggit
+
+# Примените миграции
+python manage.py migrate
+
+# Создайте суперпользователя
+python manage.py createsuperuser
+
+# Запустите сервер
+python manage.py runserver
+```
+
+Откройте [http://localhost:8000](http://localhost:8000)
+
+Админ-панель: [http://localhost:8000/admin](http://localhost:8000/admin)
+
+### Node.js версия (продакшен)
 
 ```bash
 # Установите зависимости
@@ -12,13 +32,9 @@ npm install
 
 # Настройте базу данных
 cp .env.example .env
-# Отредактируйте .env с вашими настройками
 
-# Создайте базу данных (SQLite для разработки)
+# Создайте базу данных
 npx prisma db push
-
-# Заполните тестовыми данными (опционально)
-npm run prisma:seed
 
 # Запустите dev-сервер
 npm run dev
@@ -28,14 +44,19 @@ npm run dev
 
 ## 📦 Технологии
 
-- **Frontend**: Next.js 16.1.6, React 19, TypeScript
+### Django (прототип)
+- **Backend**: Django 6.0, Python 3.14
+- **Database**: SQLite
+- **Auth**: Django Auth
+- **Media**: Pillow
+
+### Node.js (продакшен)
+- **Frontend**: Next.js 16, React 19, TypeScript
 - **Backend**: Next.js API Routes
-- **Database**: PostgreSQL (production), SQLite (development)
+- **Database**: PostgreSQL
 - **ORM**: Prisma
 - **Auth**: Iron Session
-- **Email**: Resend
-- **Styling**: CSS Modules, Montserrat font
-- **Real-time**: Socket.io
+- **Styling**: CSS Modules
 
 ## 🎨 Макеты
 

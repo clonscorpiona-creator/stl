@@ -1,0 +1,51 @@
+/* Layout 5: Компактный */
+.layout-5 .compact-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 50px;
+  background-color: var(--card-bg);
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1rem;
+  z-index: 1000;
+}
+
+.layout-5 .compact-nav {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.layout-5 .compact-nav a {
+  color: var(--text-color);
+  font-size: 0.875rem;
+}
+
+.layout-5 .btn-logout {
+  background-color: var(--danger-color);
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--radius);
+}
+
+.layout-5 .compact-main {
+  margin-top: 50px;
+  padding: 1rem;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.layout-5 .compact-footer {
+  background-color: var(--card-bg);
+  border-top: 1px solid var(--border-color);
+  padding: 1rem;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  margin-top: 2rem;
+}

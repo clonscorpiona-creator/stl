@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Test Socket Connection</title>
+  <style>
+    body { font-family: monospace; padding: 20px; background: #1a1a2e; color: #eee; }
+    .status { padding: 10px; margin: 10px 0; border-radius: 4px; }
+    .connected { background: #27ae60; }
+    .disconnected { background: #e74c3c; }
+    .log { background: #0f3460; padding: 10px; margin: 10px 0; border-radius: 4px; }
+  </style>
+</head>
+<body>
+  <h1>Тест подключения WebSocket</h1>
+  <div id="status" class="status disconnected">Статус: Подключение...</div>
+  <div id="log" class="log">Лог событий:</div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const statusEl = document.getElementById('status');
+    const logEl = document.getElementById('log');
+
+    function log(msg) {
+      logEl.innerHTML += '<br>[' + new Date().toLocaleTimeString() + '] ' + msg;
+      console.log(msg);
+    }
+
+    log('Starting connection test...');
+
+    // Подключаемся к Socket.IO
+    const socket = io({
+      reconnection: true,
+      reconnectionDelay: 1000,
+      reconnectionAttempts: 5
+    });
+
+    socket.on('connect', () => {
+      statusEl.className = 'status connected';
+      statusEl.textContent = 'Статус: ПОДКЛЮЧЕНО (Socket ID: ' + socket.id + ')';
+      log('CONNECTED! Socket ID: ' + socket.id);
+
+      // Тест: присоединиться к каналу
+      socket.emit('join-channel', '1');
+      log('Sent: join-channel(1)');
+    });
+
+    socket.on('disconnect', (reason) => {
+      statusEl.className = 'status disconnected';
+      statusEl.textContent = 'Статус: ОТКЛЮЧЕНО (' + reason + ')';
+      log('DISCONNECTED: ' + reason);
+    });
+
+    socket.on('connect_error', (err) => {
+      log('CONNECTION ERROR: ' + err.message);
+    });
+
+    socket.on('new-message', (msg) => {
+      log('NEW MESSAGE: ' + JSON.stringify(msg));
+    });
+
+    log('Socket.IO initialized, waiting for connection...');
+  </script>
+</body>
+</html>

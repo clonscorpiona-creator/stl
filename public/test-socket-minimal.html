@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Socket Minimal</title>
+  <style>
+    body { font-family: monospace; padding: 20px; background: #1a1a2e; color: #eee; }
+    #log { background: #0f3460; padding: 10px; margin-top: 20px; min-height: 200px; white-space: pre-wrap; }
+  </style>
+</head>
+<body>
+  <h1>Socket Minimal Test</h1>
+  <div id="status">Статус: проверка...</div>
+  <div id="log">Ожидание...</div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const logEl = document.getElementById('log');
+    const statusEl = document.getElementById('status');
+    let logCount = 0;
+
+    function log(msg) {
+      logCount++;
+      logEl.textContent = '[' + new Date().toLocaleTimeString() + '] ' + msg + '\n' + logEl.textContent;
+      console.log(msg);
+    }
+
+    log('Script loaded, Socket.IO available: ' + (typeof io !== 'undefined'));
+
+    try {
+      const socket = io({ transports: ['polling', 'websocket'] });
+      log('Socket created');
+
+      socket.on('connect', () => {
+        log('>>> CONNECTED! ID: ' + socket.id);
+        statusEl.textContent = 'Статус: ПОДКЛЮЧено (' + socket.id + ')';
+        socket.emit('join-channel', '1');
+        log('Sent: join-channel(1)');
+      });
+
+      socket.on('disconnect', (reason) => {
+        log('>>> DISCONNECTED: ' + reason);
+        statusEl.textContent = 'Статус: Отключен (' + reason + ')';
+      });
+
+      socket.on('connect_error', (err) => {
+        log('>>> ERROR: ' + err.message);
+        statusEl.textContent = 'Статус: Ошибка (' + err.message + ')';
+      });
+
+      socket.on('new-message', (msg) => {
+        log('>>> NEW MESSAGE: ' + JSON.stringify(msg));
+      });
+
+      log('Listeners attached');
+    } catch (e) {
+      log('>>> EXCEPTION: ' + e.message);
+      statusEl.textContent = 'Статус: Исключение (' + e.message + ')';
+    }
+  </script>
+</body>
+</html>

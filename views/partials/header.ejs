@@ -1,0 +1,42 @@
+<header class="site-header">
+  <div class="header-container">
+    <a href="/" class="logo"><%= settings?.site_name || 'STL' %></a>
+
+    <% if (settings?.header_text) { %>
+      <div class="header-text"><%= settings.header_text %></div>
+    <% } %>
+
+    <%
+      // Get user from locals or explicit parameter
+      var displayUser = (typeof user !== 'undefined' && user && typeof user.id !== 'undefined') ? user : (typeof locals !== 'undefined' && locals.user && locals.user.id ? locals.user : null);
+    %>
+    <nav class="main-nav">
+      <a href="/" class="<%= typeof currentPath !== 'undefined' && currentPath === '/' ? 'active' : '' %>">Главная</a>
+      <a href="/portfolio" class="<%= typeof currentPath !== 'undefined' && currentPath === '/portfolio' ? 'active' : '' %>">Портфолио</a>
+      <a href="/chat" class="<%= typeof currentPath !== 'undefined' && currentPath.startsWith('/chat') ? 'active' : '' %>">Чат</a>
+      <% if (displayUser) { %>
+        <a href="/profile" class="<%= typeof currentPath !== 'undefined' && currentPath === '/profile' ? 'active' : '' %>">Профиль</a>
+        <% if (displayUser.role === 'ADMIN') { %>
+          <a href="/admin" class="admin-link">Админ-панель</a>
+        <% } %>
+        <a href="/auth/logout">Выход</a>
+      <% } else { %>
+        <a href="/auth/login">Вход</a>
+        <a href="/auth/register">Регистрация</a>
+      <% } %>
+    </nav>
+
+    <% if (displayUser) { %>
+    <div class="user-menu">
+      <span class="username"><%= displayUser.username %></span>
+      <select class="layout-selector" data-layout-select>
+        <option value="layout-1" <%= typeof currentLayout !== 'undefined' && currentLayout === 'layout-1' ? 'selected' : '' %>>Классический</option>
+        <option value="layout-2" <%= typeof currentLayout !== 'undefined' && currentLayout === 'layout-2' ? 'selected' : '' %>>С панелью</option>
+        <option value="layout-3" <%= typeof currentLayout !== 'undefined' && currentLayout === 'layout-3' ? 'selected' : '' %>>Минимализм</option>
+        <option value="layout-4" <%= typeof currentLayout !== 'undefined' && currentLayout === 'layout-4' ? 'selected' : '' %>>Сетка</option>
+        <option value="layout-5" <%= typeof currentLayout !== 'undefined' && currentLayout === 'layout-5' ? 'selected' : '' %>>Компактный</option>
+      </select>
+    </div>
+    <% } %>
+  </div>
+</header>

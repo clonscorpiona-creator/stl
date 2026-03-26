@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Chat Simple Test</title>
+  <style>
+    body { font-family: monospace; padding: 20px; background: #1a1a2e; color: #eee; }
+    .status { padding: 10px; margin: 10px 0; border-radius: 4px; }
+    .connected { background: #27ae60; }
+    .disconnected { background: #e74c3c; }
+    button { padding: 10px 20px; margin: 5px; background: #e94560; color: white; border: none; border-radius: 4px; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <h1>Chat Simple Test</h1>
+  <div id="status" class="status disconnected">Нет подключения</div>
+  <div id="log"></div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const log = (msg) => { document.getElementById('log').innerHTML += '[' + new Date().toLocaleTimeString() + '] ' + msg + '<br>'; console.log(msg); };
+    const statusEl = document.getElementById('status');
+
+    log('Connecting to Socket.IO...');
+    const socket = io({ transports: ['polling', 'websocket'] });
+
+    socket.on('connect', () => {
+      log('CONNECTED! Socket ID: ' + socket.id);
+      statusEl.className = 'status connected';
+      statusEl.textContent = 'Подключено (ID: ' + socket.id + ')';
+    });
+
+    socket.on('disconnect', (reason) => {
+      log('DISCONNECTED: ' + reason);
+      statusEl.className = 'status disconnected';
+      statusEl.textContent = 'Нет подключения: ' + reason;
+    });
+
+    socket.on('connect_error', (err) => {
+      log('CONNECT ERROR: ' + err.message);
+      statusEl.className = 'status disconnected';
+      statusEl.textContent = 'Ошибка: ' + err.message;
+    });
+  </script>
+</body>
+</html>

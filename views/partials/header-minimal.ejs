@@ -1,0 +1,14 @@
+<header class="site-header-minimal">
+  <div class="header-container">
+    <a href="/" class="logo">STL</a>
+    <nav class="main-nav-minimal">
+      <a href="/">Главная</a>
+      <% if (typeof user !== 'undefined' && user) { %>
+        <a href="/profile">Профиль</a>
+        <a href="/auth/logout">Выход</a>
+      <% } else { %>
+        <a href="/auth/login">Вход</a>
+      <% } %>
+    </nav>
+  </div>
+</header>

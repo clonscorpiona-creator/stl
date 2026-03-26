@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}#{{ tag.name }} - STL{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 30px;">
+    <h1 style="font-size: 32px; margin-bottom: 10px;">#{{ tag.name }}</h1>
+    <p style="color: #666;">{{ works.paginator.count }} работ с этим тегом</p>
+</div>
+
+<div class="works-grid">
+    {% for work in works %}
+        <div class="work-card">
+            {% if work.cover %}
+                <a href="{% url 'core:work_detail' work.author.username work.slug %}">
+                    <img src="{{ work.cover.url }}" alt="{{ work.title }}">
+                </a>
+            {% endif %}
+            <div class="work-card-body">
+                <h3 class="work-card-title">
+                    <a href="{% url 'core:work_detail' work.author.username work.slug %}" style="color: inherit; text-decoration: none;">
+                        {{ work.title }}
+                    </a>
+                </h3>
+                <p class="work-card-author">
+                    от <a href="{% url 'accounts:profile' work.author.username %}">{{ work.author.username }}</a>
+                </p>
+                <div class="work-stats">
+                    <span>❤️ {{ work.likes_count }}</span>
+                    <span>👁️ {{ work.views_count }}</span>
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <p style="grid-column: 1/-1; text-align: center; padding: 40px; color: #666;">
+            Работ с этим тегом пока нет
+        </p>
+    {% endfor %}
+</div>
+
+{% if works.has_other_pages %}
+    <div style="display: flex; justify-content: center; gap: 10px; margin-top: 30px;">
+        {% if works.has_previous %}
+            <a href="?page={{ works.previous_page_number }}" class="btn btn-secondary">Назад</a>
+        {% endif %}
+        <span style="padding: 10px 20px;">Стр. {{ works.number }} из {{ works.paginator.num_pages }}</span>
+        {% if works.has_next %}
+            <a href="?page={{ works.next_page_number }}" class="btn btn-secondary">Вперёд</a>
+        {% endif %}
+    </div>
+{% endif %}
+{% endblock %}

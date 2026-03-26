@@ -1,0 +1,13 @@
+<%
+  const layoutFile = pjax ? null : (layout || 'layout-1');
+%>
+
+<% if (pjax) { %>
+  <%- include('../content/profile-content') %>
+<% } else { %>
+  <%- include('../layouts/' + layoutFile, {
+    title: 'Профиль',
+    user: user,
+    body: include('../content/profile-content')
+  }) %>
+<% } %>

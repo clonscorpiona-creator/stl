@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block title %}Редактировать профиль - STL{% endblock %}
+
+{% block content %}
+<div style="max-width: 600px; margin: 0 auto;">
+    <h1 style="margin-bottom: 30px;">Редактировать профиль</h1>
+
+    <form method="post" enctype="multipart/form-data" style="background: white; padding: 30px; border-radius: 12px;">
+        {% csrf_token %}
+
+        <div style="margin-bottom: 20px; text-align: center;">
+            {% if user.avatar %}
+                <img src="{{ user.avatar.url }}" alt="Avatar" style="width: 150px; height: 150px; border-radius: 50%; object-fit: cover; margin-bottom: 15px;">
+            {% else %}
+                <div style="width: 150px; height: 150px; border-radius: 50%; background: #f0f0f0; display: flex; align-items: center; justify-content: center; font-size: 60px; color: #999; margin: 0 auto 15px;">
+                    {{ user.username|first|upper }}
+                </div>
+            {% endif %}
+            <label style="display: block; margin-bottom: 8px; font-weight: 600;">Новая аватарка</label>
+            <input type="file" name="avatar" accept="image/*"
+                style="width: 100%; padding: 10px; border: 2px dashed #ddd; border-radius: 8px;">
+        </div>
+
+        <div style="margin-bottom: 20px;">
+            <label style="display: block; margin-bottom: 8px; font-weight: 600;">Отображаемое имя</label>
+            <input type="text" name="display_name" value="{{ profile.display_name|default:'' }}"
+                style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 16px;">
+        </div>
+
+        <div style="margin-bottom: 20px;">
+            <label style="display: block; margin-bottom: 8px; font-weight: 600;">Email</label>
+            <input type="email" name="email" value="{{ user.email }}"
+                style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 16px;">
+        </div>
+
+        <div style="margin-bottom: 20px;">
+            <label style="display: block; margin-bottom: 8px; font-weight: 600;">О себе</label>
+            <textarea name="bio" rows="4"
+                style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 16px; resize: vertical;">{{ profile.bio|default:'' }}</textarea>
+        </div>
+
+        <div style="margin-bottom: 20px;">
+            <label style="display: block; margin-bottom: 8px; font-weight: 600;">Веб-сайт</label>
+            <input type="url" name="website" value="{{ profile.website|default:'' }}"
+                placeholder="https://example.com"
+                style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 16px;">
+        </div>
+
+        <div style="margin-bottom: 20px;">
+            <label style="display: block; margin-bottom: 8px; font-weight: 600;">Город</label>
+            <input type="text" name="location" value="{{ profile.location|default:'' }}"
+                style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 16px;">
+        </div>
+
+        <div style="display: flex; gap: 15px;">
+            <button type="submit" class="btn btn-primary">Сохранить</button>
+            <a href="{% url 'accounts:profile' user.username %}" class="btn btn-secondary">Отмена</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

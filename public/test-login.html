@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Тест входа</title>
+  <style>
+    body { font-family: monospace; padding: 20px; background: #1a1a2e; color: #eee; }
+    .status { padding: 10px; margin: 10px 0; border-radius: 4px; }
+    .success { background: #27ae60; }
+    .error { background: #e74c3c; }
+    .info { background: #0f3460; padding: 10px; margin: 10px 0; border-radius: 4px; white-space: pre; }
+    form { background: #16213e; padding: 20px; border-radius: 8px; max-width: 400px; }
+    input { display: block; width: 100%; margin: 10px 0; padding: 10px; border: 1px solid #0f3460; border-radius: 4px; background: #1a1a2e; color: #eee; }
+    button { padding: 10px 20px; background: #e94560; color: white; border: none; border-radius: 4px; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <h1>Тест авторизации</h1>
+
+  <form id="loginForm">
+    <label>Email:</label>
+    <input type="email" id="email" value="testuser@stl.local" required>
+
+    <label>Пароль:</label>
+    <input type="password" id="password" value="test123" required>
+
+    <button type="submit">Войти</button>
+  </form>
+
+  <div id="status" class="status" style="display:none;"></div>
+  <div id="userInfo" class="info" style="display:none;"></div>
+
+  <hr style="margin: 30px 0; border-color: #0f3460;">
+
+  <h2>Проверка чата</h2>
+  <button onclick="checkChat()">Проверить /chat</button>
+  <button onclick="window.open('/chat', '_blank')">Открыть чат в новой вкладке</button>
+  <div id="chatStatus" class="info" style="display:none;"></div>
+
+  <script>
+    const statusEl = document.getElementById('status');
+    const userInfoEl = document.getElementById('userInfo');
+    const chatStatusEl = document.getElementById('chatStatus');
+
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      try {
+        // Получаем CSRF токен
+        const loginPage = await fetch('/auth/login');
+        const html = await loginPage.text();
+        const csrfMatch = html.match(/name="_csrf" value="([^"]+)"/);
+        const csrfToken = csrfMatch ? csrfMatch[1] : '';
+
+        console.log('CSRF Token:', csrfToken);
+
+        // Отправляем форму входа
+        const response = await fetch('/auth/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: `email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}&_csrf=${csrfToken}`
+        });
+
+        if (response.redirected) {
+          statusEl.className = 'status success';
+          statusEl.textContent = 'Вход успешен! Перенаправление...';
+          statusEl.style.display = 'block';
+
+          // Проверяем профиль
+          const profileRes = await fetch('/profile');
+          const profileHtml = await profileRes.text();
+          userInfoEl.textContent = 'Профиль загружен. Статус: ' + (profileHtml.includes('Профиль') ? 'Авторизован' : 'Не авторизован');
+          userInfoEl.style.display = 'block';
+
+          setTimeout(() => {
+            window.location.href = '/chat';
+          }, 1000);
+        } else {
+          statusEl.className = 'status error';
+          statusEl.textContent = 'Ошибка входа. Проверьте логин/пароль.';
+          statusEl.style.display = 'block';
+        }
+      } catch (err) {
+        statusEl.className = 'status error';
+        statusEl.textContent = 'Ошибка: ' + err.message;
+        statusEl.style.display = 'block';
+      }
+    });
+
+    async function checkChat() {
+      try {
+        const response = await fetch('/chat');
+        chatStatusEl.textContent = 'Chat status: ' + response.status + '\nRedirected: ' + response.redirected + '\nURL: ' + response.url;
+        chatStatusEl.style.display = 'block';
+
+        if (response.status === 200) {
+          const html = await response.text();
+          const hasInitChat = html.includes('initChat');
+          chatStatusEl.textContent += '\n\ninitChat found: ' + hasInitChat;
+        }
+      } catch (err) {
+        chatStatusEl.textContent = 'Error: ' + err.message;
+        chatStatusEl.style.display = 'block';
+      }
+    }
+  </script>
+</body>
+</html>

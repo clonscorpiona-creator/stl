@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}STL - Платформа портфолио{% endblock %}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        .header {
+            background: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #e60023;
+            text-decoration: none;
+        }
+
+        .search-form {
+            flex: 1;
+            max-width: 400px;
+            margin: 0 20px;
+            display: flex;
+        }
+
+        .search-form input {
+            flex: 1;
+            padding: 10px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px 0 0 8px;
+            font-size: 14px;
+        }
+
+        .search-form button {
+            padding: 10px 20px;
+            background: #e60023;
+            color: white;
+            border: none;
+            border-radius: 0 8px 8px 0;
+            cursor: pointer;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: #333;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .nav-links a:hover {
+            color: #e60023;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: #e60023;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #eee;
+            color: #333;
+        }
+
+        .avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        /* Main content */
+        .main {
+            padding: 30px 0;
+            min-height: calc(100vh - 200px);
+        }
+
+        /* Grid for works */
+        .works-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .work-card {
+            background: #fff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .work-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+        }
+
+        .work-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .work-card-body {
+            padding: 15px;
+        }
+
+        .work-card-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .work-card-author {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .work-card-author a {
+            color: #e60023;
+            text-decoration: none;
+        }
+
+        .work-stats {
+            display: flex;
+            gap: 15px;
+            font-size: 13px;
+            color: #999;
+        }
+
+        .work-stats span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* Tags */
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .tag {
+            background: #f0f0f0;
+            color: #666;
+            padding: 4px 10px;
+            border-radius: 16px;
+            font-size: 12px;
+            text-decoration: none;
+        }
+
+        .tag:hover {
+            background: #e60023;
+            color: white;
+        }
+
+        /* Footer */
+        .footer {
+            background: #fff;
+            padding: 30px 0;
+            margin-top: 40px;
+            border-top: 1px solid #eee;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .footer-section h4 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .footer-section a {
+            display: block;
+            color: #666;
+            text-decoration: none;
+            margin-bottom: 8px;
+        }
+
+        .footer-section a:hover {
+            color: #e60023;
+        }
+
+        /* Flash messages */
+        .messages {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+
+        .message {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .message.info {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <a href="{% url 'core:home' %}" class="logo">STL</a>
+
+            <form action="{% url 'core:work_list' %}" method="get" class="search-form">
+                <input type="text" name="q" placeholder="Поиск работ, авторов, тегов..." value="{{ request.GET.q }}">
+                <button type="submit">Найти</button>
+            </form>
+
+            <nav class="nav-links">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'core:feed' %}">Лента</a>
+                    <a href="{% url 'core:work_list' %}">Работы</a>
+                    {% if user.is_staff %}
+                        <a href="{% url 'admin:index' %}" style="color: #e60023; font-weight: 600;">Админ-панель</a>
+                    {% endif %}
+                    <a href="{% url 'core:work_create' %}" class="btn btn-primary">Создать</a>
+                    <a href="{% url 'interactions:notifications' %}">Уведомления</a>
+                    <a href="{% url 'accounts:profile' username=user.username %}">
+                        {% if user.avatar %}
+                            <img src="{{ user.avatar.url }}" alt="{{ user.username }}" class="avatar">
+                        {% else %}
+                            {{ user.username }}
+                        {% endif %}
+                    </a>
+                    <a href="{% url 'accounts:logout' %}">Выход</a>
+                {% else %}
+                    <a href="{% url 'accounts:login' %}" class="btn btn-secondary">Вход</a>
+                    <a href="{% url 'accounts:register' %}" class="btn btn-primary">Регистрация</a>
+                {% endif %}
+            </nav>
+        </div>
+    </header>
+
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+            <div class="message {{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <main class="main">
+        <div class="container">
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>STL Platform</h4>
+                <p style="color: #666; font-size: 14px;">
+                    Платформа для творческих людей. Делитесь работами, находите вдохновение, создавайте сообщества.
+                </p>
+            </div>
+            <div class="footer-section">
+                <h4>Навигация</h4>
+                <a href="{% url 'core:home' %}">Главная</a>
+                <a href="{% url 'core:feed' %}">Лента</a>
+                <a href="{% url 'core:work_list' %}">Работы</a>
+                <a href="{% url 'core:tag_list' %}">Теги</a>
+            </div>
+            <div class="footer-section">
+                <h4>Сообщество</h4>
+                <a href="#">Правила</a>
+                <a href="#">Помощь</a>
+                <a href="#">Блог</a>
+                <a href="#">Вакансии</a>
+            </div>
+            <div class="footer-section">
+                <h4>Юридическая информация</h4>
+                <a href="#">Условия использования</a>
+                <a href="#">Конфиденциальность</a>
+                <a href="#">Cookie</a>
+            </div>
+        </div>
+    </footer>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

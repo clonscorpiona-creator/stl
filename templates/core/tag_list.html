@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block title %}Теги - STL{% endblock %}
+
+{% block content %}
+<h1 style="margin-bottom: 30px;">Все теги</h1>
+
+<div style="display: flex; flex-wrap: wrap; gap: 15px;">
+    {% for tag in tags %}
+        <a href="{% url 'core:tag_detail' tag.slug %}"
+            style="padding: 15px 25px; background: white; border-radius: 24px; text-decoration: none; color: #333; box-shadow: 0 2px 8px rgba(0,0,0,0.1); display: inline-block;">
+            <strong>{{ tag.name }}</strong>
+            <span style="color: #999; margin-left: 8px;">{{ tag.count }}</span>
+        </a>
+    {% empty %}
+        <p style="color: #666;">Тегов пока нет</p>
+    {% endfor %}
+</div>
+{% endblock %}

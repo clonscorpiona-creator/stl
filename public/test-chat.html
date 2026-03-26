@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Тест чата</title>
+  <style>
+    body { font-family: monospace; padding: 20px; background: #1a1a2e; color: #eee; }
+    .status { padding: 10px; margin: 10px 0; border-radius: 4px; }
+    .connected { background: #27ae60; }
+    .disconnected { background: #e74c3c; }
+    .log { background: #0f3460; padding: 10px; margin: 10px 0; border-radius: 4px; min-height: 100px; }
+    button { padding: 10px 20px; margin: 5px; background: #e94560; color: white; border: none; border-radius: 4px; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <h1>Тест чата с авторизацией</h1>
+
+  <div>
+    <button onclick="checkAuth()">Проверить авторизацию</button>
+    <button onclick="testChat()">Тестировать чат</button>
+    <button onclick="window.location.href='/auth/login'">На страницу входа</button>
+    <button onclick="window.location.href='/chat'">Открыть /chat</button>
+  </div>
+
+  <div id="authStatus" class="status" style="display:none;"></div>
+  <div id="chatStatus" class="status" style="display:none;"></div>
+  <div id="log" class="log">Лог событий:<br></div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const logEl = document.getElementById('log');
+    const authStatusEl = document.getElementById('authStatus');
+    const chatStatusEl = document.getElementById('chatStatus');
+
+    function log(msg) {
+      logEl.innerHTML += '[' + new Date().toLocaleTimeString() + '] ' + msg + '<br>';
+      console.log(msg);
+    }
+
+    async function checkAuth() {
+      try {
+        const res = await fetch('/profile');
+        const isAuth = res.status === 200;
+        authStatusEl.className = 'status ' + (isAuth ? 'connected' : 'disconnected');
+        authStatusEl.textContent = isAuth ? 'АВТОРИЗОВАН' : 'НЕ АВТОРИЗОВАН';
+        authStatusEl.style.display = 'block';
+        log('Auth check: ' + (isAuth ? 'AUTHORIZED' : 'UNAUTHORIZED'));
+      } catch (err) {
+        authStatusEl.className = 'status disconnected';
+        authStatusEl.textContent = 'Ошибка: ' + err.message;
+        authStatusEl.style.display = 'block';
+      }
+    }
+
+    async function testChat() {
+      log('Starting chat test...');
+
+      // Проверка авторизации
+      await checkAuth();
+
+      // Проверка загрузки каналов
+      try {
+        const res = await fetch('/chat');
+        log('Chat page status: ' + res.status);
+        if (res.redirected) {
+          log('Redirected to: ' + res.url);
+          chatStatusEl.className = 'status disconnected';
+          chatStatusEl.textContent = 'Редирект на ' + res.url + ' - нужна авторизация';
+          chatStatusEl.style.display = 'block';
+          return;
+        }
+      } catch (err) {
+        log('Chat page error: ' + err.message);
+      }
+
+      // Тест Socket.IO
+      log('Connecting to Socket.IO...');
+      const socket = io({ reconnection: true, reconnectionAttempts: 3 });
+
+      socket.on('connect', () => {
+        log('CONNECTED! Socket ID: ' + socket.id);
+        chatStatusEl.className = 'status connected';
+        chatStatusEl.textContent = 'WebSocket ПОДКЛЮЧЕН (ID: ' + socket.id + ')';
+        chatStatusEl.style.display = 'block';
+
+        socket.emit('join-channel', '1');
+        log('Sent: join-channel(1)');
+      });
+
+      socket.on('disconnect', (reason) => {
+        log('DISCONNECTED: ' + reason);
+        chatStatusEl.className = 'status disconnected';
+        chatStatusEl.textContent = 'WebSocket ОТКЛЮЧЕН: ' + reason;
+      });
+
+      socket.on('connect_error', (err) => {
+        log('CONNECT ERROR: ' + err.message);
+        chatStatusEl.className = 'status disconnected';
+        chatStatusEl.textContent = 'Ошибка подключения: ' + err.message;
+      });
+
+      socket.on('new-message', (msg) => {
+        log('NEW MESSAGE: ' + JSON.stringify(msg));
+      });
+    }
+  </script>
+</body>
+</html>

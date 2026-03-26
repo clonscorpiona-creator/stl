@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Test Message Send</title>
+  <style>
+    body { font-family: Arial; padding: 20px; background: #1a1a2e; color: #eee; }
+    .log { background: #000; padding: 10px; margin: 10px 0; border-radius: 5px; font-family: monospace; font-size: 12px; }
+    .log-item { margin: 5px 0; }
+    .success { color: #0f0; }
+    .error { color: #f00; }
+    .info { color: #0af; }
+    button { padding: 10px 20px; font-size: 16px; cursor: pointer; background: #4a4a6a; color: #fff; border: none; border-radius: 5px; margin: 5px; }
+    button:hover { background: #5a5a7a; }
+    input { padding: 10px; font-size: 16px; width: 300px; background: #2a2a3e; color: #fff; border: 1px solid #4a4a6a; border-radius: 5px; }
+  </style>
+</head>
+<body>
+  <h1>Test Message Sending</h1>
+
+  <div>
+    <input type="text" id="message-input" placeholder="Enter message...">
+    <button onclick="sendMessage()">Send Message</button>
+    <button onclick="connectSocket()">Reconnect</button>
+  </div>
+
+  <div id="status" class="log">Status: Not connected</div>
+  <div id="logs" class="log"></div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    let socket = null;
+
+    function log(msg, type = 'info') {
+      const logs = document.getElementById('logs');
+      const item = document.createElement('div');
+      item.className = 'log-item ' + type;
+      item.textContent = '[' + new Date().toLocaleTimeString() + '] ' + msg;
+      logs.appendChild(item);
+      logs.scrollTop = logs.scrollHeight;
+      console.log('[Test]', msg);
+    }
+
+    function updateStatus(msg, type = 'info') {
+      const status = document.getElementById('status');
+      status.className = 'log ' + type;
+      status.textContent = msg;
+    }
+
+    function connectSocket() {
+      if (socket) {
+        socket.removeAllListeners();
+        socket.disconnect();
+      }
+
+      log('Connecting to Socket.IO...', 'info');
+      socket = io({
+        reconnection: true,
+        reconnectionDelay: 1000,
+        transports: ['polling', 'websocket']
+      });
+
+      socket.on('connect', () => {
+        log('CONNECTED! Socket ID: ' + socket.id, 'success');
+        updateStatus('Connected: ' + socket.id, 'success');
+
+        // Join channel 1
+        socket.emit('join-channel', 1);
+        log('Joined channel 1', 'info');
+      });
+
+      socket.on('disconnect', (reason) => {
+        log('DISCONNECTED: ' + reason, 'error');
+        updateStatus('Disconnected: ' + reason, 'error');
+      });
+
+      socket.on('connect_error', (error) => {
+        log('CONNECT ERROR: ' + error.message, 'error');
+      });
+
+      socket.on('new-message', (message) => {
+        log('NEW MESSAGE: ' + JSON.stringify(message), 'success');
+      });
+
+      socket.on('message-sent', (data) => {
+        log('MESSAGE SENT CONFIRMATION: ' + JSON.stringify(data), 'success');
+      });
+
+      socket.on('message-error', (data) => {
+        log('MESSAGE ERROR: ' + JSON.stringify(data), 'error');
+      });
+    }
+
+    function sendMessage() {
+      const input = document.getElementById('message-input');
+      const content = input.value.trim();
+
+      if (!content) {
+        log('Empty message!', 'error');
+        return;
+      }
+
+      if (!socket || !socket.connected) {
+        log('Not connected to socket!', 'error');
+        return;
+      }
+
+      const payload = {
+        channelId: 1,
+        userId: 1, // Test user ID
+        content: content,
+        type: 'TEXT'
+      };
+
+      log('Sending message: ' + content, 'info');
+      socket.emit('send-message', payload);
+      input.value = '';
+    }
+
+    // Auto-connect on load
+    connectSocket();
+  </script>
+</body>
+</html>

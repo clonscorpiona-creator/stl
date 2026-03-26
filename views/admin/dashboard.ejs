@@ -1,0 +1,28 @@
+<%- include('../layouts/admin-layout', {
+  title: title,
+  currentPath: '/admin',
+  body: `
+    <h1>Панель управления</h1>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <h3>Пользователи</h3>
+        <p class="stat-value">\${stats.users[0].count}</p>
+      </div>
+      <div class="stat-card">
+        <h3>Работы</h3>
+        <p class="stat-value">\${stats.works[0].count}</p>
+      </div>
+      <div class="stat-card">
+        <h3>Сообщения</h3>
+        <p class="stat-value">\${stats.messages[0].count}</p>
+      </div>
+    </div>
+
+    <div class="quick-actions">
+      <h2>Быстрые действия</h2>
+      <a href="/admin/settings" class="btn">Настройки сайта</a>
+      <a href="/admin/modules" class="btn">Управление модулями</a>
+    </div>
+  `
+}) %>

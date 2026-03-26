@@ -1,0 +1,113 @@
+<div class="work-show-container">
+  <div class="work-header">
+    <div class="work-author">
+      <img src="<%= work.author_avatar || '/images/default-avatar.png' %>" alt="<%= work.author_name %>" class="author-avatar">
+      <div class="author-info">
+        <a href="/user/<%= work.author_id %>" class="author-name"><h2><%= work.author_name %></h2></a>
+        <span class="work-date"><%= new Date(work.created_at).toLocaleDateString('ru-RU') %></span>
+      </div>
+    </div>
+    <h1 class="work-title"><%= work.title %></h1>
+    <% if (typeof user !== 'undefined' && user && user.id === work.author_id) { %>
+      <div class="work-actions">
+        <a href="/portfolio/<%= work.id %>/edit" class="btn btn-secondary">Редактировать</a>
+        <button class="btn btn-danger" onclick="deleteWork(<%= work.id %>)">Удалить</button>
+      </div>
+    <% } %>
+  </div>
+
+  <div class="work-media">
+    <% if (work.cover_image) { %>
+      <img src="<%= work.cover_image %>" alt="<%= work.title %>" class="work-cover">
+    <% } else { %>
+      <div class="no-cover">Нет изображения</div>
+    <% } %>
+  </div>
+
+  <% if (work.description) { %>
+    <div class="work-description">
+      <h3>Описание</h3>
+      <p><%= work.description %></p>
+    </div>
+  <% } %>
+
+  <div class="work-stats">
+    <span class="stat">👁️ <%= work.views %></span>
+    <span class="stat" id="likes-count">❤️ <%= likesCount %></span>
+    <% if (typeof user !== 'undefined' && user) { %>
+      <button class="btn btn-primary like-btn" data-work-id="<%= work.id %>" data-liked="<%= isLiked ? 'true' : 'false' %>">
+        <%= isLiked ? '❤️ Понравилось' : '🤍 Понравилось' %>
+      </button>
+    <% } else { %>
+      <a href="/auth/login" class="btn btn-secondary">Войдите, чтобы лайкнуть</a>
+    <% } %>
+  </div>
+
+  <div class="work-back">
+    <a href="/portfolio" class="btn btn-secondary">← Назад к портфолио</a>
+  </div>
+</div>
+
+<script>
+  // CSRF token from meta tag
+  const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || '';
+
+  // Удаление работы
+  function deleteWork(workId) {
+    if (confirm('Вы уверены, что хотите удалить эту работу?')) {
+      fetch('/portfolio/' + workId, {
+        method: 'DELETE',
+        headers: {
+          'X-PJAX': 'true',
+          'CSRF-Token': csrfToken
+        }
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          window.location.href = '/portfolio';
+        } else {
+          alert('Ошибка: ' + data.error);
+        }
+      })
+      .catch(err => {
+        console.error('Delete error:', err);
+        alert('Ошибка при удалении');
+      });
+    }
+  }
+
+  // Лайк/анлайк
+  document.addEventListener('DOMContentLoaded', function() {
+    const likeBtn = document.querySelector('.like-btn');
+    if (likeBtn) {
+      likeBtn.addEventListener('click', function() {
+        const workId = this.dataset.workId;
+
+        fetch('/portfolio/' + workId + '/like', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-PJAX': 'true',
+            'CSRF-Token': csrfToken
+          }
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            const likesCount = document.getElementById('likes-count');
+            likesCount.textContent = '❤️ ' + data.likes;
+            this.dataset.liked = data.liked ? 'true' : 'false';
+            this.innerHTML = data.liked ? '❤️ Понравилось' : '🤍 Понравилось';
+          } else {
+            alert('Ошибка: ' + data.error);
+          }
+        })
+        .catch(err => {
+          console.error('Like error:', err);
+          alert('Ошибка при лайке');
+        });
+      });
+    }
+  });
+</script>

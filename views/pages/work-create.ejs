@@ -1,0 +1,65 @@
+<div class="work-create-container">
+  <div class="work-form-header">
+    <h1>Новая работа</h1>
+    <a href="/portfolio" class="btn btn-secondary">Отмена</a>
+  </div>
+
+  <% if (typeof error !== 'undefined' && error) { %>
+    <div class="alert alert-error">
+      <p><%= error %></p>
+    </div>
+  <% } %>
+
+  <form class="work-form" action="/portfolio/create" method="POST" enctype="multipart/form-data">
+    <input type="hidden" name="_csrf" value="<%= typeof csrfToken !== 'undefined' ? csrfToken : '' %>">
+    <div class="form-group">
+      <label for="title">Название работы *</label>
+      <input type="text" id="title" name="title" required placeholder="Введите название работы">
+    </div>
+
+    <div class="form-group">
+      <label for="direction">Направление *</label>
+      <select id="direction" name="direction" required>
+        <option value="">Выберите направление</option>
+        <% directions.forEach(function(dir) { %>
+          <option value="<%= dir %>"><%= dir %></option>
+        <% }); %>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="cover">Обложка работы</label>
+      <div class="file-upload">
+        <input type="file" id="cover" name="cover" accept="image/jpeg,image/jpg,image/png,image/gif,image/webp">
+        <p class="file-help">JPG, PNG, GIF, WEBP до 10MB</p>
+      </div>
+      <div class="file-preview" id="file-preview"></div>
+    </div>
+
+    <div class="form-group">
+      <label for="description">Описание</label>
+      <textarea id="description" name="description" rows="5" placeholder="Расскажите о вашей работе..."></textarea>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">Опубликовать</button>
+      <a href="/portfolio" class="btn btn-secondary">Отмена</a>
+    </div>
+  </form>
+</div>
+
+<script>
+  // Preview файла при выборе
+  document.getElementById('cover').addEventListener('change', function(e) {
+    const preview = document.getElementById('file-preview');
+    const file = e.target.files[0];
+
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        preview.innerHTML = '<img src="' + e.target.result + '" alt="Preview">';
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+</script>

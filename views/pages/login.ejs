@@ -1,0 +1,34 @@
+<%
+  const layoutFile = 'layout-3';
+  const errorMsg = typeof error !== 'undefined' && error ? `<div class="alert alert-error">${error}</div>` : '';
+%>
+<%- include('../layouts/' + layoutFile, {
+  title: 'Вход',
+  user: null,
+  body: `
+    <div class="auth-container">
+      <h1>Вход в STL</h1>
+
+      ${errorMsg}
+
+      <form class="auth-form" action="/auth/login" method="POST">
+        <input type="hidden" name="_csrf" value="${typeof csrfToken !== 'undefined' ? csrfToken : ''}">
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" required placeholder="your@email.com">
+        </div>
+
+        <div class="form-group">
+          <label for="password">Пароль</label>
+          <input type="password" id="password" name="password" required placeholder="Введите пароль">
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-full">Войти</button>
+      </form>
+
+      <p class="auth-link">
+        Нет аккаунта? <a href="/auth/register">Зарегистрироваться</a>
+      </p>
+    </div>
+  `
+}) %>

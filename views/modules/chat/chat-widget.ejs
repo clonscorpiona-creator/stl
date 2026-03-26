@@ -1,0 +1,44 @@
+<!-- Chat Widget Module - Link to Full Chat -->
+<div class="chat-widget" id="chat-widget">
+  <a href="/chat" class="chat-widget-link" data-no-pjax>
+    <span class="chat-widget-icon">💬</span>
+    <span class="chat-widget-text">Открыть чат</span>
+  </a>
+</div>
+
+<style>
+.chat-widget {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 999;
+}
+
+.chat-widget-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 15px 20px;
+  background: var(--primary-color, #4a90d9);
+  color: white;
+  text-decoration: none;
+  border-radius: 50px;
+  cursor: pointer;
+  font-size: 1rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.chat-widget-link:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.3);
+}
+
+.chat-widget-icon {
+  font-size: 1.3rem;
+}
+
+.chat-widget-text {
+  font-weight: 500;
+}
+</style>

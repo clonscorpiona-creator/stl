@@ -1,0 +1,52 @@
+<%
+  // Generate modules HTML
+  let modulesHtml = '<div class="modules-list">';
+  modules.forEach(mod => {
+    const activeClass = mod.active ? 'active' : '';
+    const status = mod.active ? '✓ Активен' : '○ Отключен';
+    const btnClass = mod.active ? 'btn btn-danger' : 'btn btn-primary';
+    const btnAction = mod.active ? 'disable' : 'enable';
+    const btnText = mod.active ? 'Отключить' : 'Подключить';
+
+    modulesHtml += `
+      <div class="module-card ${activeClass}">
+        <div class="module-info">
+          <h3>${mod.name}</h3>
+          <p>Путь: ${mod.path}</p>
+          <span class="status">${status}</span>
+        </div>
+        <div class="module-actions">
+          <button class="${btnClass}" onclick="toggleModule('${mod.id}', '${btnAction}')">${btnText}</button>
+        </div>
+      </div>
+    `;
+  });
+  modulesHtml += '</div>';
+
+  modulesHtml += `
+    <script>
+      const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || '';
+
+      async function toggleModule(moduleId, action) {
+        const res = await fetch('/admin/modules/' + moduleId + '/toggle', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'CSRF-Token': csrfToken
+          },
+          body: JSON.stringify({ action })
+        });
+        const data = await res.json();
+        if (data.success) {
+          location.reload();
+        }
+      }
+    </script>
+  `;
+%>
+
+<%- include('../layouts/admin-layout', {
+  title: title,
+  currentPath: '/admin/modules',
+  body: modulesHtml
+}) %>

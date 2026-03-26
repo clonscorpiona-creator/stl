@@ -1,0 +1,54 @@
+<div class="chat-container">
+  <!-- Debug panel -->
+  <div style="position: fixed; top: 10px; right: 10px; background: rgba(0,0,0,0.9); color: #0f0; padding: 15px; border-radius: 8px; z-index: 9999; font-size: 12px; max-width: 400px;">
+    <strong style="color: #fff; display: block; margin-bottom: 10px;">=== DEBUG AUTH ===</strong>
+    <div>channels: <%= typeof channels !== 'undefined' ? JSON.stringify(channels).substring(0, 50) : 'UNDEFINED' %></div>
+    <div>currentChannel: <%= typeof currentChannel !== 'undefined' ? JSON.stringify(currentChannel) : 'UNDEFINED' %></div>
+    <div>user: <%= typeof user !== 'undefined' ? JSON.stringify(user) : 'UNDEFINED' %></div>
+    <div style="margin-top: 10px; color: #ff0;">Смотри консоль (F12) для полных логов</div>
+  </div>
+
+  <aside class="chat-sidebar">
+    <h3 class="chat-sidebar-title">
+      Каналы <span class="connection-status disconnected" id="connection-status">Нет подключения</span>
+    </h3>
+    <ul class="channel-list" id="channel-list"></ul>
+  </aside>
+
+  <div class="chat-main">
+    <div class="chat-header">
+      <h2 id="channel-name"></h2>
+      <p id="channel-description" class="channel-description"></p>
+    </div>
+    <div class="messages-container" id="messages"></div>
+    <form class="message-form" id="message-form">
+      <input type="text" id="message-input" placeholder="Введите сообщение..." required autocomplete="off">
+      <button type="submit" class="btn btn-primary">Отправить</button>
+    </form>
+  </div>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/chat-client.js"></script>
+<script>
+  (function() {
+    console.log('[Template] channels:', typeof channels, Array.isArray(channels) ? channels.length : 'not array');
+    console.log('[Template] currentChannel:', currentChannel);
+    console.log('[Template] user:', user);
+
+    window.CHAT_CONFIG = {
+      channels: <%= JSON.stringify(channels || []) %>,
+      currentChannel: <%= JSON.stringify(currentChannel || null) %>,
+      userId: <%= user && user.id ? user.id : 'null' %>,
+      userName: <%= user && user.username ? JSON.stringify(user.username) : '"Аноним"' %>
+    };
+    console.log('[Template] CHAT_CONFIG:', window.CHAT_CONFIG);
+
+    if (typeof window.initChat === 'function') {
+      console.log('[Template] initChat exists, calling...');
+      window.initChat(window.CHAT_CONFIG);
+    } else {
+      console.error('[Template] initChat is NOT defined!');
+    }
+  })();
+</script>

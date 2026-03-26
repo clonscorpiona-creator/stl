@@ -1,0 +1,52 @@
+<section class="hero">
+  <h1>Сообщество творческих людей</h1>
+  <p class="hero-subtitle">Присоединяйтесь к STL — месту, где творчество встречает возможности</p>
+  <% if (typeof user === 'undefined' || !user) { %>
+    <div class="hero-actions">
+      <a href="/auth/register" class="btn btn-primary">Присоединиться</a>
+      <a href="/auth/login" class="btn btn-secondary">Войти</a>
+    </div>
+  <% } %>
+</section>
+
+<section class="featured-works">
+  <h2>Избранные работы</h2>
+  <div class="works-grid">
+    <div class="work-card">
+      <div class="work-image"></div>
+      <div class="work-info">
+        <h3>Название работы</h3>
+        <p class="work-author">Автор: Иванов И.</p>
+      </div>
+    </div>
+    <div class="work-card">
+      <div class="work-image"></div>
+      <div class="work-info">
+        <h3>Название работы</h3>
+        <p class="work-author">Автор: Петров П.</p>
+      </div>
+    </div>
+    <div class="work-card">
+      <div class="work-image"></div>
+      <div class="work-info">
+        <h3>Название работы</h3>
+        <p class="work-author">Автор: Сидоров С.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="features">
+  <div class="feature-block">
+    <h3>Портфолио</h3>
+    <p>Размещайте свои работы и получайте обратную связь</p>
+  </div>
+  <div class="feature-block">
+    <h3>Чат</h3>
+    <p>Общайтесь с другими участниками сообщества</p>
+  </div>
+  <div class="feature-block">
+    <h3>Заказы</h3>
+    <p>Находите клиентов и исполнителей для проектов</p>
+  </div>
+</section>

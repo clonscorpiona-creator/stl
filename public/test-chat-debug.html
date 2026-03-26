@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Chat Debug</title>
+  <style>
+    body { font-family: monospace; padding: 20px; background: #1a1a2e; color: #eee; font-size: 12px; }
+    .status { padding: 10px; margin: 10px 0; border-radius: 4px; font-size: 14px; }
+    .connected { background: #27ae60; }
+    .disconnected { background: #e74c3c; }
+    .log { background: #0f3460; padding: 10px; margin: 10px 0; border-radius: 4px; white-space: pre-wrap; max-height: 400px; overflow: auto; }
+    button { padding: 10px 20px; margin: 5px; background: #e94560; color: white; border: none; border-radius: 4px; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <h1>Chat Debug - Проверка подключения</h1>
+
+  <div>
+    <button onclick="checkAuth()">1. Проверить авторизацию</button>
+    <button onclick="loadChatData()">2. Загрузить данные чата</button>
+    <button onclick="connectSocket()">3. Подключить WebSocket</button>
+    <button onclick="window.location.href='/chat'">Открыть /chat</button>
+  </div>
+
+  <div id="authStatus" class="status" style="display:none;"></div>
+  <div id="chatDataStatus" class="status" style="display:none;"></div>
+  <div id="socketStatus" class="status" style="display:none;"></div>
+  <div id="log" class="log">Лог событий:<br></div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const logEl = document.getElementById('log');
+    let socket = null;
+
+    function log(msg) {
+      logEl.innerHTML += '[' + new Date().toLocaleTimeString() + '] ' + msg + '\n';
+      console.log(msg);
+    }
+
+    async function checkAuth() {
+      const authStatusEl = document.getElementById('authStatus');
+      try {
+        const res = await fetch('/profile');
+        const html = await res.text();
+        const isAuth = res.status === 200 && html.includes('Профиль');
+        authStatusEl.className = 'status ' + (isAuth ? 'connected' : 'disconnected');
+        authStatusEl.textContent = isAuth ? 'АВТОРИЗОВАН' : 'НЕ АВТОРИЗОВАН - войдите на /auth/login';
+        authStatusEl.style.display = 'block';
+        log('Auth: ' + (isAuth ? 'AUTHORIZED' : 'UNAUTHORIZED'));
+
+        if (!isAuth) {
+          log('>>> НУЖНО ВОЙТИ! Откройте /auth/login');
+        }
+      } catch (err) {
+        authStatusEl.className = 'status disconnected';
+        authStatusEl.textContent = 'Ошибка: ' + err.message;
+        authStatusEl.style.display = 'block';
+        log('Auth error: ' + err.message);
+      }
+    }
+
+    async function loadChatData() {
+      const chatDataStatusEl = document.getElementById('chatDataStatus');
+      try {
+        const res = await fetch('/chat');
+        if (res.redirected) {
+          chatDataStatusEl.className = 'status disconnected';
+          chatDataStatusEl.textContent = 'РЕДИРЕКТ на ' + res.url + ' - нужна авторизация';
+          chatDataStatusEl.style.display = 'block';
+          log('Chat page redirected to: ' + res.url);
+          return;
+        }
+
+        const html = await res.text();
+        const hasInitChat = html.includes('window.initChat');
+        const hasChannels = html.includes('channels:');
+        const hasCurrentChannel = html.includes('currentChannel:');
+
+        chatDataStatusEl.className = 'status ' + (hasInitChat && hasChannels ? 'connected' : 'disconnected');
+        chatDataStatusEl.textContent = 'initChat: ' + hasInitChat + ', channels: ' + hasChannels + ', currentChannel: ' + hasCurrentChannel;
+        chatDataStatusEl.style.display = 'block';
+
+        log('Chat page loaded. initChat=' + hasInitChat + ', channels=' + hasChannels);
+
+        // Извлекаем данные для проверки
+        const channelsMatch = html.match(/channels:\s*(\[.*?\])/s);
+        const currentChannelMatch = html.match(/currentChannel:\s*({.*?}),/s);
+        const userIdMatch = html.match(/userId:\s*(\d+|null)/);
+        const userNameMatch = html.match(/userName:\s*"([^"]+)"/);
+
+        if (channelsMatch) log('Channels: ' + channelsMatch[1].substring(0, 100) + '...');
+        if (currentChannelMatch) log('Current channel: ' + currentChannelMatch[1]);
+        if (userIdMatch) log('User ID: ' + userIdMatch[1]);
+        if (userNameMatch) log('User name: ' + userNameMatch[1]);
+
+      } catch (err) {
+        chatDataStatusEl.className = 'status disconnected';
+        chatDataStatusEl.textContent = 'Ошибка: ' + err.message;
+        chatDataStatusEl.style.display = 'block';
+        log('Chat data error: ' + err.message);
+      }
+    }
+
+    function connectSocket() {
+      const socketStatusEl = document.getElementById('socketStatus');
+
+      if (socket) {
+        socket.disconnect();
+        socket.removeAllListeners();
+      }
+
+      log('Connecting to Socket.IO...');
+      socket = io({ reconnection: true, reconnectionAttempts: 5 });
+
+      socket.on('connect', () => {
+        log('>>> CONNECTED! Socket ID: ' + socket.id);
+        socketStatusEl.className = 'status connected';
+        socketStatusEl.textContent = 'WebSocket ПОДКЛЮЧЕН (ID: ' + socket.id + ')';
+        socketStatusEl.style.display = 'block';
+
+        socket.emit('join-channel', '1');
+        log('Sent: join-channel(1)');
+      });
+
+      socket.on('disconnect', (reason) => {
+        log('>>> DISCONNECTED: ' + reason);
+        socketStatusEl.className = 'status disconnected';
+        socketStatusEl.textContent = 'WebSocket ОТКЛЮЧЕН: ' + reason;
+      });
+
+      socket.on('connect_error', (err) => {
+        log('>>> CONNECT ERROR: ' + err.message);
+        socketStatusEl.className = 'status disconnected';
+        socketStatusEl.textContent = 'Ошибка подключения: ' + err.message;
+      });
+
+      socket.on('new-message', (msg) => {
+        log('NEW MESSAGE: ' + JSON.stringify(msg));
+      });
+    }
+  </script>
+</body>
+</html>

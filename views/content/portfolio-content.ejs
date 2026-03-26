@@ -1,0 +1,49 @@
+<div class="portfolio-container">
+  <div class="portfolio-header">
+    <h1>Портфолио</h1>
+    <% if (typeof user !== 'undefined' && user) { %>
+      <a href="/portfolio/create/new" class="btn btn-primary">+ Новая работа</a>
+    <% } %>
+  </div>
+
+  <div class="portfolio-filters">
+    <a href="/portfolio" class="filter-btn <%= !currentDirection ? 'active' : '' %>">Все</a>
+    <a href="/portfolio?direction=2D" class="filter-btn <%= currentDirection === '2D' ? 'active' : '' %>">2D</a>
+    <a href="/portfolio?direction=3D" class="filter-btn <%= currentDirection === '3D' ? 'active' : '' %>">3D</a>
+    <a href="/portfolio?direction=Motion" class="filter-btn <%= currentDirection === 'Motion' ? 'active' : '' %>">Motion</a>
+    <a href="/portfolio?direction=Pixel" class="filter-btn <%= currentDirection === 'Pixel' ? 'active' : '' %>">Pixel</a>
+    <a href="/portfolio?direction=Illustration" class="filter-btn <%= currentDirection === 'Illustration' ? 'active' : '' %>">Illustration</a>
+    <a href="/portfolio?direction=Visualization" class="filter-btn <%= currentDirection === 'Visualization' ? 'active' : '' %>">Visualization</a>
+  </div>
+
+  <% if (works && works.length > 0) { %>
+    <div class="works-grid">
+      <% works.forEach(function(work) { %>
+        <div class="work-card">
+          <a href="/portfolio/<%= work.id %>">
+            <div class="work-image" style="background-image: url('<%= work.cover_image || '/images/default-work.png' %>')">
+              <% if (!work.cover_image) { %>
+                <span class="no-image">Нет изображения</span>
+              <% } %>
+            </div>
+            <div class="work-info">
+              <h3><%= work.title %></h3>
+              <p class="work-author"><%= work.author_name %></p>
+              <div class="work-stats">
+                <span class="stat likes">❤️ <%= work.likes_count || 0 %></span>
+                <span class="stat views">👁️ <%= work.views || 0 %></span>
+              </div>
+            </div>
+          </a>
+        </div>
+      <% }); %>
+    </div>
+  <% } else { %>
+    <div class="empty-state">
+      <p>Работ пока нет. Будьте первыми!</p>
+      <% if (typeof user !== 'undefined' && user) { %>
+        <a href="/portfolio/create/new" class="btn btn-primary">Создать работу</a>
+      <% } %>
+    </div>
+  <% } %>
+</div>

@@ -1,0 +1,53 @@
+<div class="profile-container">
+  <h1>Профиль</h1>
+
+  <div class="profile-info">
+    <div class="profile-avatar">
+      <div class="avatar-placeholder"><%= user.username.charAt(0).toUpperCase() %></div>
+    </div>
+
+    <div class="profile-details">
+      <h2><%= user.username %></h2>
+      <p class="profile-email"><%= user.email %></p>
+      <span class="profile-role badge badge-<%= user.role.toLowerCase() %>"><%= user.role %></span>
+    </div>
+  </div>
+
+  <div class="profile-settings">
+    <h3>Настройки</h3>
+
+    <div class="setting-group">
+      <label for="layout-select">Макет интерфейса</label>
+      <select id="layout-select" data-layout-select class="form-control">
+        <option value="layout-1" <%= typeof currentLayout !== 'undefined' && currentLayout === 'layout-1' ? 'selected' : '' %>>Классический</option>
+        <option value="layout-2" <%= typeof currentLayout !== 'undefined' && currentLayout === 'layout-2' ? 'selected' : '' %>>С панелью</option>
+        <option value="layout-3" <%= typeof currentLayout !== 'undefined' && currentLayout === 'layout-3' ? 'selected' : '' %>>Минимализм</option>
+        <option value="layout-4" <%= typeof currentLayout !== 'undefined' && currentLayout === 'layout-4' ? 'selected' : '' %>>Сетка</option>
+        <option value="layout-5" <%= typeof currentLayout !== 'undefined' && currentLayout === 'layout-5' ? 'selected' : '' %>>Компактный</option>
+      </select>
+      <p class="setting-help">Выберите удобный для вас макет сайта</p>
+    </div>
+
+    <div class="setting-group">
+      <a href="/auth/logout" class="btn btn-danger">Выйти из аккаунта</a>
+    </div>
+  </div>
+
+  <div class="profile-stats">
+    <h3>Моя активность</h3>
+    <div class="stats-grid">
+      <div class="stat-item">
+        <span class="stat-value">0</span>
+        <span class="stat-label">Работ</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-value">0</span>
+        <span class="stat-label">Сообщений</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-value">0</span>
+        <span class="stat-label">Заказов</span>
+      </div>
+    </div>
+  </div>
+</div>
