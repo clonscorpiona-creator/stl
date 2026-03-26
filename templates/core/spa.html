@@ -497,6 +497,18 @@
         window.STL = {
             user: {% if user.is_authenticated %}{{ user.id }}{% else %}null{% endif %},
             csrf: '{{ csrf_token }}',
+            // Категории с русскими названиями
+            categories: [
+                { slug: '', name: 'Все' },
+                { slug: '3d-modeling', name: '3D Моделирование' },
+                { slug: 'animation', name: 'Анимация' },
+                { slug: 'graphic-design', name: 'Графический дизайн' },
+                { slug: 'illustrations', name: 'Иллюстрации' },
+                { slug: 'ui/ux', name: 'UI/UX' },
+                { slug: 'web-design', name: 'Веб-дизайн' },
+                { slug: 'ai-images', name: 'ИИ Изображения' },
+                { slug: 'ai-video', name: 'ИИ Видео' },
+            ],
             urls: {
                 works: '/api/works/',
                 feed: '/api/feed/',
@@ -504,6 +516,9 @@
                 comment: '/interactions/',
             }
         };
+
+        // Текущий выбранный фильтр
+        window.currentFilter = { type: 'all', value: '' };
 
         // Sidebar toggle
         const sidebar = document.getElementById('sidebar');
@@ -642,11 +657,18 @@
                 return;
             }
 
+            // Генерируем HTML для кнопок категорий
+            const categoryButtons = window.STL.categories.map(cat => {
+                const isActive = (window.currentFilter.type === 'category' && window.currentFilter.value === cat.slug) ||
+                                 (cat.slug === '' && window.currentFilter.type === 'all');
+                return `<button class="filter-chip ${isActive ? 'active' : ''}" data-category="${cat.slug}">${cat.name}</button>`;
+            }).join('');
+
             content.innerHTML = `
                 <div class="filters-bar">
-                    <button class="filter-chip active">Все</button>
-                    <button class="filter-chip">Популярные</button>
-                    <button class="filter-chip">Свежие</button>
+                    ${categoryButtons}
+                    <button class="filter-chip ${window.currentFilter.type === 'popular' ? 'active' : ''}" data-filter="popular">Популярные</button>
+                    <button class="filter-chip ${window.currentFilter.type === 'newest' ? 'active' : ''}" data-filter="newest">Свежие</button>
                 </div>
                 <div class="works-grid">
                     ${works.map(work => {
@@ -672,6 +694,29 @@
                     }).join('')}
                 </div>
             `;
+
+            // Навешиваем обработчики на кнопки фильтров
+            document.querySelectorAll('.filter-chip').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const category = this.dataset.category;
+                    const filter = this.dataset.filter;
+
+                    // Снимаем активный класс со всех кнопок
+                    document.querySelectorAll('.filter-chip').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+
+                    if (category !== undefined) {
+                        window.currentFilter = { type: 'category', value: category };
+                        loadWorks(category ? { category } : {});
+                    } else if (filter === 'popular') {
+                        window.currentFilter = { type: 'popular', value: '' };
+                        loadWorks({ sort: '-likes_count' });
+                    } else if (filter === 'newest') {
+                        window.currentFilter = { type: 'newest', value: '' };
+                        loadWorks({ sort: '-created_at' });
+                    }
+                });
+            });
         }
 
         // Initial load
