@@ -166,7 +166,7 @@ def create_work(request):
             title=title,
             description=description,
             category_id=category_id,
-            status='moderation'
+            status='published'  # Сразу публикуем работу
         )
 
         # Теги
