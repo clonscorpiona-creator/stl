@@ -138,11 +138,14 @@ class ChatConsumer(AsyncWebsocketConsumer):
         content = data.get('content', '').strip()
         reply_to_id = data.get('reply_to')
         image_url = data.get('image_url')
+        file_url = data.get('file_url')
+        file_type = data.get('file_type')
+        file_name = data.get('file_name')
 
-        if not content and not image_url:
+        if not content and not image_url and not file_url:
             await self.send(text_data=json.dumps({
                 'type': 'error',
-                'message': 'Content or image required'
+                'message': 'Content, image or file required'
             }))
             return
 
@@ -163,7 +166,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             return
 
         # Сохраняем сообщение
-        message = await self.create_message(content, reply_to_id, image_url)
+        message = await self.create_message(content, reply_to_id, image_url, file_url, file_type, file_name)
 
         if message:
             # Отправляем сообщение всем в группе
@@ -262,7 +265,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         return member and member.is_muted
 
     @database_sync_to_async
-    def create_message(self, content, reply_to_id=None, image_url=None):
+    def create_message(self, content, reply_to_id=None, image_url=None, file_url=None, file_type=None, file_name=None):
         """Создание сообщения"""
         channel = Channel.objects.filter(slug=self.slug, is_active=True).first()
         if not channel:
@@ -283,15 +286,20 @@ class ChatConsumer(AsyncWebsocketConsumer):
         message = Message.objects.create(
             channel=channel,
             user=self.user,
-            content=content if content else '[Изображение]',
+            content=content if content else ('[Изображение]' if image_url else '[Файл]'),
             reply_to=reply_to,
             has_image=bool(image_url),
+            has_file=bool(file_url),
+            file_type=file_type or '',
+            file_name=file_name or '',
         )
 
         # Если есть изображение, обновляем поле image
         if image_url:
             message.image = image_url
-            message.save(update_fields=['image'])
+        if file_url:
+            message.file = file_url
+        message.save()
 
         # Сериализуем сообщение с информацией об ответе
         from .api import serialize_message
@@ -302,10 +310,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         # Сохраняем в текстовое хранилище (формат базы данных)
         timestamp = timezone.now().isoformat()
-        attachments = image_url if image_url else ''
+        attachments = image_url or file_url or ''
         save_message_to_storage(
             username=self.user.username,
-            content=content if content else f'[Изображение: {image_url}]',
+            content=content if content else f'[Файл: {file_name}]',
             timestamp=timestamp,
             attachments=attachments,
             channel_slug=channel.slug

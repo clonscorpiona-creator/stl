@@ -785,7 +785,21 @@
                         align-items: center;
                         justify-content: center;
                     " title="Изображение">🖼️</button>
+                    <button type="button" id="fileBtn" style="
+                        width: 40px;
+                        height: 40px;
+                        border-radius: 8px;
+                        background: var(--chat-surface-hover);
+                        border: 1px solid var(--chat-border);
+                        color: var(--chat-text);
+                        font-size: 18px;
+                        cursor: pointer;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                    " title="Загрузить файл (видео/аудио)">📎</button>
                     <input type="file" id="imageInput" accept="image/*" style="display: none;">
+                    <input type="file" id="fileInput" accept="video/*,audio/*" style="display: none;">
                 </div>
                 <!-- Текстовое поле -->
                 <textarea
@@ -826,6 +840,15 @@
                     ">×</button>
                 </div>
             </div>
+            <!-- Превью файла -->
+            <div id="filePreview" style="
+                display: none;
+                margin-top: 8px;
+                padding: 12px;
+                background: var(--chat-surface-hover);
+                border-radius: 8px;
+                border: 1px solid var(--chat-border);
+            "></div>
             <!-- Панель эмодзи -->
             <div id="emojiPicker" style="
                 display: none;

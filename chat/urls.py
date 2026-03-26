@@ -27,6 +27,7 @@ urlpatterns = [
 
     # Image upload
     path('api/upload-image/', api.upload_image_api, name='api_upload_image'),
+    path('api/upload-file/', api.upload_file_api, name='api_upload_file'),
 
     # Moderation
     path('api/channels/<str:slug>/ban/', api.ban_user_api, name='api_ban_user'),

@@ -162,6 +162,10 @@ class Message(models.Model):
     # Вложения
     has_image = models.BooleanField(default=False)
     image = models.ImageField(upload_to='chat/images/', null=True, blank=True)
+    has_file = models.BooleanField(default=False)
+    file = models.FileField(upload_to='chat/files/', null=True, blank=True)
+    file_type = models.CharField('Тип файла', max_length=50, blank=True)  # 'video', 'audio'
+    file_name = models.CharField('Имя файла', max_length=255, blank=True)
 
     # Статусы
     is_deleted = models.BooleanField(default=False)

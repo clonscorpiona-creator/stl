@@ -102,6 +102,10 @@ def serialize_message(message, current_user=None):
         'edited_at': message.edited_at.isoformat() if message.edited_at else None,
         'has_image': message.has_image,
         'image': message.image.url if message.image and hasattr(message.image, 'url') else None,
+        'has_file': message.has_file,
+        'file': message.file.url if message.file and hasattr(message.file, 'url') else None,
+        'file_type': message.file_type,
+        'file_name': message.file_name,
     }
 
     # Добавляем информацию об ответе
@@ -626,6 +630,48 @@ def promote_moderator_api(request, slug):
     channel.moderators.add(user_id)
 
     return JsonResponse({'success': True, 'is_moderator': True})
+
+
+@login_required
+@require_http_methods(["POST"])
+def upload_file_api(request):
+    """
+    Загрузка файла (видео/аудио) в чат.
+
+    Принимает файл и возвращает URL загруженного файла.
+    """
+    if 'file' not in request.FILES:
+        return JsonResponse({'error': 'No file provided'}, status=400)
+
+    file_obj = request.FILES['file']
+    content_type = file_obj.content_type
+    file_size = file_obj.size
+
+    # Определяем тип файла
+    file_type = None
+    if content_type.startswith('video/'):
+        file_type = 'video'
+    elif content_type.startswith('audio/'):
+        file_type = 'audio'
+    else:
+        return JsonResponse({'error': 'Invalid file type. Only video and audio allowed'}, status=400)
+
+    # Проверяем размер (макс 50MB)
+    max_size = 50 * 1024 * 1024
+    if file_size > max_size:
+        return JsonResponse({'error': f'File too large (max {max_size // 1024 // 1024}MB)'}, status=400)
+
+    # Сохраняем файл
+    file_obj.name = f'{file_type}_{int(timezone.now().timestamp())}_{file_obj.name}'
+    file_path = default_storage.save(f'chat/files/{file_obj.name}', file_obj)
+    file_url = default_storage.url(file_path)
+
+    return JsonResponse({
+        'url': file_url,
+        'file_type': file_type,
+        'file_name': file_obj.name,
+        'size': file_size,
+    })
 
 
 @login_required
