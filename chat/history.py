@@ -7,8 +7,31 @@ chat_history/<channel_slug>.json
 Структура файла:
 {
     "channel_slug": "general",
+    "channel_name": "General",
     "messages": [...],
+    "reactions": [...],
     "last_updated": "2026-03-26T12:00:00Z"
+}
+
+Подробная информация о сообщении:
+{
+    "id": 1,
+    "content": "Текст сообщения",
+    "is_deleted": false,
+    "is_edited": false,
+    "reply_to": {"id": 0, "username": "user", "content": "..."},
+    "user": {
+        "id": 1,
+        "username": "username",
+        "avatar": "/path/to/avatar.jpg",
+        "is_moderator": false,
+        "is_staff": false
+    },
+    "created_at": "2026-03-26T12:00:00Z",
+    "edited_at": null,
+    "likes_count": 0,
+    "likes": [{"user_id": 1, "username": "user", "created_at": "..."}],
+    "replies": [{"id": 2, "content": "...", "user": "user2"}]
 }
 """
 
@@ -42,13 +65,15 @@ def save_message_to_history(message_data: dict, channel_slug: str) -> None:
     # Загружаем существующую историю
     history = load_channel_history(channel_slug)
 
-    # Добавляем новое сообщение
-    history['messages'].append(message_data)
-    history['last_updated'] = timezone.now().isoformat()
+    # Проверяем, нет ли уже такого сообщения (защита от дублей)
+    existing_ids = {m.get('id') for m in history['messages']}
+    if message_data.get('id') not in existing_ids:
+        history['messages'].append(message_data)
+        history['last_updated'] = timezone.now().isoformat()
 
-    # Сохраняем обратно
-    with open(file_path, 'w', encoding='utf-8') as f:
-        json.dump(history, f, ensure_ascii=False, indent=2)
+        # Сохраняем обратно
+        with open(file_path, 'w', encoding='utf-8') as f:
+            json.dump(history, f, ensure_ascii=False, indent=2)
 
 
 def load_channel_history(channel_slug: str, limit: int = 100) -> dict:
@@ -90,9 +115,78 @@ def load_channel_history(channel_slug: str, limit: int = 100) -> dict:
 
 
 def get_all_messages(channel_slug: str) -> list:
-    """Получить все сообщения канала."""
+    """Получить все сообщения канала из файла истории."""
     history = load_channel_history(channel_slug, limit=None)
     return history.get('messages', [])
+
+
+def load_messages_from_db(channel_slug: str, limit: int = 100) -> list:
+    """
+    Загрузить сообщения из базы данных с полной информацией.
+
+    Args:
+        channel_slug: Slug канала
+        limit: Максимальное количество сообщений
+
+    Returns:
+        List с сообщениями
+    """
+    from .models import Channel, Message, MessageLike
+    from django.contrib.auth import get_user_model
+
+    User = get_user_model()
+
+    channel = Channel.objects.filter(slug=channel_slug, is_active=True).first()
+    if not channel:
+        return []
+
+    messages = Message.objects.filter(
+        channel=channel
+    ).select_related('user', 'reply_to', 'reply_to__user').prefetch_related('likes').order_by('-created_at')[:limit]
+
+    result = []
+    for msg in reversed(messages):
+        # Получаем лайки с информацией о пользователях
+        likes = []
+        for like in msg.likes.all():
+            likes.append({
+                'user_id': like.user.id,
+                'username': like.user.username,
+                'created_at': like.created_at.isoformat() if hasattr(like, 'created_at') else None,
+            })
+
+        # Получаем информацию об ответе
+        reply_to_data = None
+        if msg.reply_to:
+            reply_to_data = {
+                'id': msg.reply_to.id,
+                'username': msg.reply_to.user.username,
+                'content': msg.reply_to.content[:100] if not msg.reply_to.is_deleted else '[Сообщение удалено]',
+            }
+
+        message_data = {
+            'id': msg.id,
+            'content': msg.content if not msg.is_deleted else '[Сообщение удалено]',
+            'is_deleted': msg.is_deleted,
+            'is_edited': msg.is_edited,
+            'likes_count': msg.likes_count,
+            'liked': False,  # Заполняется отдельно для текущего пользователя
+            'likes': likes,
+            'reply_to': reply_to_data,
+            'user': {
+                'id': msg.user.id,
+                'username': msg.user.username,
+                'avatar': msg.user.avatar.url if msg.user.avatar else None,
+                'is_moderator': channel.moderators.filter(id=msg.user.id).exists(),
+                'is_staff': msg.user.is_staff,
+            },
+            'created_at': msg.created_at.isoformat(),
+            'edited_at': msg.edited_at.isoformat() if msg.edited_at else None,
+        }
+
+        result.append(message_data)
+
+    return result
 
 
 def update_message_in_history(message_id: int, updated_data: dict, channel_slug: str) -> None:

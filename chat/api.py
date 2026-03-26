@@ -67,6 +67,15 @@ def serialize_message(message, current_user=None):
 
     Оптимизация: минимальный набор полей для уменьшения размера ответа.
     """
+    # Получаем информацию о лайках
+    likes_data = []
+    if hasattr(message, 'likes'):
+        for like in message.likes.all():
+            likes_data.append({
+                'user_id': like.user.id,
+                'username': like.user.username,
+            })
+
     data = {
         'id': message.id,
         'content': message.content if not message.is_deleted else '[Сообщение удалено]',
@@ -74,6 +83,7 @@ def serialize_message(message, current_user=None):
         'is_edited': message.is_edited,
         'likes_count': message.likes_count,
         'liked': bool(current_user and message.likes.filter(user=current_user).exists()) if hasattr(message, 'likes') else False,
+        'likes': likes_data,
         'user': {
             'id': message.user.id,
             'username': message.user.username,
@@ -176,7 +186,7 @@ def channel_detail_api(request, slug):
     messages = Message.objects.filter(
         channel=channel,
         is_deleted=False
-    ).select_related('user', 'reply_to', 'reply_to__user').prefetch_related('likes').order_by('-created_at')
+    ).select_related('user', 'reply_to', 'reply_to__user').prefetch_related('likes', 'likes__user').order_by('-created_at')
 
     paginator = Paginator(messages, 50)
     page_obj = paginator.get_page(page)

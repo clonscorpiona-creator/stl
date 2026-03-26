@@ -46,10 +46,19 @@ class Command(BaseCommand):
 
             messages = Message.objects.filter(
                 channel=channel
-            ).select_related('user').order_by('created_at')[:limit]
+            ).select_related('user', 'reply_to', 'reply_to__user').order_by('created_at')[:limit]
 
             exported = 0
             for msg in messages:
+                # Получаем информацию об ответе
+                reply_to_data = None
+                if msg.reply_to:
+                    reply_to_data = {
+                        'id': msg.reply_to.id,
+                        'username': msg.reply_to.user.username,
+                        'content': msg.reply_to.content[:100] if not msg.reply_to.is_deleted else '[Сообщение удалено]',
+                    }
+
                 message_data = {
                     'id': msg.id,
                     'content': msg.content if not msg.is_deleted else '[Сообщение удалено]',
@@ -57,11 +66,13 @@ class Command(BaseCommand):
                     'is_edited': msg.is_edited,
                     'likes_count': msg.likes_count,
                     'liked': False,
+                    'reply_to': reply_to_data,
                     'user': {
                         'id': msg.user.id,
                         'username': msg.user.username,
                         'avatar': msg.user.avatar.url if msg.user.avatar else None,
                         'is_moderator': channel.moderators.filter(id=msg.user.id).exists(),
+                        'is_staff': msg.user.is_staff,
                     },
                     'created_at': msg.created_at.isoformat(),
                     'edited_at': msg.edited_at.isoformat() if msg.edited_at else None,
