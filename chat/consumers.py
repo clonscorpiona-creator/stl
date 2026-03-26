@@ -125,6 +125,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
     async def handle_message(self, data):
         """Обработка нового сообщения"""
         content = data.get('content', '').strip()
+        reply_to_id = data.get('reply_to')
 
         if not content or len(content) > 5000:
             await self.send(text_data=json.dumps({
@@ -143,7 +144,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             return
 
         # Сохраняем сообщение
-        message = await self.create_message(content)
+        message = await self.create_message(content, reply_to_id)
 
         if message:
             # Отправляем сообщение всем в группе
@@ -242,7 +243,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         return member and member.is_muted
 
     @database_sync_to_async
-    def create_message(self, content):
+    def create_message(self, content, reply_to_id=None):
         """Создание сообщения"""
         channel = Channel.objects.filter(slug=self.slug, is_active=True).first()
         if not channel:
@@ -254,28 +255,21 @@ class ChatConsumer(AsyncWebsocketConsumer):
             if not member and not self.user.is_staff:
                 return None
 
+        # Проверка ответа
+        reply_to = None
+        if reply_to_id:
+            reply_to = Message.objects.filter(id=reply_to_id, channel=channel).first()
+
         message = Message.objects.create(
             channel=channel,
             user=self.user,
-            content=content
+            content=content,
+            reply_to=reply_to
         )
 
-        message_data = {
-            'id': message.id,
-            'content': message.content,
-            'is_deleted': False,
-            'is_edited': False,
-            'likes_count': 0,
-            'liked': False,
-            'user': {
-                'id': self.user.id,
-                'username': self.user.username,
-                'avatar': self.user.avatar.url if self.user.avatar else None,
-                'is_moderator': channel.moderators.filter(id=self.user.id).exists(),
-            },
-            'created_at': message.created_at.isoformat(),
-            'edited_at': None,
-        }
+        # Сериализуем сообщение с информацией об ответе
+        from .api import serialize_message
+        message_data = serialize_message(message, self.user)
 
         # Сохраняем в файл истории
         save_message_to_history(message_data, channel.slug)

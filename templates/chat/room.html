@@ -302,7 +302,7 @@
 
         const isOwn = msg.user.id === window.CHAT.user.id;
         const avatar = msg.user.avatar || '/static/placeholder-avatar.png';
-        const isAdmin = window.CHAT.user.isModerator || window.CHAT.user.isAdmin;
+        const isAdmin = window.CHAT.user.isModerator || window.CHAT.user.isStaff;
         const isStaff = window.CHAT.user.isStaff || false;
 
         // Определяем роль для отображения
@@ -583,13 +583,18 @@
         // Проверяем, есть ли ответ
         const replyTo = window.CHAT.replyingTo;
 
+        console.log('[Chat] Sending message:', { content: content.substring(0, 50), replyTo: replyTo?.id });
+
         if (window.CHAT.ws?.readyState === WebSocket.OPEN) {
-            window.CHAT.ws.send(JSON.stringify({
+            const payload = {
                 type: 'message',
                 content: content,
                 reply_to: replyTo ? replyTo.id : null,
-            }));
+            };
+            console.log('[Chat] WebSocket send:', payload);
+            window.CHAT.ws.send(JSON.stringify(payload));
         } else {
+            console.log('[Chat] WebSocket not connected, sending via HTTP');
             sendViaHTTP(content, replyTo);
         }
 
@@ -601,6 +606,8 @@
             cancelReply();
         }
     }
+
+    function scrollToBottom() {
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
 
