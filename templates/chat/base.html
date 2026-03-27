@@ -481,17 +481,17 @@
         cursor: not-allowed;
     }
 
-    /* Members sidebar */
+    /* Members sidebar - всегда отображается */
     .chat-members-sidebar {
-        width: 200px;
+        width: 240px;
         background: var(--chat-surface);
         border-left: 1px solid var(--chat-border);
-        display: none;
+        display: flex;
         flex-direction: column;
     }
 
     .chat-members-sidebar.open {
-        display: flex;
+        width: 240px;
     }
 
     .members-header {
@@ -871,15 +871,21 @@
     <!-- Sidebar участников -->
     <aside class="chat-members-sidebar" id="membersSidebar">
         <div class="members-header">
-            <div style="margin-bottom: 12px;">
-                Онлайн (<span id="onlineCount">0</span>)
-            </div>
-            <div style="font-size: 12px; opacity: 0.7;">
-                Участники (<span id="membersCount">0</span>)
-            </div>
+            <div>Участники</div>
         </div>
-        <div class="members-list" id="onlineUsersList" style="border-bottom: 1px solid var(--chat-border); padding-bottom: 8px; margin-bottom: 8px;">
+
+        <!-- Секция онлайн-пользователей -->
+        <div style="padding: 8px 16px; font-size: 12px; font-weight: 600; color: var(--chat-success); text-transform: uppercase; letter-spacing: 0.5px;">
+            Онлайн (<span id="onlineCount">0</span>)
+        </div>
+        <div class="members-list" id="onlineUsersList" style="border-bottom: 1px solid var(--chat-border); padding-bottom: 8px; margin-bottom: 8px; max-height: 200px; overflow-y: auto;">
             <!-- Онлайн пользователи загружаются через JS -->
+            <div style="padding: 8px 16px; color: var(--chat-text-muted); font-size: 13px;">Нет онлайн-пользователей</div>
+        </div>
+
+        <!-- Секция всех участников -->
+        <div style="padding: 8px 16px; font-size: 12px; font-weight: 600; color: var(--chat-text-muted); text-transform: uppercase; letter-spacing: 0.5px;">
+            Все участники (<span id="membersCount">0</span>)
         </div>
         <div class="members-list" id="membersList" style="flex: 1; overflow-y: auto;">
             <!-- Все участники загружаются через JS -->

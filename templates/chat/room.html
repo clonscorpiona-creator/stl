@@ -926,13 +926,17 @@
         const onlineCount = document.getElementById('onlineCount');
 
         if (onlineList && users) {
-            onlineList.innerHTML = users.map(u => `
-                <div class="member-item online-member">
-                    <img src="${u.avatar || '/static/placeholder-avatar.png'}" alt="${u.username}" class="member-avatar">
-                    <span class="member-name">${escapeHtml(u.username)}</span>
-                    <span class="online-indicator" title="Онлайн"></span>
-                </div>
-            `).join('');
+            if (users.length === 0) {
+                onlineList.innerHTML = '<div style="padding: 8px 16px; color: var(--chat-text-muted); font-size: 13px;">Нет онлайн-пользователей</div>';
+            } else {
+                onlineList.innerHTML = users.map(u => `
+                    <div class="member-item online-member">
+                        <img src="${u.avatar || '/static/placeholder-avatar.png'}" alt="${u.username}" class="member-avatar">
+                        <span class="member-name">${escapeHtml(u.username)}</span>
+                        <span class="online-indicator" title="Онлайн"></span>
+                    </div>
+                `).join('');
+            }
 
             onlineCount.textContent = users.length;
         }

@@ -103,7 +103,7 @@ def serialize_message(message, current_user=None):
         'has_image': message.has_image,
         'image': message.image.url if message.image and hasattr(message.image, 'url') else None,
         'has_file': message.has_file,
-        'file': message.file.url if message.file and hasattr(message.file, 'url') else None,
+        'file': f'/media/{message.file}' if message.file and not str(message.file).startswith('/') else str(message.file) if message.file else None,
         'file_type': message.file_type,
         'file_name': message.file_name,
     }
@@ -257,9 +257,12 @@ def send_message_api(request, slug):
     content = data.get('content', '').strip()
     reply_to_id = data.get('reply_to')
     image_url = data.get('image_url')
+    file_url = data.get('file_url')
+    file_type = data.get('file_type', '')
+    file_name = data.get('file_name', '')
 
-    if not content and not image_url:
-        return JsonResponse({'error': 'Content or image required'}, status=400)
+    if not content and not image_url and not file_url:
+        return JsonResponse({'error': 'Content, image or file required'}, status=400)
 
     if content and len(content) > 5000:
         return JsonResponse({'error': 'Content too long'}, status=400)
@@ -273,15 +276,21 @@ def send_message_api(request, slug):
     message = Message.objects.create(
         channel=channel,
         user=request.user,
-        content=content if content else '[Изображение]',
+        content=content if content else ('[Изображение]' if image_url else '[Файл]'),
         reply_to=reply_to,
         has_image=bool(image_url),
+        has_file=bool(file_url),
+        file_type=file_type,
+        file_name=file_name,
     )
 
     # Если есть изображение, обновляем поле image
     if image_url:
         message.image = image_url
-        message.save(update_fields=['image'])
+    if file_url:
+        # Сохраняем относительный путь (убираем /media/ если есть)
+        message.file = file_url.replace('/media/', '', 1) if file_url.startswith('/media/') else file_url
+    message.save()
 
     # Сохраняем в файл истории
     save_message_to_history(serialize_message(message, request.user), channel.slug)

@@ -298,7 +298,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
         if image_url:
             message.image = image_url
         if file_url:
-            message.file = file_url
+            # Сохраняем относительный путь (убираем /media/ если есть)
+            message.file = file_url.replace('/media/', '', 1) if file_url.startswith('/media/') else file_url
         message.save()
 
         # Сериализуем сообщение с информацией об ответе
