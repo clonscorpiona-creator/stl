@@ -2,11 +2,10 @@ services:
   # PostgreSQL Database
   - type: pserv
     name: stl-django-db
-    env: docker
-    region: frankfurt
     plan: free
-    disk:
-      size: 1GB
+    region: frankfurt
+    database:
+      name: stl_db
 
   # Django Web Service
   - type: web
@@ -14,7 +13,7 @@ services:
     env: python
     region: frankfurt
     plan: free
-    buildCommand: pip install -r requirements.txt && python manage.py collectstatic --noinput && python manage.py migrate
+    buildCommand: pip install -r requirements.txt && python manage.py collectstatic --noinput --clear && python manage.py migrate --noinput
     startCommand: daphne -b 0.0.0.0 -p $PORT config.asgi:application
     envVars:
       - key: PYTHON_VERSION
@@ -28,6 +27,6 @@ services:
       - key: DEBUG
         value: false
       - key: ALLOWED_HOSTS
-        sync: false
+        value: '*'
       - key: CSRF_TRUSTED_ORIGINS
-        sync: false
+        value: https://*.onrender.com
