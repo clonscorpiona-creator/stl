@@ -1,124 +1,121 @@
 # 🚀 Деплой на Render - Пошаговая инструкция
 
-## Текущий статус
-✅ Код на GitHub: https://github.com/clonscorpiona-creator/stl
-❌ Backend на Render: Не задеплоен (404 ошибка)
+## Вариант 1: Простой деплой (рекомендуется)
 
-## Шаги для деплоя
+Используем SQLite + один веб-сервис (быстрее и проще)
 
-### 1. Зайдите на Render
+### Шаг 1: Создайте новый Web Service
 
-Откройте: https://dashboard.render.com
+1. Откройте https://dashboard.render.com
+2. Нажмите **"New +"** → **"Web Service"**
+3. Нажмите **"Connect a repository"**
+4. Выберите репозиторий: **`clonscorpiona-creator/stl`**
 
-Если нет аккаунта:
-- Sign Up (можно через GitHub)
-- Подтвердите email
+### Шаг 2: Настройте сервис
 
-### 2. Создайте Blueprint
+Заполните поля:
 
-1. Нажмите **New +** (синяя кнопка справа вверху)
-2. Выберите **Blueprint**
-3. Подключите GitHub:
-   - Если первый раз: нажмите "Connect GitHub"
-   - Авторизуйте Render в GitHub
-   - Выберите репозиторий: **clonscorpiona-creator/stl**
+| Поле | Значение |
+|------|----------|
+| **Name** | `stl-platform` |
+| **Region** | Frankfurt (Germany) |
+| **Root Directory** | (оставьте пустым) |
+| **Environment** | `Python` |
+| **Build Command** | `pip install -r requirements.txt && python manage.py collectstatic --noinput --clear` |
+| **Start Command** | `python manage.py runserver 0.0.0.0:$PORT` |
 
-### 3. Render найдёт конфигурацию
+### Шаг 3: Добавьте переменные окружения
 
-Render автоматически обнаружит файл `render-backend.yaml` и покажет:
-- ✅ Web Service: **stl-api**
-- ✅ PostgreSQL: **stl-db**
+Нажмите **"Advanced"** → **"Add Environment Variable"**:
 
-### 4. Настройте Environment Variables
-
-Перед деплоем нажмите на **stl-api** и добавьте переменные:
-
-**Обязательные:**
 ```
-RESEND_API_KEY=re_xxxxxxxxxx
-```
-Получите на https://resend.com (бесплатно, нужна регистрация)
-
-**Автоматические (уже настроены в yaml):**
-- DATABASE_URL - подключится автоматически из stl-db
-- SESSION_SECRET - сгенерируется автоматически
-- NODE_ENV=production
-
-**Для split deployment:**
-```
-NEXT_PUBLIC_API_URL=https://stl-api.onrender.com
-NEXT_PUBLIC_APP_URL=https://stl-platform.pages.dev
-ALLOWED_ORIGINS=https://stl-platform.pages.dev,https://*.stl-platform.pages.dev
+DEBUG = false
+ALLOWED_HOSTS = *
+CSRF_TRUSTED_ORIGINS = https://*.onrender.com
+SECRET_KEY = stl-secret-key-change-this-12345
 ```
 
-### 5. Нажмите Apply
+### Шаг 4: Выберите тариф
 
-Render начнёт деплой:
-1. Создаст PostgreSQL базу данных (1-2 минуты)
-2. Установит зависимости (2-3 минуты)
-3. Применит миграции Prisma (1 минута)
-4. Соберёт приложение (2-3 минуты)
-5. Запустит сервер
+- **Plan**: Free
+- **Instance Type**: Static
 
-**Общее время: 5-10 минут**
+### Шаг 5: Запустите деплой
 
-### 6. Дождитесь завершения
+Нажмите **"Create Web Service"**
 
-В логах вы увидите:
+**Время деплоя:** 3-5 минут
+
+---
+
+## Вариант 2: Полный деплой с PostgreSQL
+
+Используем `render-django.yaml` с отдельной базой данных
+
+### Шаг 1: Откройте Blueprint
+
+1. https://dashboard.render.com/blueprints
+2. **"New +"** → **"Blueprint"**
+3. Подключите репозиторий `clonscorpiona-creator/stl`
+
+### Шаг 2: Примените конфигурацию
+
+1. Render найдет файл `render-django.yaml`
+2. Нажмите **"Apply"**
+3. Дождитесь создания БД и сервиса
+
+### Шаг 3: Настройте переменные
+
+Добавьте в Environment сервиса `stl-django`:
+
 ```
-==> Building...
-==> Installing dependencies...
-==> Running prisma generate...
-==> Running prisma migrate deploy...
-==> Building Next.js...
-==> Starting server...
-==> Your service is live 🎉
+ALLOWED_HOSTS = stl-django.onrender.com,*.onrender.com
+CSRF_TRUSTED_ORIGINS = https://stl-django.onrender.com
 ```
 
-### 7. Проверьте API
+---
 
-После деплоя выполните:
+## ✅ Проверка после деплоя
+
+1. Откройте `https://stl-platform.onrender.com` (или ваш URL)
+2. Проверьте:
+   - ✅ Главная страница загружается
+   - ✅ Вход/регистрация работают
+   - ✅ Чат открывается
+
+---
+
+## 🔧 Создание суперпользователя
+
+После деплоя откройте **Shell** в Dashboard сервиса:
+
 ```bash
-curl https://stl-api.onrender.com/api/health
+python manage.py createsuperuser
 ```
 
-Должен вернуть:
-```json
-{
-  "status": "ok",
-  "database": "connected",
-  "initialized": true,
-  "userCount": 0
-}
-```
+Введите:
+- Username: `admin`
+- Email: `your@email.com`
+- Password: (введите дважды)
 
-## Troubleshooting
+---
 
-### Ошибка: "RESEND_API_KEY not set"
-- Добавьте RESEND_API_KEY в Environment Variables
-- Получите ключ на https://resend.com
+## ⚠️ Важно!
 
-### Ошибка: "Migration failed"
-- Проверьте логи миграций
-- Убедитесь, что DATABASE_URL подключен
-- Миграции находятся в prisma/migrations/
+### Бесплатный тариф Render:
+- Сервис "засыпает" через 15 мин бездействия
+- Первый запрос после "сна" занимает ~30 секунд
+- База данных SQLite сохраняется между перезапусками
 
-### Ошибка: "Build failed"
-- Проверьте логи сборки
-- Убедитесь, что package.json корректен
-- Проверьте, что все зависимости установлены
+### Для production:
+- Рекомендуется тариф **Standard ($7/мес)**
+- Подключите постоянный домен
+- Настройте HTTPS
 
-### Render засыпает (Free tier)
-- Первый запрос после 15 минут будет медленным (cold start)
-- Решение: UptimeRobot для пинга каждые 5 минут
-- Или платный план ($7/мес) без sleep
+---
 
-## Что дальше?
+## 📊 Ссылки
 
-После успешного деплоя на Render:
-1. ✅ Backend работает на https://stl-api.onrender.com
-2. ⏭️ Деплой Frontend на Cloudflare Pages
-3. ⏭️ Настройка environment variables на Cloudflare
-4. ⏭️ Проверка работоспособности
-
-См. DEPLOYMENT_CHECKLIST.md для полного чеклиста.
+- **Ваши сервисы:** https://dashboard.render.com/services
+- **Логи сервиса:** Dashboard → Service → Logs
+- **Консоль (Shell):** Dashboard → Service → Shell
