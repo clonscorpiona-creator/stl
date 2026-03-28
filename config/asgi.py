@@ -23,16 +23,6 @@ django_asgi_app = get_asgi_application()
 from chat import routing as chat_routing
 from chat.middleware import WebSocketAuthMiddlewareStack
 
-application = ProtocolTypeRouter({
-    # HTTP запросы обрабатываются стандартным Django ASGI
-    "http": django_asgi_app,
-
-    # WebSocket подключения с кастомной авторизацией
-    "websocket": AllowedHostsOriginValidator(
-        WebSocketAuthMiddlewareStack(
-            URLRouter(
-                chat_routing.websocket_urlpatterns
-            )
-        )
-    ),
-})
+# Простой ASGI application для Render
+# WebSocket отключён для бесплатного тарифа (требуется Redis)
+application = django_asgi_app
