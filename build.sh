@@ -4,6 +4,17 @@
 # Exit on error
 set -o errexit
 
+# Create virtual environment if not exists
+if [ ! -d ".venv" ]; then
+    python -m venv .venv
+fi
+
+# Activate virtual environment
+source .venv/bin/activate
+
+# Upgrade pip
+pip install --upgrade pip
+
 # Install dependencies
 pip install -r requirements.txt
 
@@ -12,6 +23,3 @@ python manage.py collectstatic --noinput --clear
 
 # Run migrations
 python manage.py migrate --noinput
-
-# Create superuser if not exists (optional)
-# python manage.py shell -c "from accounts.models import User; User.objects.filter(is_superuser=True).exists() or User.objects.create_superuser('admin', 'admin@example.com', 'admin')"
