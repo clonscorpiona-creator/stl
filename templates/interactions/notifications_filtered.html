@@ -1,0 +1,401 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ type_info.title }} - {{ category.name }} - STL{% endblock %}
+
+{% block extra_css %}
+<style>
+    .filtered-notifications-container {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    .filter-header {
+        background: white;
+        border-radius: 16px;
+        padding: 24px 30px;
+        margin-bottom: 24px;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+        display: flex;
+        align-items: center;
+        gap: 16px;
+    }
+
+    .filter-icon {
+        font-size: 36px;
+    }
+
+    .filter-info {
+        flex: 1;
+    }
+
+    .filter-category {
+        font-size: 14px;
+        color: #666;
+        margin-bottom: 4px;
+    }
+
+    .filter-category a {
+        color: var(--primary);
+        text-decoration: none;
+    }
+
+    .filter-title {
+        font-size: 22px;
+        font-weight: 700;
+        color: #333;
+    }
+
+    .filter-count {
+        background: #ef4444;
+        color: white;
+        font-size: 14px;
+        font-weight: 700;
+        padding: 6px 14px;
+        border-radius: 20px;
+    }
+
+    .back-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: #666;
+        text-decoration: none;
+        padding: 10px 16px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        transition: all 0.2s;
+    }
+
+    .back-button:hover {
+        background: #e9ecef;
+        color: #333;
+    }
+
+    .notification-list {
+        background: white;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    }
+
+    .notification-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 20px;
+        padding: 20px 24px;
+        border-bottom: 1px solid #f0f0f0;
+        transition: background 0.2s;
+    }
+
+    .notification-item:last-child {
+        border-bottom: none;
+    }
+
+    .notification-item:hover {
+        background: #f8f9fa;
+    }
+
+    .notification-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background: #f0f0f0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+        flex-shrink: 0;
+    }
+
+    .notification-body {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .notification-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 8px;
+    }
+
+    .notification-actor {
+        font-weight: 600;
+        color: #333;
+    }
+
+    .notification-time {
+        font-size: 13px;
+        color: #999;
+        margin-left: auto;
+    }
+
+    .notification-text {
+        color: #666;
+        line-height: 1.6;
+    }
+
+    .notification-text a {
+        color: var(--primary);
+        text-decoration: none;
+    }
+
+    .notification-text a:hover {
+        text-decoration: underline;
+    }
+
+    .work-preview {
+        margin-top: 12px;
+        padding: 12px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        display: flex;
+        gap: 12px;
+    }
+
+    .work-preview img {
+        width: 60px;
+        height: 60px;
+        object-fit: cover;
+        border-radius: 6px;
+    }
+
+    .work-preview-info {
+        flex: 1;
+    }
+
+    .work-preview-title {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 4px;
+    }
+
+    .work-preview-title a {
+        color: inherit;
+        text-decoration: none;
+    }
+
+    .work-preview-title a:hover {
+        color: var(--primary);
+    }
+
+    .work-preview-meta {
+        font-size: 13px;
+        color: #666;
+    }
+
+    .empty-list {
+        padding: 60px 20px;
+        text-align: center;
+        color: #666;
+    }
+
+    .works-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 16px;
+        padding: 20px;
+    }
+
+    .work-card-small {
+        background: #f8f9fa;
+        border-radius: 12px;
+        overflow: hidden;
+        transition: transform 0.2s;
+    }
+
+    .work-card-small:hover {
+        transform: translateY(-4px);
+    }
+
+    .work-card-small img {
+        width: 100%;
+        height: 150px;
+        object-fit: cover;
+    }
+
+    .work-card-small-body {
+        padding: 12px;
+    }
+
+    .work-card-small-title {
+        font-size: 14px;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 6px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .work-card-small-title a {
+        color: inherit;
+        text-decoration: none;
+    }
+
+    .work-card-small-title a:hover {
+        color: var(--primary);
+    }
+
+    .work-card-small-author {
+        font-size: 12px;
+        color: #666;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="filtered-notifications-container">
+    <a href="{% url 'interactions:notifications' %}" class="back-button">
+        ← Назад к уведомлениям
+    </a>
+
+    <div class="filter-header">
+        <div class="filter-icon">{{ type_info.icon }}</div>
+        <div class="filter-info">
+            <div class="filter-category">
+                Категория: <a href="{% url 'core:work_list' %}?category={{ category.slug }}">{{ category.name }}</a>
+            </div>
+            <div class="filter-title">{{ type_info.title }}</div>
+        </div>
+        <div class="filter-count">{{ notifications.count|add:works|length }}</div>
+    </div>
+
+    {% if notification_type == 'new_work' and works %}
+        <!-- Показываем новые работы -->
+        <div class="notification-list">
+            <div class="works-grid">
+                {% for work in works %}
+                <div class="work-card-small">
+                    {% if work.cover %}
+                        <a href="{% url 'core:work_detail' work.author.username work.slug %}">
+                            <img src="{{ work.cover.url }}" alt="{{ work.title }}">
+                        </a>
+                    {% endif %}
+                    <div class="work-card-small-body">
+                        <div class="work-card-small-title">
+                            <a href="{% url 'core:work_detail' work.author.username work.slug %}">{{ work.title }}</a>
+                        </div>
+                        <div class="work-card-small-author">
+                            {{ work.author.username }}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% elif notifications %}
+        <!-- Показываем уведомления -->
+        <div class="notification-list">
+            {% for notification in notifications %}
+            <div class="notification-item">
+                <div class="notification-icon">
+                    {% if notification.type == 'like' %}❤️
+                    {% elif notification.type == 'comment' %}💬
+                    {% elif notification.type == 'repost' %}🔁
+                    {% elif notification.type == 'save' %}🔖
+                    {% elif notification.type == 'complaint' %}⚠️
+                    {% else %}🔔
+                    {% endif %}
+                </div>
+                <div class="notification-body">
+                    <div class="notification-header">
+                        <span class="notification-actor">{{ notification.actor.username }}</span>
+                        <span class="notification-time">{{ notification.created_at|date:"d.m.Y H:i" }}</span>
+                    </div>
+                    <div class="notification-text">
+                        {% if notification.type == 'like' %}
+                            Оценил вашу работу
+                        {% elif notification.type == 'comment' %}
+                            Оставил комментарий
+                            {% if notification.comment %}
+                                <div style="margin-top: 8px; padding: 8px 12px; background: #f0f0f0; border-radius: 6px; font-size: 14px;">
+                                    "{{ notification.comment.content|truncatechars:200 }}"
+                                </div>
+                            {% endif %}
+                        {% elif notification.type == 'repost' %}
+                            сделал репост
+                        {% elif notification.type == 'save' %}
+                            сохранил вашу работу
+                        {% elif notification.type == 'complaint' %}
+                            Пожаловался на работу
+                        {% endif %}
+
+                        {% if notification.work %}
+                            <div class="work-preview">
+                                {% if notification.work.cover %}
+                                    <a href="{% url 'core:work_detail' notification.work.author.username notification.work.slug %}">
+                                        <img src="{{ notification.work.cover.url }}" alt="{{ notification.work.title }}">
+                                    </a>
+                                {% endif %}
+                                <div class="work-preview-info">
+                                    <div class="work-preview-title">
+                                        <a href="{% url 'core:work_detail' notification.work.author.username notification.work.slug %}">
+                                            {{ notification.work.title }}
+                                        </a>
+                                    </div>
+                                    <div class="work-preview-meta">
+                                        Автор: {{ notification.work.author.username }}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-list">
+            <p style="font-size: 16px; margin-bottom: 20px;">
+                {% if notification_type == 'new_work' %}
+                    Нет новых работ в этой категории
+                {% else %}
+                    Нет уведомлений этого типа
+                {% endif %}
+            </p>
+            <a href="{% url 'interactions:notifications' %}" style="color: var(--primary); text-decoration: none;">
+                Вернуться к уведомлениям
+            </a>
+        </div>
+    {% endif %}
+</div>
+
+<script>
+    // При загрузке фильтрованной страницы обновляем счетчик в шапке
+    document.addEventListener('DOMContentLoaded', function() {
+        // Помечаем уведомления как просмотренные и обновляем счетчик
+        fetch('/api/mark-notifications-viewed/', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken')
+            }
+        }).then(() => {
+            // Обновляем бейдж визуально
+            const badge = document.getElementById('notificationsBadge');
+            if (badge) {
+                badge.textContent = '+0';
+                badge.style.display = 'none';
+            }
+        }).catch(error => {
+            console.error('[Mark Notifications Viewed] Error:', error);
+        });
+    });
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+</script>
+{% endblock %}

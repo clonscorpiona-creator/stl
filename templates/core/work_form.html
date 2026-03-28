@@ -6,7 +6,7 @@
 <div style="max-width: 800px; margin: 0 auto;">
     <h1 style="margin-bottom: 30px;">{% if editing %}Редактировать работу{% else %}Новая работа{% endif %}</h1>
 
-    <form method="post" enctype="multipart/form-data" style="background: white; padding: 30px; border-radius: 12px;">
+    <form id="work-form" method="post" enctype="multipart/form-data" style="background: white; padding: 30px; border-radius: 12px;">
         {% csrf_token %}
 
         <div style="margin-bottom: 20px;">
@@ -54,7 +54,7 @@
         </div>
 
         <div style="display: flex; gap: 15px;">
-            <button type="submit" class="btn btn-primary">{% if editing %}Сохранить{% else %}Опубликовать{% endif %}</button>
+            <button type="submit" class="btn btn-primary" id="submit-btn">{% if editing %}Сохранить{% else %}Опубликовать{% endif %}</button>
             {% if work %}
                 <a href="{% url 'core:work_detail' work.author.username work.slug %}" class="btn btn-secondary">Отмена</a>
             {% else %}
@@ -63,4 +63,45 @@
         </div>
     </form>
 </div>
+
+<script>
+document.getElementById('work-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    var form = this;
+    var formData = new FormData(form);
+    var submitBtn = document.getElementById('submit-btn');
+
+    // Блокируем кнопку отправки
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Публикация...';
+
+    // Отправляем AJAX запрос
+    fetch('{% if editing %}{% url "core:work_edit" work.author.username work.slug %}{% else %}{% url "core:work_create" %}{% endif %}', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Перенаправляем на страницу работы
+            window.location.href = data.redirect_url;
+        } else {
+            alert('Ошибка: ' + (data.error || 'Неизвестная ошибка'));
+            submitBtn.disabled = false;
+            submitBtn.textContent = '{% if editing %}Сохранить{% else %}Опубликовать{% endif %}';
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Произошла ошибка при публикации работы');
+        submitBtn.disabled = false;
+        submitBtn.textContent = '{% if editing %}Сохранить{% else %}Опубликовать{% endif %}';
+    });
+});
+</script>
 {% endblock %}

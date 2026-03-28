@@ -183,6 +183,17 @@ def create_work(request):
             work.cover = request.FILES['cover']
             work.save()
 
+        # Проверяем, это AJAX запрос
+        is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
+        is_json = 'application/json' in request.headers.get('Accept', '')
+
+        if is_ajax or is_json:
+            from django.http import JsonResponse
+            return JsonResponse({
+                'success': True,
+                'redirect_url': work.get_absolute_url()
+            })
+
         return redirect('core:work_detail', username=request.user.username, slug=work.slug)
 
     categories = Category.objects.all()

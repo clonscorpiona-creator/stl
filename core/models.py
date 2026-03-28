@@ -94,6 +94,12 @@ class Work(models.Model):
             self.slug = slug
         super().save(*args, **kwargs)
 
+    def get_absolute_url(self):
+        """Получить URL работы"""
+        if self.author and self.slug:
+            return f'/works/{self.author.username}/{self.slug}/'
+        return None
+
 
 class WorkImage(models.Model):
     """Изображения работы (галерея)"""
