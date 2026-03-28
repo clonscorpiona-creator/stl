@@ -6,11 +6,36 @@
 <div style="display: grid; grid-template-columns: 1fr 350px; gap: 30px;">
     <!-- Основной контент -->
     <div>
-        <!-- Изображения работы -->
+        <!-- Изображения и видео работы -->
         <div style="background: white; border-radius: 12px; overflow: hidden; margin-bottom: 20px;">
             {% if work.cover %}
                 <img src="{{ work.cover.url }}" alt="{{ work.title }}" style="width: 100%; max-height: 600px; object-fit: contain;">
             {% endif %}
+
+            <!-- Видео -->
+            {% if work.videos.all %}
+                <div style="padding: 20px;">
+                    {% for video in work.videos.all %}
+                        <div class="video-container" data-video-id="{{ video.id }}" style="position: relative; margin-bottom: 20px; background: #000; border-radius: 12px; overflow: hidden;" data-aspect-ratio="auto">
+                            <video id="video-{{ video.id }}" class="video-player" style="width: 100%; height: auto; max-height: 600px; display: block;" controls preload="metadata" onloadedmetadata="adjustVideoFrame(this)">
+                                <source src="{{ video.video.url }}" type="video/mp4">
+                                Ваш браузер не поддерживает видео.
+                            </video>
+                            <!-- Кнопки управления -->
+                            <div style="position: absolute; bottom: 60px; right: 20px; display: flex; gap: 10px; opacity: 0; transition: opacity 0.3s;" class="video-controls">
+                                <button onclick="toggleFullscreen('video-{{ video.id }}')" style="background: rgba(0,0,0,0.7); color: white; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer; font-size: 18px; display: flex; align-items: center; gap: 5px;" title="На весь экран">
+                                    <span>⛶</span>
+                                    <span style="font-size: 12px;">Полноэкранный режим</span>
+                                </button>
+                            </div>
+                            {% if video.caption %}
+                                <p style="color: #666; font-size: 14px; margin-top: 10px; padding: 10px;">{{ video.caption }}</p>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
             {% if work.images.all %}
                 <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; padding: 20px;">
                     {% for image in work.images.all %}
@@ -22,11 +47,74 @@
 
         <!-- Описание -->
         <div style="background: white; padding: 30px; border-radius: 12px; margin-bottom: 20px;">
-            <h1 style="font-size: 28px; margin-bottom: 10px;">{{ work.title }}</h1>
-            <p style="color: #666; margin-bottom: 20px;">
-                Автор: <a href="{% url 'accounts:profile' work.author.username %}" style="color: #e60023;">{{ work.author.username }}</a>
-                {% if work.category %}• {{ work.category.name }}{% endif %}
-            </p>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+                    <h1 style="font-size: 28px; margin: 0;">{{ work.title }}</h1>
+                    {% if work.is_admin_recommended %}
+                        <span class="admin-recommended-badge" style="background: linear-gradient(135deg, #ffd700, #ff8c00); color: #000; padding: 4px 12px; border-radius: 16px; font-weight: 700; font-size: 12px; display: inline-block;">
+                            ТОП
+                        </span>
+                    {% endif %}
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    {% if user.is_staff and user != work.author %}
+                        <button type="button" id="toggle-recommend-btn" data-work-id="{{ work.id }}" class="btn {% if work.is_admin_recommended %}btn-primary{% else %}btn-secondary{% endif %}" style="padding: 8px 16px; font-size: 14px;">
+                            {% if work.is_admin_recommended %}★ Снять рекомендацию{% else %}☆ Рекомендовать{% endif %}
+                        </button>
+                    {% endif %}
+                    {% if user == work.author or user.is_staff %}
+                        <a href="{% url 'core:work_edit' work.author.username work.slug %}" class="btn btn-secondary" style="padding: 8px 16px; font-size: 14px;">
+                            ✏️ Редактировать
+                        </a>
+                        <a href="{% url 'core:work_delete' work.author.username work.slug %}" class="btn btn-secondary" style="padding: 8px 16px; font-size: 14px; color: #dc3545;"
+                           onclick="return confirm('Вы уверены, что хотите удалить эту работу?')">
+                            🗑️ Удалить
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+            <div style="margin-bottom: 20px;">
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <p style="color: #666; margin-bottom: 5px;">
+                        Автор: <a href="{% url 'accounts:profile' work.author.username %}" style="color: #e60023;">{{ work.author.username }}</a>
+                        {% if work.author.profile.is_banned %}
+                            <span style="background: #dc3545; color: white; padding: 2px 8px; border-radius: 4px; font-size: 11px; margin-left: 8px;">ЗАБАНЕН</span>
+                        {% elif work.author.profile.warning_count > 0 %}
+                            <span style="display: inline-flex; gap: 4px; margin-left: 8px; align-items: center;">
+                                {% for i in work.author.profile.warning_count|make_list %}
+                                    <span style="display: inline-block; width: 8px; height: 8px; background: #ffc107; border-radius: 50%;"></span>
+                                {% endfor %}
+                            </span>
+                        {% else %}
+                            <span style="display: inline-block; width: 8px; height: 8px; background: #28a745; margin-left: 8px; border-radius: 50%;" title="Пользователь активен"></span>
+                        {% endif %}
+                        {% if work.category %}• {{ work.category.name }}{% endif %}
+                    </p>
+                    <!-- Роль автора -->
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+                        {% if work.author.is_staff %}
+                            <span style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 1px 6px; border-radius: 3px; font-size: 8px; font-weight: 600; height: 14px; line-height: 12px; display: inline-flex; align-items: center;">АДМИН</span>
+                        {% elif work.author.profile.is_senior_moderator %}
+                            <span style="background: linear-gradient(135deg, #f093fb, #f5576c); color: white; padding: 1px 6px; border-radius: 3px; font-size: 8px; font-weight: 600; height: 14px; line-height: 12px; display: inline-flex; align-items: center;">СТ. МОД</span>
+                        {% elif work.author.profile.is_moderator %}
+                            <span style="background: linear-gradient(135deg, #4facfe, #00f2fe); color: white; padding: 1px 6px; border-radius: 3px; font-size: 8px; font-weight: 600; height: 14px; line-height: 12px; display: inline-flex; align-items: center;">МОД</span>
+                        {% endif %}
+                        {% if work.author.profile.warning_count > 0 and not work.author.profile.is_banned %}
+                            <span style="background: #fff3cd; color: #856404; padding: 1px 6px; border-radius: 3px; font-size: 8px; font-weight: 600; border: 1px solid #ffc107; height: 14px; line-height: 12px; display: inline-flex; align-items: center; gap: 3px;">
+                                НАРУШИТЕЛЬ
+                                {% for i in work.author.profile.warning_count|make_list %}
+                                    <span style="display: inline-block; width: 6px; height: 6px; background: #ffc107; border-radius: 50%;"></span>
+                                {% endfor %}
+                            </span>
+                        {% endif %}
+                    </div>
+                </div>
+                {% if user.is_staff and user != work.author and not work.author.is_staff %}
+                    <button type="button" onclick="openWarningModal()" class="btn btn-secondary" style="padding: 4px 10px; font-size: 12px; color: #ffc107; border: 1px solid #ffc107;">
+                        ⚠️ Предупреждение автору
+                    </button>
+                {% endif %}
+            </div>
 
             {% if work.description %}
                 <div style="color: #333; line-height: 1.8;">{{ work.description|linebreaks }}</div>
@@ -58,18 +146,198 @@
                 </p>
             {% endif %}
 
-            <div style="display: flex; flex-direction: column; gap: 20px;">
+            <div id="comments-container" style="display: flex; flex-direction: column; gap: 20px;">
                 {% for comment in comments %}
-                    <div style="display: flex; gap: 15px; padding-bottom: 20px; border-bottom: 1px solid #eee;">
-                        <div style="width: 40px; height: 40px; border-radius: 50%; background: #f0f0f0; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #666;">
-                            {{ comment.user.username|first|upper }}
-                        </div>
+                    <div class="comment-item" data-comment-id="{{ comment.id }}" style="display: flex; gap: 15px; padding-bottom: 20px; border-bottom: 1px solid #eee;">
+                        <a href="{% url 'accounts:profile' comment.user.username %}" style="width: 50px; height: 50px; border-radius: 50%; background: #f0f0f0; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #666; overflow: hidden; flex-shrink: 0; text-decoration: none;">
+                            {% if comment.user.avatar %}
+                                <img src="{{ comment.user.avatar.url }}" alt="{{ comment.user.username }}" style="width: 100%; height: 100%; object-fit: cover;">
+                            {% else %}
+                                {{ comment.user.username|first|upper }}
+                            {% endif %}
+                        </a>
                         <div style="flex: 1;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                                <strong>{{ comment.user.username }}</strong>
-                                <span style="color: #999; font-size: 14px;">{{ comment.created_at|date:"d.m.Y H:i" }}</span>
+                            <div style="display: flex; flex-direction: column; gap: 4px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                                        <strong>{{ comment.user.username }}</strong>
+                                        {% if comment.user.profile.is_banned %}
+                                            <span style="background: #dc3545; color: white; padding: 1px 4px; border-radius: 2px; font-size: 9px;">БАН</span>
+                                        {% elif comment.user.profile.warning_count > 0 %}
+                                            <span style="display: inline-flex; gap: 3px; margin-left: 4px; align-items: center;">
+                                                {% for i in comment.user.profile.warning_count|make_list %}
+                                                    <span style="display: inline-block; width: 6px; height: 6px; background: #ffc107; border-radius: 50%;"></span>
+                                                {% endfor %}
+                                            </span>
+                                        {% else %}
+                                            <span style="display: inline-block; width: 6px; height: 6px; background: #28a745; margin-left: 4px; border-radius: 50%;" title="Активный пользователь"></span>
+                                        {% endif %}
+                                        {% if comment.is_edited %}
+                                            <span style="color: #999; font-size: 12px; font-style: italic;">(изменено)</span>
+                                        {% endif %}
+                                    </div>
+                                    <span style="color: #999; font-size: 14px;">{{ comment.created_at|date:"d.m.Y H:i" }}</span>
+                                </div>
+                                <!-- Роль пользователя -->
+                                <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+                                    {% if comment.user.is_staff %}
+                                        <span style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 1px 6px; border-radius: 3px; font-size: 8px; font-weight: 600; height: 14px; line-height: 12px; display: inline-flex; align-items: center;">АДМИН</span>
+                                    {% elif comment.user.profile.is_senior_moderator %}
+                                        <span style="background: linear-gradient(135deg, #f093fb, #f5576c); color: white; padding: 1px 6px; border-radius: 3px; font-size: 8px; font-weight: 600; height: 14px; line-height: 12px; display: inline-flex; align-items: center;">СТ. МОД</span>
+                                    {% elif comment.user.profile.is_moderator %}
+                                        <span style="background: linear-gradient(135deg, #4facfe, #00f2fe); color: white; padding: 1px 6px; border-radius: 3px; font-size: 8px; font-weight: 600; height: 14px; line-height: 12px; display: inline-flex; align-items: center;">МОД</span>
+                                    {% endif %}
+                                    {% if comment.user.profile.warning_count > 0 and not comment.user.profile.is_banned %}
+                                        <span style="background: #fff3cd; color: #856404; padding: 1px 6px; border-radius: 3px; font-size: 8px; font-weight: 600; border: 1px solid #ffc107; height: 14px; line-height: 12px; display: inline-flex; align-items: center; gap: 3px;">
+                                            НАРУШИТЕЛЬ
+                                            {% for i in comment.user.profile.warning_count|make_list %}
+                                                <span style="display: inline-block; width: 6px; height: 6px; background: #ffc107; border-radius: 50%;"></span>
+                                            {% endfor %}
+                                        </span>
+                                    {% endif %}
+                                </div>
                             </div>
-                            <p style="color: #333;">{{ comment.content }}</p>
+                            <div class="comment-content" style="color: #333; margin-bottom: 10px;">
+                                {% if comment.is_deleted %}
+                                    <em style="color: #999;">Комментарий удален</em>
+                                {% else %}
+                                    <p class="comment-text">{{ comment.content|linebreaks }}</p>
+                                {% endif %}
+                            </div>
+                            {% if not comment.is_deleted %}
+                            <div style="display: flex; gap: 15px; align-items: center;">
+                                <button type="button" class="comment-like-btn" data-comment-id="{{ comment.id }}" style="background: none; border: none; cursor: pointer; color: #666; display: flex; align-items: center; gap: 5px; padding: 0;">
+                                    <span>🤍</span>
+                                    <span class="likes-count">{{ comment.likes_count }}</span>
+                                </button>
+                                <button type="button" class="comment-reply-btn" data-comment-id="{{ comment.id }}" style="background: none; border: none; cursor: pointer; color: #666; font-size: 14px; padding: 0;">
+                                    Ответить
+                                </button>
+                                {% if user == comment.user or user.is_staff %}
+                                    <button type="button" class="comment-edit-btn" data-comment-id="{{ comment.id }}" style="background: none; border: none; cursor: pointer; color: #666; font-size: 14px; padding: 0;">
+                                        {% if user.is_staff %}✏️{% else %}Редактировать{% endif %}
+                                    </button>
+                                {% endif %}
+                                {% if user == comment.user or user.is_staff %}
+                                    <button type="button" class="comment-delete-btn" data-comment-id="{{ comment.id }}" style="background: none; border: none; cursor: pointer; color: #dc3545; font-size: 14px; padding: 0;">
+                                        {% if user.is_staff %}🗑️{% else %}Удалить{% endif %}
+                                    </button>
+                                {% endif %}
+                                {% if user.is_staff and user != comment.user and not comment.user.is_staff %}
+                                    <button type="button" class="comment-warning-btn" data-comment-id="{{ comment.id }}" data-user-id="{{ comment.user.id }}" data-username="{{ comment.user.username }}" style="background: none; border: none; cursor: pointer; color: #ffc107; font-size: 14px; padding: 0;">
+                                        ⚠️ Предупреждение
+                                    </button>
+                                {% endif %}
+                            </div>
+                            <!-- Форма ответа -->
+                            <div id="reply-form-{{ comment.id }}" class="reply-form" style="display: none; margin-top: 15px;">
+                                <form action="{% url 'interactions:comment' work.id %}" method="post">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="parent" value="{{ comment.id }}">
+                                    <textarea name="content" rows="2" placeholder="Напишите ответ..." required
+                                        style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 8px; resize: vertical;"></textarea>
+                                    <div style="display: flex; gap: 10px; margin-top: 10px;">
+                                        <button type="submit" class="btn btn-primary" style="padding: 6px 12px; font-size: 14px;">Отправить ответ</button>
+                                        <button type="button" class="btn btn-secondary cancel-reply" style="padding: 6px 12px; font-size: 14px;">Отмена</button>
+                                    </div>
+                                </form>
+                            </div>
+                            <!-- Форма редактирования -->
+                            <div id="edit-form-{{ comment.id }}" class="edit-form" style="display: none; margin-top: 15px;">
+                                <form method="post" action="{% url 'interactions:comment_edit' comment.id %}">
+                                    {% csrf_token %}
+                                    <textarea name="content" rows="3" required
+                                        style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 8px; resize: vertical;">{{ comment.content }}</textarea>
+                                    <div style="display: flex; gap: 10px; margin-top: 10px;">
+                                        <button type="submit" class="btn btn-primary" style="padding: 6px 12px; font-size: 14px;">Сохранить</button>
+                                        <button type="button" class="btn btn-secondary cancel-edit" style="padding: 6px 12px; font-size: 14px;">Отмена</button>
+                                    </div>
+                                </form>
+                            </div>
+                            {% endif %}
+                            <!-- Ответы на комментарий -->
+                            {% if comment.replies.all %}
+                                <div style="margin-top: 15px; margin-left: 30px; display: flex; flex-direction: column; gap: 15px;">
+                                    {% for reply in comment.replies.all %}
+                                        <div class="reply-item" data-comment-id="{{ reply.id }}" style="display: flex; gap: 15px; padding-top: 15px; border-top: 1px solid #f0f0f0;">
+                                            <a href="{% url 'accounts:profile' reply.user.username %}" style="width: 40px; height: 40px; border-radius: 50%; background: #f0f0f0; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #666; font-size: 14px; overflow: hidden; flex-shrink: 0; text-decoration: none;">
+                                                {% if reply.user.avatar %}
+                                                    <img src="{{ reply.user.avatar.url }}" alt="{{ reply.user.username }}" style="width: 100%; height: 100%; object-fit: cover;">
+                                                {% else %}
+                                                    {{ reply.user.username|first|upper }}
+                                                {% endif %}
+                                            </a>
+                                            <div style="flex: 1;">
+                                                <div style="display: flex; flex-direction: column; gap: 4px;">
+                                                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                                                        <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                                                            <strong style="font-size: 14px;">{{ reply.user.username }}</strong>
+                                                            {% if reply.user.profile.is_banned %}
+                                                                <span style="background: #dc3545; color: white; padding: 1px 4px; border-radius: 2px; font-size: 9px;">БАН</span>
+                                                            {% elif reply.user.profile.warning_count > 0 %}
+                                                                <span style="display: inline-flex; gap: 3px; margin-left: 4px; align-items: center;">
+                                                                    {% for i in reply.user.profile.warning_count|make_list %}
+                                                                        <span style="display: inline-block; width: 6px; height: 6px; background: #ffc107; border-radius: 50%;"></span>
+                                                                    {% endfor %}
+                                                                </span>
+                                                            {% else %}
+                                                                <span style="display: inline-block; width: 6px; height: 6px; background: #28a745; margin-left: 4px; border-radius: 50%;" title="Активный пользователь"></span>
+                                                            {% endif %}
+                                                            {% if reply.is_edited %}
+                                                                <span style="color: #999; font-size: 11px; font-style: italic;">(изменено)</span>
+                                                            {% endif %}
+                                                        </div>
+                                                        <span style="color: #999; font-size: 12px;">{{ reply.created_at|date:"d.m.Y H:i" }}</span>
+                                                    </div>
+                                                    <!-- Роль пользователя -->
+                                                    <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+                                                        {% if reply.user.is_staff %}
+                                                            <span style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 1px 6px; border-radius: 3px; font-size: 8px; font-weight: 600; height: 14px; line-height: 12px; display: inline-flex; align-items: center;">АДМИН</span>
+                                                        {% elif reply.user.profile.is_senior_moderator %}
+                                                            <span style="background: linear-gradient(135deg, #f093fb, #f5576c); color: white; padding: 1px 6px; border-radius: 3px; font-size: 8px; font-weight: 600; height: 14px; line-height: 12px; display: inline-flex; align-items: center;">СТ. МОД</span>
+                                                        {% elif reply.user.profile.is_moderator %}
+                                                            <span style="background: linear-gradient(135deg, #4facfe, #00f2fe); color: white; padding: 1px 6px; border-radius: 3px; font-size: 8px; font-weight: 600; height: 14px; line-height: 12px; display: inline-flex; align-items: center;">МОД</span>
+                                                        {% endif %}
+                                                        {% if reply.user.profile.warning_count > 0 and not reply.user.profile.is_banned %}
+                                                            <span style="background: #fff3cd; color: #856404; padding: 1px 6px; border-radius: 3px; font-size: 8px; font-weight: 600; border: 1px solid #ffc107; height: 14px; line-height: 12px; display: inline-flex; align-items: center; gap: 3px;">
+                                                                НАРУШИТЕЛЬ
+                                                                {% for i in reply.user.profile.warning_count|make_list %}
+                                                                    <span style="display: inline-block; width: 6px; height: 6px; background: #ffc107; border-radius: 50%;"></span>
+                                                                {% endfor %}
+                                                            </span>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                                <div style="color: #333; font-size: 14px;">
+                                                    {% if reply.is_deleted %}
+                                                        <em style="color: #999;">Комментарий удален</em>
+                                                    {% else %}
+                                                        {{ reply.content|linebreaks }}
+                                                    {% endif %}
+                                                </div>
+                                                {% if not reply.is_deleted %}
+                                                <div style="display: flex; gap: 15px; align-items: center; margin-top: 8px;">
+                                                    <button type="button" class="comment-like-btn" data-comment-id="{{ reply.id }}" style="background: none; border: none; cursor: pointer; color: #666; display: flex; align-items: center; gap: 5px; padding: 0; font-size: 13px;">
+                                                        <span>🤍</span>
+                                                        <span class="likes-count">{{ reply.likes_count }}</span>
+                                                    </button>
+                                                    {% if user == reply.user or user.is_staff %}
+                                                        <button type="button" class="comment-delete-btn" data-comment-id="{{ reply.id }}" style="background: none; border: none; cursor: pointer; color: #dc3545; font-size: 13px; padding: 0;">
+                                                            {% if user.is_staff %}🗑️{% else %}Удалить{% endif %}
+                                                        </button>
+                                                    {% endif %}
+                                                    {% if user.is_staff and user != reply.user and not reply.user.is_staff %}
+                                                        <button type="button" class="comment-warning-btn" data-comment-id="{{ reply.id }}" data-user-id="{{ reply.user.id }}" data-username="{{ reply.user.username }}" style="background: none; border: none; cursor: pointer; color: #ffc107; font-size: 13px; padding: 0;">
+                                                            ⚠️ Предупреждение
+                                                        </button>
+                                                    {% endif %}
+                                                </div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
                         </div>
                     </div>
                 {% empty %}
@@ -151,17 +419,566 @@
             {% for work in similar_works %}
                 <div class="work-card">
                     {% if work.cover %}
-                        <a href="{% url 'core:work_detail' work.author.username work.slug %}">
+                        {% if work.author and work.slug %}
+                            <a href="{% url 'core:work_detail' work.author.username work.slug %}">
+                                <img src="{{ work.cover.url }}" alt="{{ work.title }}">
+                            </a>
+                        {% else %}
                             <img src="{{ work.cover.url }}" alt="{{ work.title }}">
-                        </a>
+                        {% endif %}
                     {% endif %}
                     <div class="work-card-body">
-                        <h3 class="work-card-title">{{ work.title }}</h3>
-                        <p class="work-card-author">от {{ work.author.username }}</p>
+                        <h3 class="work-card-title">
+                            {% if work.author and work.slug %}
+                                <a href="{% url 'core:work_detail' work.author.username work.slug %}" style="color: inherit; text-decoration: none;">
+                                    {{ work.title }}
+                                </a>
+                            {% else %}
+                                {{ work.title }}
+                            {% endif %}
+                        </h3>
+                        <p class="work-card-author">
+                            {% if work.author %}
+                                от <a href="{% url 'accounts:profile' work.author.username %}">{{ work.author.username }}</a>
+                            {% endif %}
+                        </p>
                     </div>
                 </div>
             {% endfor %}
         </div>
     </div>
 {% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<style>
+    /* Стили для fullscreen режима */
+    .video-container:-webkit-full-screen {
+        width: 100%;
+        height: 100%;
+        background: #000;
+    }
+    .video-container:-webkit-full-screen video {
+        width: 100%;
+        height: 100%;
+        max-height: none;
+        object-fit: contain;
+    }
+    .video-container:-moz-full-screen {
+        width: 100%;
+        height: 100%;
+        background: #000;
+    }
+    .video-container:-moz-full-screen video {
+        width: 100%;
+        height: 100%;
+        max-height: none;
+        object-fit: contain;
+    }
+    .video-container:-ms-fullscreen {
+        width: 100%;
+        height: 100%;
+        background: #000;
+    }
+    .video-container:-ms-fullscreen video {
+        width: 100%;
+        height: 100%;
+        max-height: none;
+        object-fit: contain;
+    }
+    .video-container:fullscreen {
+        width: 100%;
+        height: 100%;
+        background: #000;
+    }
+    .video-container:fullscreen video {
+        width: 100%;
+        height: 100%;
+        max-height: none;
+        object-fit: contain;
+    }
+</style>
+<script>
+    // Функция для подгонки размера фрейма под пропорции видео
+    function adjustVideoFrame(videoElement) {
+        if (!videoElement) return;
+
+        const container = videoElement.closest('.video-container');
+        if (!container) return;
+
+        const videoWidth = videoElement.videoWidth;
+        const videoHeight = videoElement.videoHeight;
+
+        if (videoWidth && videoHeight) {
+            const aspectRatio = videoWidth / videoHeight;
+
+            // Сохраняем пропорции в data-атрибуте
+            container.dataset.aspectRatio = aspectRatio;
+
+            // Вычисляем оптимальную высоту для контеймента
+            const containerWidth = container.offsetWidth;
+            const optimalHeight = containerWidth / aspectRatio;
+
+            // Применяем стили
+            videoElement.style.width = '100%';
+            videoElement.style.height = 'auto';
+            videoElement.style.maxHeight = '600px';
+            videoElement.style.objectFit = 'contain';
+
+            // Устанавливаем высоту контейнера
+            container.style.aspectRatio = `${videoWidth} / ${videoHeight}`;
+
+            console.log(`Video ${videoElement.id}: ${videoWidth}x${videoHeight}, aspect ratio: ${aspectRatio.toFixed(2)}`);
+        }
+    }
+
+    // Показываем кнопки управления при наведении на видео
+    document.querySelectorAll('.video-container').forEach(container => {
+        container.addEventListener('mouseenter', () => {
+            container.querySelector('.video-controls').style.opacity = '1';
+        });
+        container.addEventListener('mouseleave', () => {
+            container.querySelector('.video-controls').style.opacity = '0';
+        });
+
+        // Находим видео в контейнере и подстраиваем размер после загрузки метаданных
+        const video = container.querySelector('video');
+        if (video && video.readyState >= 1) {
+            adjustVideoFrame(video);
+        }
+    });
+
+    // Функция для переключения fullscreen режима
+    function toggleFullscreen(videoId) {
+        const video = document.getElementById(videoId);
+        const container = video.closest('.video-container');
+
+        if (!document.fullscreenElement) {
+            // Разворачиваем на весь экран
+            if (container.requestFullscreen) {
+                container.requestFullscreen().catch(err => {
+                    console.log('Error attempting to enable fullscreen:', err);
+                });
+            } else if (container.webkitRequestFullscreen) {
+                container.webkitRequestFullscreen();
+            } else if (container.msRequestFullscreen) {
+                container.msRequestFullscreen();
+            }
+        } else {
+            // Сворачиваем
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            } else if (document.msExitFullscreen) {
+                document.msExitFullscreen();
+            }
+        }
+    }
+
+    // Обработка изменения размера видео при fullscreen
+    document.addEventListener('fullscreenchange', () => {
+        document.querySelectorAll('.video-container').forEach(container => {
+            const video = container.querySelector('video');
+            const controls = container.querySelector('.video-controls');
+
+            if (document.fullscreenElement === container) {
+                // Видео на весь экран
+                video.style.width = '100%';
+                video.style.height = '100%';
+                video.style.maxHeight = 'none';
+                video.style.objectFit = 'contain';
+                container.style.background = '#000';
+                if (controls) controls.style.opacity = '1';
+            } else if (!document.fullscreenElement) {
+                // Возвращаем к исходному размеру с сохранением пропорций
+                video.style.width = '100%';
+                video.style.height = 'auto';
+                video.style.maxHeight = '600px';
+                video.style.objectFit = 'contain';
+                container.style.background = '#000';
+                // Восстанавливаем aspect ratio
+                if (container.dataset.aspectRatio) {
+                    const ratio = parseFloat(container.dataset.aspectRatio);
+                    container.style.aspectRatio = `${ratio}`;
+                }
+            }
+        });
+    });
+
+    // Подстраиваем размеры всех видео после загрузки страницы
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.video-player').forEach(video => {
+            if (video.readyState >= 1) {
+                adjustVideoFrame(video);
+            } else {
+                video.addEventListener('loadedmetadata', () => adjustVideoFrame(video));
+            }
+        });
+
+        // Кнопка "Рекомендует администрация"
+        const recommendBtn = document.getElementById('toggle-recommend-btn');
+        if (recommendBtn) {
+            recommendBtn.addEventListener('click', function() {
+                const workId = '{{ work.id }}';
+                const csrfToken = '{{ csrf_token }}';
+
+                fetch(`/api/works/${workId}/toggle-recommend/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': csrfToken,
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        alert('Ошибка: ' + data.error);
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            });
+        }
+
+        // Лайки комментариев
+        document.querySelectorAll('.comment-like-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const commentId = this.dataset.commentId;
+                const csrfToken = '{{ csrf_token }}';
+
+                fetch(`/interactions/comment/like/${commentId}/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': csrfToken,
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.liked !== undefined) {
+                        const likesSpan = this.querySelector('.likes-count');
+                        const heartSpan = this.querySelector('span:first-child');
+                        likesSpan.textContent = data.count;
+                        heartSpan.textContent = data.liked ? '❤️' : '🤍';
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            });
+        });
+
+        // Кнопка "Ответить"
+        document.querySelectorAll('.comment-reply-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const commentId = this.dataset.commentId;
+                const replyForm = document.getElementById(`reply-form-${commentId}`);
+
+                // Скрываем все формы ответа
+                document.querySelectorAll('.reply-form').forEach(f => f.style.display = 'none');
+
+                if (replyForm) {
+                    replyForm.style.display = replyForm.style.display === 'none' ? 'block' : 'none';
+                }
+            });
+        });
+
+        // Отмена ответа
+        document.querySelectorAll('.cancel-reply').forEach(btn => {
+            btn.addEventListener('click', function() {
+                this.closest('.reply-form').style.display = 'none';
+            });
+        });
+
+        // Кнопка "Редактировать"
+        document.querySelectorAll('.comment-edit-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const commentId = this.dataset.commentId;
+                const editForm = document.getElementById(`edit-form-${commentId}`);
+
+                // Скрываем все формы редактирования
+                document.querySelectorAll('.edit-form').forEach(f => f.style.display = 'none');
+
+                if (editForm) {
+                    editForm.style.display = editForm.style.display === 'none' ? 'block' : 'none';
+                }
+            });
+        });
+
+        // Отмена редактирования
+        document.querySelectorAll('.cancel-edit').forEach(btn => {
+            btn.addEventListener('click', function() {
+                this.closest('.edit-form').style.display = 'none';
+            });
+        });
+
+        // Удаление комментария
+        document.querySelectorAll('.comment-delete-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                if (!confirm('Вы уверены, что хотите удалить этот комментарий?')) return;
+
+                const commentId = this.dataset.commentId;
+                const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || '{{ csrf_token }}';
+
+                fetch(`/interactions/comment/delete-permanent/${commentId}/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': csrfToken,
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(err => { throw new Error(err.error || 'Ошибка удаления'); });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        const commentItem = this.closest('.comment-item, .reply-item');
+                        if (commentItem) {
+                            commentItem.querySelector('.comment-content').innerHTML = '<em style="color: #999;">Комментарий удален</em>';
+                            this.closest('div').remove();
+                        }
+                    } else if (data.error) {
+                        alert(data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Ошибка удаления комментария: ' + error.message);
+                });
+            });
+        });
+
+        // Предупреждение комментария (только для staff)
+        document.querySelectorAll('.comment-warning-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const commentId = this.dataset.commentId;
+                const userId = this.dataset.userId;
+                const username = this.dataset.username;
+                openCommentWarningModal(commentId, userId, username);
+            });
+        });
+    });
+
+    // === Модальное окно предупреждения ===
+    function openWarningModal() {
+        const modal = document.getElementById('warning-modal');
+        if (modal) {
+            modal.style.display = 'flex';
+        }
+    }
+
+    function closeWarningModal() {
+        const modal = document.getElementById('warning-modal');
+        if (modal) {
+            modal.style.display = 'none';
+        }
+    }
+
+    function submitWarning(event) {
+        event.preventDefault();
+        const form = event.target;
+        const formData = new FormData(form);
+        const csrfToken = formData.get('csrfmiddlewaretoken');
+
+        fetch(form.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': csrfToken,
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Предупреждение выдано!');
+                closeWarningModal();
+                location.reload();
+            } else {
+                alert('Ошибка: ' + (data.error || 'Неизвестная ошибка'));
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Ошибка при выдаче предупреждения');
+        });
+    }
+
+    // === Кнопка "Рекомендовать" ===
+    const recommendBtn = document.getElementById('toggle-recommend-btn');
+    if (recommendBtn) {
+        recommendBtn.addEventListener('click', function() {
+            const workId = this.dataset.workId;
+            const csrfToken = getCsrfToken();
+
+            fetch(`/api/works/${workId}/toggle-recommend/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrfToken,
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    if (data.is_admin_recommended) {
+                        this.textContent = '★ Снять рекомендацию';
+                        this.classList.remove('btn-secondary');
+                        this.classList.add('btn-primary');
+                        // Добавляем бейдж
+                        const titleEl = document.querySelector('h1');
+                        if (titleEl && !document.querySelector('.admin-recommended-badge')) {
+                            const badge = document.createElement('span');
+                            badge.className = 'admin-recommended-badge';
+                            badge.style.cssText = 'background: linear-gradient(135deg, #ffd700, #ff8c00); color: #000; padding: 4px 12px; border-radius: 16px; font-weight: 700; font-size: 12px; display: inline-block; margin-left: 10px;';
+                            badge.textContent = 'ТОП';
+                            titleEl.after(badge);
+                        }
+                    } else {
+                        this.textContent = '☆ Рекомендовать';
+                        this.classList.remove('btn-primary');
+                        this.classList.add('btn-secondary');
+                        // Удаляем бейдж
+                        const badge = document.querySelector('.admin-recommended-badge');
+                        if (badge) badge.remove();
+                    }
+                } else {
+                    alert('Ошибка: ' + (data.error || 'Неизвестная ошибка'));
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Ошибка при переключении рекомендации');
+            });
+        });
+    }
+
+    function getCsrfToken() {
+        const name = 'csrftoken';
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    // === Модальное окно для предупреждения комментария ===
+    function openCommentWarningModal(commentId, userId, username) {
+        const modal = document.getElementById('comment-warning-modal');
+        if (modal) {
+            document.getElementById('warning-user-id').value = userId;
+            document.getElementById('warning-comment-id').value = commentId || '';
+            document.getElementById('warning-username').textContent = username;
+            modal.style.display = 'flex';
+        }
+    }
+
+    function closeCommentWarningModal() {
+        const modal = document.getElementById('comment-warning-modal');
+        if (modal) {
+            modal.style.display = 'none';
+        }
+    }
+
+    function submitCommentWarning(event) {
+        event.preventDefault();
+        const form = event.target;
+        const formData = new FormData(form);
+        const csrfToken = formData.get('csrfmiddlewaretoken');
+        const userId = formData.get('user_id');
+
+        fetch(`/accounts/warning/${userId}/give/`, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': csrfToken,
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Предупреждение выдано!');
+                closeCommentWarningModal();
+                location.reload();
+            } else {
+                alert('Ошибка: ' + (data.error || 'Неизвестная ошибка'));
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Ошибка при выдаче предупреждения');
+        });
+    }
+</script>
+
+<!-- Модальное окно для предупреждения автора работы -->
+<div id="warning-modal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+    <div style="background: white; padding: 30px; border-radius: 12px; max-width: 500px; width: 90%;">
+        <h3 style="margin-bottom: 20px; color: #dc3545;">⚠️ Выдать предупреждение автору</h3>
+        <form method="post" action="{% url 'accounts:warning_give' work.author.id %}" onsubmit="submitWarning(event)">
+            {% csrf_token %}
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: 600;">Причина предупреждения *</label>
+                <textarea name="reason" rows="4" required
+                    style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px;"
+                    placeholder="Опишите причину предупреждения..."></textarea>
+            </div>
+            <div style="margin-bottom: 15px;">
+                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                    <input type="checkbox" name="is_yellow" value="on" checked style="width: 18px; height: 18px;">
+                    <span>Жёлтое предупреждение (красное = бан)</span>
+                </label>
+            </div>
+            <input type="hidden" name="work_id" value="{{ work.id }}">
+            <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                <button type="button" onclick="closeWarningModal()" class="btn btn-secondary">Отмена</button>
+                <button type="submit" class="btn btn-primary" style="background: #ffc107; color: #000;">Выдать предупреждение</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Модальное окно для предупреждения комментария -->
+<div id="comment-warning-modal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+    <div style="background: white; padding: 30px; border-radius: 12px; max-width: 500px; width: 90%;">
+        <h3 style="margin-bottom: 20px; color: #ffc107;">⚠️ Выдать предупреждение за комментарий</h3>
+        <form method="post" id="comment-warning-form" onsubmit="submitCommentWarning(event)">
+            {% csrf_token %}
+            <input type="hidden" name="user_id" id="warning-user-id">
+            <input type="hidden" name="comment_id" id="warning-comment-id">
+            <input type="hidden" name="work_id" value="{{ work.id }}">
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: 600;">Пользователь:</label>
+                <span id="warning-username" style="font-weight: 600; color: #333;"></span>
+            </div>
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: 600;">Причина предупреждения *</label>
+                <textarea name="reason" rows="4" required
+                    style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px;"
+                    placeholder="Опишите причину предупреждения..."></textarea>
+            </div>
+            <div style="margin-bottom: 15px;">
+                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                    <input type="checkbox" name="is_yellow" value="on" checked style="width: 18px; height: 18px;">
+                    <span>Жёлтое предупреждение (красное = бан)</span>
+                </label>
+            </div>
+            <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                <button type="button" onclick="closeCommentWarningModal()" class="btn btn-secondary">Отмена</button>
+                <button type="submit" class="btn btn-primary" style="background: #ffc107; color: #000;">Выдать предупреждение</button>
+            </div>
+        </form>
+    </div>
+</div>
 {% endblock %}

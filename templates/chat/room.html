@@ -505,12 +505,37 @@
         const isAdmin = window.CHAT.user.isModerator || window.CHAT.user.isStaff;
         const isStaff = window.CHAT.user.isStaff || false;
 
-        // Определяем роль для отображения
+        // Определяем роль и индикаторы для отображения
         let roleHtml = '';
-        if (msg.user.is_staff || isStaff && msg.user.id === window.CHAT.user.id) {
-            roleHtml = '<span class="chat-message-role staff">ADMIN</span>';
+        if (msg.user.is_staff) {
+            roleHtml = '<span class="chat-message-role staff" style="background: linear-gradient(135deg, #667eea, #764ba2); padding: 1px 5px; border-radius: 3px; font-size: 8px; font-weight: 600; height: 14px; line-height: 12px; display: inline-flex; align-items: center;">АДМИН</span>';
+        } else if (msg.user.is_senior_moderator) {
+            roleHtml = '<span class="chat-message-role senior-mod" style="background: linear-gradient(135deg, #f093fb, #f5576c); padding: 1px 5px; border-radius: 3px; font-size: 8px; font-weight: 600; height: 14px; line-height: 12px; display: inline-flex; align-items: center;">СТ. МОД</span>';
         } else if (msg.user.is_moderator) {
-            roleHtml = '<span class="chat-message-role moderator">MOD</span>';
+            roleHtml = '<span class="chat-message-role mod" style="background: linear-gradient(135deg, #4facfe, #00f2fe); padding: 1px 5px; border-radius: 3px; font-size: 8px; font-weight: 600; height: 14px; line-height: 12px; display: inline-flex; align-items: center;">МОД</span>';
+        }
+
+        // Добавляем надпись "НАРУШИТЕЛЬ" с шариками если есть предупреждения
+        if (msg.user.warning_count > 0 && !msg.user.is_banned) {
+            let warningCircles = '';
+            for (let i = 0; i < msg.user.warning_count; i++) {
+                warningCircles += '<span style="display: inline-block; width: 6px; height: 6px; background: #ffc107; border-radius: 50%; margin-left: 3px;"></span>';
+            }
+            roleHtml += `<span class="chat-message-role violator" style="background: #fff3cd; color: #856404; border: 1px solid #ffc107; padding: 1px 5px; border-radius: 3px; font-size: 8px; font-weight: 600; height: 14px; line-height: 12px; display: inline-flex; align-items: center; gap: 3px;">НАРУШИТЕЛЬ${warningCircles}</span>`;
+        }
+
+        // Индикаторы предупреждений (кружки)
+        let indicatorHtml = '';
+        if (msg.user.is_banned) {
+            indicatorHtml = '<span style="display: inline-block; width: 8px; height: 8px; background: #dc3545; border-radius: 50%; margin-left: 6px;" title="Забанен"></span>';
+        } else if (msg.user.warning_count > 0) {
+            let circles = '';
+            for (let i = 0; i < msg.user.warning_count; i++) {
+                circles += '<span style="display: inline-block; width: 6px; height: 6px; background: #ffc107; border-radius: 50%; margin-left: 2px;"></span>';
+            }
+            indicatorHtml = `<span style="display: inline-flex; align-items: center; margin-left: 6px;">${circles}</span>`;
+        } else {
+            indicatorHtml = '<span style="display: inline-block; width: 6px; height: 6px; background: #28a745; border-radius: 50%; margin-left: 6px;" title="Активный пользователь"></span>';
         }
 
         // Цитата для ответа
@@ -556,8 +581,8 @@
                     <button class="chat-message-action danger" onclick="deleteMessage(${msg.id})">
                         🗑️ Удалить
                     </button>
-                    <button class="chat-message-action danger" onclick="banUser(${msg.user.id}, '${escapeHtml(msg.user.username)}')">
-                        🚫 Бан
+                    <button class="chat-message-action" onclick="giveWarning(${msg.user.id}, '${escapeHtml(msg.user.username)}')" style="color: #ffc107;">
+                        ⚠️ Предупреждение
                     </button>
                     <button class="chat-message-action edit" onclick="editMessage(${msg.id})">
                         ✏️ Редактировать
@@ -569,9 +594,14 @@
         messageEl.innerHTML = `
             <div class="chat-message-frame">
                 <div class="chat-message-header">
-                    <img src="${avatar}" alt="${escapeHtml(msg.user.username)}" class="chat-message-avatar">
-                    <span class="chat-message-author">${escapeHtml(msg.user.username)}</span>
+                    <a href="/accounts/profile/${escapeHtml(msg.user.username)}/" class="chat-message-avatar-link" style="text-decoration: none;">
+                        <img src="${avatar}" alt="${escapeHtml(msg.user.username)}" class="chat-message-avatar">
+                    </a>
+                    <a href="/accounts/profile/${escapeHtml(msg.user.username)}/" style="text-decoration: none; color: inherit;">
+                        <span class="chat-message-author">${escapeHtml(msg.user.username)}</span>
+                    </a>
                     ${roleHtml}
+                    ${indicatorHtml}
                     <span class="chat-message-time">${formatTime(msg.created_at)}</span>
                 </div>
                 <div class="chat-message-content-frame">
@@ -749,6 +779,59 @@
         });
     }
 
+    // Выдача предупреждения пользователю
+    function giveWarning(userId, username) {
+        const reason = prompt('Причина предупреждения:', 'Нарушение правил чата');
+        if (!reason) return;
+
+        // Отправляем предупреждение через API accounts
+        fetch(`/accounts/warning/${userId}/give/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': window.CHAT.csrf,
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `reason=${encodeURIComponent(reason)}&is_yellow=on`,
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                const status = data.is_banned ? 'забанен' : 'получил предупреждение';
+                alert(`Пользователь ${username} ${status}. Предупреждений: ${data.warning_count}`);
+                // Обновляем индикаторы в сообщениях этого пользователя
+                document.querySelectorAll(`[data-message-id]`).forEach(el => {
+                    const msgEl = el;
+                    if (msgEl.innerHTML.includes(`data-message-id="${msgEl.dataset.messageId}"`)) {
+                        // Перерисовываем сообщение с обновленными данными
+                        // Для простоты - просто обновляем индикаторы
+                        const authorSpan = msgEl.querySelector('.chat-message-author');
+                        if (authorSpan && authorSpan.textContent === username) {
+                            const indicatorContainer = authorSpan.nextElementSibling;
+                            if (indicatorContainer && indicatorContainer.classList.contains('warning-indicator')) {
+                                // Обновляем индикатор
+                                if (data.is_banned) {
+                                    indicatorContainer.innerHTML = '<span style="display: inline-block; width: 8px; height: 8px; background: #dc3545; border-radius: 50%; margin-left: 6px;" title="Забанен"></span>';
+                                } else {
+                                    let circles = '';
+                                    for (let i = 0; i < data.warning_count; i++) {
+                                        circles += '<span style="display: inline-block; width: 6px; height: 6px; background: #ffc107; border-radius: 50%; margin-left: 2px;"></span>';
+                                    }
+                                    indicatorContainer.innerHTML = `<span style="display: inline-flex; align-items: center; margin-left: 6px;">${circles}</span>`;
+                                }
+                            }
+                        }
+                    }
+                });
+            } else {
+                alert('Ошибка: ' + (data.error || 'Неизвестная ошибка'));
+            }
+        })
+        .catch(error => {
+            console.error('[Chat] Warning error:', error);
+            alert('Ошибка при выдаче предупреждения');
+        });
+    }
+
     // Редактирование сообщения
     function editMessage(messageId) {
         const msg = window.CHAT.messages.find(m => m.id === messageId);
@@ -895,11 +978,11 @@
             const data = await response.json();
 
             membersList.innerHTML = data.members.map(m => `
-                <div class="member-item">
+                <a href="/accounts/profile/${escapeHtml(m.username)}/" class="member-item" style="text-decoration: none; color: inherit;">
                     <img src="${m.avatar || '/static/placeholder-avatar.png'}" alt="${m.username}" class="member-avatar">
                     <span class="member-name">${escapeHtml(m.username)}</span>
                     ${m.is_moderator ? '<span class="member-role">MOD</span>' : ''}
-                </div>
+                </a>
             `).join('');
 
             membersCount.textContent = data.members.length;
@@ -930,11 +1013,11 @@
                 onlineList.innerHTML = '<div style="padding: 8px 16px; color: var(--chat-text-muted); font-size: 13px;">Нет онлайн-пользователей</div>';
             } else {
                 onlineList.innerHTML = users.map(u => `
-                    <div class="member-item online-member">
+                    <a href="/accounts/profile/${escapeHtml(u.username)}/" class="member-item online-member" style="text-decoration: none; color: inherit;">
                         <img src="${u.avatar || '/static/placeholder-avatar.png'}" alt="${u.username}" class="member-avatar">
                         <span class="member-name">${escapeHtml(u.username)}</span>
                         <span class="online-indicator" title="Онлайн"></span>
-                    </div>
+                    </a>
                 `).join('');
             }
 
@@ -1335,9 +1418,20 @@
 
         let roleHtml = '';
         if (msg.user.is_staff) {
-            roleHtml = '<span class="chat-message-role staff">ADMIN</span>';
+            roleHtml = '<span class="chat-message-role staff" style="background: linear-gradient(135deg, #667eea, #764ba2); padding: 1px 5px; border-radius: 3px; font-size: 8px; font-weight: 600; height: 14px; line-height: 12px; display: inline-flex; align-items: center;">АДМИН</span>';
+        } else if (msg.user.is_senior_moderator) {
+            roleHtml = '<span class="chat-message-role senior-mod" style="background: linear-gradient(135deg, #f093fb, #f5576c); padding: 1px 5px; border-radius: 3px; font-size: 8px; font-weight: 600; height: 14px; line-height: 12px; display: inline-flex; align-items: center;">СТ. МОД</span>';
         } else if (msg.user.is_moderator) {
-            roleHtml = '<span class="chat-message-role moderator">MOD</span>';
+            roleHtml = '<span class="chat-message-role mod" style="background: linear-gradient(135deg, #4facfe, #00f2fe); padding: 1px 5px; border-radius: 3px; font-size: 8px; font-weight: 600; height: 14px; line-height: 12px; display: inline-flex; align-items: center;">МОД</span>';
+        }
+
+        // Добавляем надпись "НАРУШИТЕЛЬ" с шариками если есть предупреждения
+        if (msg.user.warning_count > 0 && !msg.user.is_banned) {
+            let warningCircles = '';
+            for (let i = 0; i < msg.user.warning_count; i++) {
+                warningCircles += '<span style="display: inline-block; width: 6px; height: 6px; background: #ffc107; border-radius: 50%; margin-left: 3px;"></span>';
+            }
+            roleHtml += `<span class="chat-message-role violator" style="background: #fff3cd; color: #856404; border: 1px solid #ffc107; padding: 1px 5px; border-radius: 3px; font-size: 8px; font-weight: 600; height: 14px; line-height: 12px; display: inline-flex; align-items: center; gap: 3px;">НАРУШИТЕЛЬ${warningCircles}</span>`;
         }
 
         let replyQuoteHtml = '';
@@ -1484,8 +1578,12 @@
         messageEl.innerHTML = `
             <div class="chat-message-frame">
                 <div class="chat-message-header">
-                    <img src="${avatar}" alt="${escapeHtml(msg.user.username)}" class="chat-message-avatar">
-                    <span class="chat-message-author">${escapeHtml(msg.user.username)}</span>
+                    <a href="/accounts/profile/${escapeHtml(msg.user.username)}/" class="chat-message-avatar-link" style="text-decoration: none;">
+                        <img src="${avatar}" alt="${escapeHtml(msg.user.username)}" class="chat-message-avatar">
+                    </a>
+                    <a href="/accounts/profile/${escapeHtml(msg.user.username)}/" style="text-decoration: none; color: inherit;">
+                        <span class="chat-message-author">${escapeHtml(msg.user.username)}</span>
+                    </a>
                     ${roleHtml}
                     <span class="chat-message-time">${formatTime(msg.created_at)}</span>
                 </div>

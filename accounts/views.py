@@ -3,7 +3,10 @@ from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
 from django.db.models import Q
-from .models import Profile, Follow
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+from django.utils import timezone
+from .models import Profile, Follow, Warning
 
 User = get_user_model()
 
@@ -131,3 +134,127 @@ def edit_profile(request):
         return redirect('accounts:profile', username=request.user.username)
 
     return render(request, 'accounts/edit_profile.html', {'profile': profile})
+
+
+@login_required
+@require_POST
+def give_warning(request, user_id):
+    """
+    Выдать предупреждение пользователю.
+    Только для staff пользователей.
+    Нельзя выдать предупреждение самому себе и администратору.
+    """
+    user = get_object_or_404(User, pk=user_id)
+
+    if not request.user.is_staff:
+        return JsonResponse({'error': 'Требуется права администратора'}, status=403)
+
+    if user == request.user:
+        return JsonResponse({'error': 'Нельзя выдать предупреждение самому себе'}, status=400)
+
+    if user.is_staff:
+        return JsonResponse({'error': 'Администратору нельзя выдать предупреждение'}, status=400)
+
+    reason = request.POST.get('reason', '').strip()
+    work_id = request.POST.get('work_id')
+    comment_id = request.POST.get('comment_id')
+    is_yellow = request.POST.get('is_yellow', 'on') == 'on'  # По умолчанию желтое
+
+    if not reason:
+        return JsonResponse({'error': 'Укажите причину'}, status=400)
+
+    work = None
+    if work_id:
+        from core.models import Work
+        work = get_object_or_404(Work, pk=work_id)
+
+    comment = None
+    if comment_id:
+        from interactions.models import Comment
+        comment = get_object_or_404(Comment, pk=comment_id)
+
+    warning = Warning.objects.create(
+        user=user,
+        moderator=request.user,
+        reason=reason,
+        is_yellow=is_yellow,
+        work=work,
+        comment=comment
+    )
+
+    # После сохранения warning_count обновляется автоматически в модели
+
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return JsonResponse({
+            'success': True,
+            'warning_count': user.profile.warning_count,
+            'is_banned': user.profile.is_banned
+        })
+
+    return redirect('accounts:profile', username=user.username)
+
+
+@login_required
+@require_POST
+def remove_warning(request, warning_id):
+    """
+    Снять предупреждение.
+    Только для staff пользователей.
+    """
+    warning = get_object_or_404(Warning, pk=warning_id)
+
+    if not request.user.is_staff:
+        return JsonResponse({'error': 'Требуется права администратора'}, status=403)
+
+    user = warning.user
+    warning.delete()
+
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return JsonResponse({
+            'success': True,
+            'warning_count': user.profile.warning_count,
+            'is_banned': user.profile.is_banned
+        })
+
+    return redirect('accounts:profile', username=user.username)
+
+
+@login_required
+@require_POST
+def toggle_ban(request, user_id):
+    """
+    Забанить/разбанить пользователя.
+    Только для staff пользователей.
+    """
+    user = get_object_or_404(User, pk=user_id)
+
+    if not request.user.is_staff:
+        return JsonResponse({'error': 'Требуется права администратора'}, status=403)
+
+    reason = request.POST.get('reason', '').strip()
+
+    if user.profile.is_banned:
+        # Разбанить
+        user.profile.is_banned = False
+        user.profile.banned_at = None
+        user.profile.banned_by = None
+        user.profile.ban_reason = ''
+        user.profile.save(update_fields=['is_banned', 'banned_at', 'banned_by', 'ban_reason'])
+    else:
+        # Забанить
+        if not reason:
+            return JsonResponse({'error': 'Укажите причину бана'}, status=400)
+
+        user.profile.is_banned = True
+        user.profile.banned_at = timezone.now()
+        user.profile.banned_by = request.user
+        user.profile.ban_reason = reason
+        user.profile.save(update_fields=['is_banned', 'banned_at', 'banned_by', 'ban_reason'])
+
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return JsonResponse({
+            'success': True,
+            'is_banned': user.profile.is_banned
+        })
+
+    return redirect('accounts:profile', username=user.username)

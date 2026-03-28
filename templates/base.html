@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>{% block title %}СТЛ - Платформа портфолио{% endblock %}</title>
 
     <!-- Favicon -->
@@ -49,7 +52,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 15px 20px;
+            padding: 5px 20px;
             width: 100%;
         }
 
@@ -74,8 +77,8 @@
         }
 
         .logo-icon {
-            width: 44px;
-            height: 44px;
+            width: 80px;
+            height: 80px;
             flex-shrink: 0;
             filter: drop-shadow(0 2px 4px rgba(156, 175, 61, 0.3));
         }
@@ -182,8 +185,8 @@
         }
 
         .avatar {
-            width: 32px;
-            height: 32px;
+            width: 48px;
+            height: 48px;
             border-radius: 50%;
             object-fit: cover;
         }
@@ -344,58 +347,7 @@
     <header class="header">
         <div class="header-content">
             <a href="{% url 'core:home' %}" class="logo" title="СТЛ Platform - Творческая платформа">
-                <svg class="logo-icon" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <!-- Sci-fi гексагон (основа) -->
-                    <path d="M22 2L40 12V32L22 42L4 32V12L22 2Z"
-                          fill="url(#primaryGradient)"
-                          stroke="url(#primaryStroke)"
-                          stroke-width="1.5"/>
-
-                    <!-- Внутренний гексагон (контур) -->
-                    <path d="M22 8L34 15V29L22 36L10 29V15L22 8Z"
-                          stroke="url(#innerGradient)"
-                          stroke-width="1.5"
-                          fill="none"/>
-
-                    <!-- Центральный элемент (звезда/кристалл) -->
-                    <path d="M22 14L26 20L22 26L18 20L22 14Z"
-                          fill="#fff"
-                          opacity="0.9"/>
-
-                    <!-- Орбитальные кольца -->
-                    <circle cx="22" cy="22" r="16"
-                            stroke="url(#ringGradient)"
-                            stroke-width="0.5"
-                            fill="none"
-                            opacity="0.4"/>
-
-                    <!-- Технологические точки -->
-                    <circle cx="22" cy="6" r="1.5" fill="#fff" opacity="0.8"/>
-                    <circle cx="38" cy="22" r="1.5" fill="#fff" opacity="0.8"/>
-                    <circle cx="22" cy="38" r="1.5" fill="#fff" opacity="0.8"/>
-                    <circle cx="6" cy="22" r="1.5" fill="#fff" opacity="0.8"/>
-
-                    <!-- Градиенты -->
-                    <defs>
-                        <linearGradient id="primaryGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" stop-color="#7d5fb8"/>
-                            <stop offset="50%" stop-color="#9a7cc9"/>
-                            <stop offset="100%" stop-color="#b899d9"/>
-                        </linearGradient>
-                        <linearGradient id="primaryStroke" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" stop-color="#5d428a"/>
-                            <stop offset="100%" stop-color="#7d5fb8"/>
-                        </linearGradient>
-                        <linearGradient id="innerGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" stop-color="#b899d9"/>
-                            <stop offset="100%" stop-color="#7d5fb8"/>
-                        </linearGradient>
-                        <radialGradient id="ringGradient" cx="50%" cy="50%" r="50%">
-                            <stop offset="0%" stop-color="#9a7cc9"/>
-                            <stop offset="100%" stop-color="#5d428a"/>
-                        </radialGradient>
-                    </defs>
-                </svg>
+                <img src="{% if logo_image %}{{ logo_image }}{% else %}/media/images/logo.png{% endif %}" alt="СТЛ логотип" class="logo-icon" style="object-fit: contain;">
                 <div>
                     <span class="logo-text">сообщество<br>творческих людей</span>
                 </div>
@@ -453,53 +405,7 @@
         <div class="footer-content">
             <div class="footer-section">
                 <h4 style="display: flex; align-items: center; gap: 8px;">
-                    <svg width="24" height="24" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <!-- Sci-fi гексагон (основа) -->
-                        <path d="M22 2L40 12V32L22 42L4 32V12L22 2Z"
-                              fill="url(#primaryGradient)"
-                              stroke="url(#primaryStroke)"
-                              stroke-width="1.5"/>
-                        <!-- Внутренний гексагон (контур) -->
-                        <path d="M22 8L34 15V29L22 36L10 29V15L22 8Z"
-                              stroke="url(#innerGradient)"
-                              stroke-width="1.5"
-                              fill="none"/>
-                        <!-- Центральный элемент (звезда/кристалл) -->
-                        <path d="M22 14L26 20L22 26L18 20L22 14Z"
-                              fill="#fff"
-                              opacity="0.9"/>
-                        <!-- Орбитальные кольца -->
-                        <circle cx="22" cy="22" r="16"
-                                stroke="url(#ringGradient)"
-                                stroke-width="0.5"
-                                fill="none"
-                                opacity="0.4"/>
-                        <!-- Технологические точки -->
-                        <circle cx="22" cy="6" r="1.5" fill="#fff" opacity="0.8"/>
-                        <circle cx="38" cy="22" r="1.5" fill="#fff" opacity="0.8"/>
-                        <circle cx="22" cy="38" r="1.5" fill="#fff" opacity="0.8"/>
-                        <circle cx="6" cy="22" r="1.5" fill="#fff" opacity="0.8"/>
-                        <!-- Градиенты -->
-                        <defs>
-                            <linearGradient id="primaryGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" stop-color="#7d5fb8"/>
-                                <stop offset="50%" stop-color="#9a7cc9"/>
-                                <stop offset="100%" stop-color="#b899d9"/>
-                            </linearGradient>
-                            <linearGradient id="primaryStroke" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" stop-color="#5d428a"/>
-                                <stop offset="100%" stop-color="#7d5fb8"/>
-                            </linearGradient>
-                            <linearGradient id="innerGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" stop-color="#b899d9"/>
-                                <stop offset="100%" stop-color="#7d5fb8"/>
-                            </linearGradient>
-                            <radialGradient id="ringGradient" cx="50%" cy="50%" r="50%">
-                                <stop offset="0%" stop-color="#9a7cc9"/>
-                                <stop offset="100%" stop-color="#5d428a"/>
-                            </radialGradient>
-                        </defs>
-                    </svg>
+                    <img src="/media/images/logo.png" alt="СТЛ логотип" width="96" height="96" style="object-fit: contain;">
                     сообщество творческих людей
                 </h4>
                 <p style="color: #666; font-size: 14px;">

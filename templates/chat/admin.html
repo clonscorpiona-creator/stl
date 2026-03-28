@@ -380,10 +380,12 @@
                         <tr>
                             <td>
                                 <div class="user-cell">
-                                    {% if msg.user.avatar %}
-                                    <img src="{{ msg.user.avatar.url }}" alt="{{ msg.user.username }}" class="user-avatar">
-                                    {% endif %}
-                                    {{ msg.user.username }}
+                                    <a href="{% url 'accounts:profile' msg.user.username %}" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 8px;">
+                                        {% if msg.user.avatar %}
+                                        <img src="{{ msg.user.avatar.url }}" alt="{{ msg.user.username }}" class="user-avatar">
+                                        {% endif %}
+                                        {{ msg.user.username }}
+                                    </a>
                                 </div>
                             </td>
                             <td>
@@ -433,10 +435,12 @@
                         <tr>
                             <td>
                                 <div class="user-cell">
-                                    {% if member.user.avatar %}
-                                    <img src="{{ member.user.avatar.url }}" alt="{{ member.user.username }}" class="user-avatar">
-                                    {% endif %}
-                                    {{ member.user.username }}
+                                    <a href="{% url 'accounts:profile' member.user.username %}" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 8px;">
+                                        {% if member.user.avatar %}
+                                        <img src="{{ member.user.avatar.url }}" alt="{{ member.user.username }}" class="user-avatar">
+                                        {% endif %}
+                                        {{ member.user.username }}
+                                    </a>
                                 </div>
                             </td>
                             <td>
