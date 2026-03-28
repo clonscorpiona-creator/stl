@@ -1,0 +1,51 @@
+═══════════════════════════════════════════════════════════
+           ДЕПЛОЙ НА RENDER — БЫСТРАЯ ИНСТРУКЦИЯ
+═══════════════════════════════════════════════════════════
+
+ШАГ 1: Зайдите на https://render.com и войдите в аккаунт
+
+ШАГ 2: Нажмите "New +" → "Web Service"
+
+ШАГ 3: Подключите GitHub репозиторий с проектом stl
+
+ШАГ 4: Заполните настройки:
+
+   Name: stl-django
+   Region: Frankfurt
+   Branch: master
+   Runtime: Python 3
+
+   Build Command:
+   pip install -r requirements.txt && python manage.py collectstatic --noinput && python manage.py migrate
+
+   Start Command:
+   daphne -b 0.0.0.0 -p $PORT config.asgi:application
+
+ШАГ 5: Добавьте переменные окружения (Environment Variables):
+
+   SECRET_KEY = (любая случайная строка 50+ символов)
+   DEBUG = false
+   ALLOWED_HOSTS = *
+
+   → Для этого нажмите "Advanced" → "Add Environment Variable"
+
+ШАГ 6: Создайте базу данных:
+
+   → В панели Render: "New +" → "PostgreSQL"
+   → Name: stl-db
+   → Region: Frankfurt
+   → Plan: Free
+   → Скопируйте "Internal Database URL"
+   → Добавьте в переменные окружения веб-сервиса:
+     DATABASE_URL = (вставьте скопированное значение)
+
+ШАГ 7: Нажмите "Create Web Service"
+
+═══════════════════════════════════════════════════════════
+
+После деплоя:
+- Сайт будет доступен по ссылке https://stl-django.onrender.com
+- Первый запуск займёт 2-3 минуты
+- Для входа используйте созданного ранее администратора
+
+═══════════════════════════════════════════════════════════
