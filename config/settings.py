@@ -30,6 +30,13 @@ DEBUG = os.environ.get('DEBUG', 'True').lower() == 'true'
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1,testserver').split(',')
 CSRF_TRUSTED_ORIGINS = os.environ.get('CSRF_TRUSTED_ORIGINS', 'http://localhost,http://127.0.0.1').split(',')
 
+# Добавляем домен Render для CSRF
+if not DEBUG:
+    render_url = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
+    if render_url:
+        CSRF_TRUSTED_ORIGINS.append(f'https://{render_url}')
+        ALLOWED_HOSTS.append(render_url)
+
 
 # Application definition
 
@@ -127,11 +134,11 @@ AUTH_USER_MODEL = 'accounts.User'
 
 # Media files
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_ROOT = os.environ.get('MEDIA_ROOT', BASE_DIR / 'media')
 
 # Static files
 STATICFILES_DIRS = [BASE_DIR / 'static']
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATIC_ROOT = os.environ.get('STATIC_ROOT', BASE_DIR / 'staticfiles')
 
 # Production static files settings
 if not DEBUG:
