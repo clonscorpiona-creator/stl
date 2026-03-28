@@ -16,10 +16,19 @@ services:
       - key: ALLOWED_HOSTS
         value: '*'
       - key: DATABASE_URL
-        sync: false
+        fromDatabase:
+          name: stl-db
+          property: connectionString
       - key: MEDIA_ROOT
         value: /opt/render/project/src/media
       - key: STATIC_ROOT
         value: /opt/render/project/src/staticfiles
       - key: DJANGO_SETTINGS_MODULE
         value: config.settings
+
+databases:
+  - name: stl-db
+    databaseName: stl_platform
+    user: stl_user
+    plan: free
+    region: frankfurt
