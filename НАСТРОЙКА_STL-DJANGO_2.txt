@@ -1,0 +1,81 @@
+═══════════════════════════════════════════════════════════
+        НАСТРОЙКА stl-django_2 НА RENDER
+═══════════════════════════════════════════════════════════
+
+ШАГ 1: Создайте базу данных
+
+1. В панели Render нажмите "New +" → "PostgreSQL"
+2. Заполните:
+   - Name: stl-django-db-2
+   - Region: Frankfurt
+   - Plan: Free
+3. После создания скопируйте "Internal Database URL"
+   (выглядит как: postgresql://user:pass@host:5432/dbname)
+
+═══════════════════════════════════════════════════════════
+
+ШАГ 2: Настройте stl-django_2
+
+1. Зайдите в сервис stl-django_2
+2. Перейдите во вкладку "Environment"
+3. Добавьте переменные окружения:
+
+   Ключ                    | Значение
+   ------------------------|------------------------------------------
+   SECRET_KEY              | (сгенерируйте на randomkeygen.com)
+   DEBUG                   | false
+   ALLOWED_HOSTS           | *
+   CSRF_TRUSTED_ORIGINS    | https://stl-django-2.onrender.com
+   DATABASE_URL            | (Internal Database URL из шага 1)
+
+═══════════════════════════════════════════════════════════
+
+ШАГ 3: Проверьте настройки сервиса
+
+Вкладка "Settings":
+
+- Build Command:
+  pip install -r requirements.txt && python manage.py collectstatic --noinput && python manage.py migrate --noinput
+
+- Start Command:
+  daphne -b 0.0.0.0 -p $PORT config.asgi:application
+
+- Python Version: 3.14.0 (или 3.12)
+- Region: Frankfurt
+- Plan: Free
+
+═══════════════════════════════════════════════════════════
+
+ШАГ 4: Запустите деплой
+
+1. Перейдите во вкладку "Logs"
+2. Нажмите "Manual Deploy" → "Deploy Latest"
+3. Дождитесь завершения (2-3 минуты)
+
+═══════════════════════════════════════════════════════════
+
+После деплоя:
+
+✓ Сайт: https://stl-django-2.onrender.com
+✓ Админка: https://stl-django-2.onrender.com/admin/
+
+Создайте суперпользователя через Render Shell:
+  python manage.py createsuperuser
+
+═══════════════════════════════════════════════════════════
+
+Проблемы и решения:
+
+❌ Ошибка "DATABASE_URL not set"
+   → Добавьте DATABASE_URL в Environment
+
+❌ Ошибка "SECRET_KEY not set"
+   → Добавьте SECRET_KEY (минимум 50 символов)
+
+❌ Деплой застрял в очереди
+   → Нажмите "Manual Deploy" → "Deploy Latest"
+
+❌ Сайт не загружается (502 error)
+   → Проверьте логи во вкладке "Logs"
+
+═══════════════════════════════════════════════════════════
