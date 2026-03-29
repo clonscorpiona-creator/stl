@@ -374,13 +374,15 @@
                         <a href="{% url 'admin:index' %}" style="color: var(--primary-dark); font-weight: 600;">Админ-панель</a>
                     {% endif %}
                     <a href="{% url 'core:work_create' %}" class="btn btn-primary" style="color: #ffd700 !important;">Создать</a>
-                    <a href="{% url 'interactions:notifications' %}">Уведомления</a>
-                    <a href="{% url 'accounts:profile' username=user.username %}">
+                    <a href="{% url 'interactions:notifications' %}" style="position: relative;">
+                        🔔 Уведомления
+                        <span id="notificationsBadge" style="display: none; position: absolute; top: -8px; right: -12px; background: #ef4444; color: white; border-radius: 50%; min-width: 18px; height: 18px; font-size: 10px; font-weight: 700; text-align: center; line-height: 18px; padding: 0 4px; box-shadow: 0 2px 4px rgba(239, 68, 68, 0.4);">+0</span>
+                    </a>
+                    <a href="{% url 'accounts:profile' username=user.username %}" style="display: flex; align-items: center; gap: 8px;">
                         {% if user.avatar %}
-                            <img src="{{ user.avatar.url }}" alt="{{ user.username }}" class="avatar">
-                        {% else %}
-                            {{ user.username }}
+                            <img src="{{ user.avatar.url }}" alt="{{ user.username }}" class="avatar" style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover;">
                         {% endif %}
+                        {{ user.username }}
                     </a>
                     <a href="{% url 'accounts:logout' %}">Выход</a>
                 {% else %}
@@ -463,18 +465,121 @@
             }
         };
 
-        // Загружаем при загрузке страницы и обновляем каждые 5 секунд
+        // Загрузка количества всех уведомлений (глобальная функция)
+        window.loadNotificationsCount = async function() {
+            // Не обновляем счетчик на странице уведомлений
+            if (window.location.pathname.includes('/interactions/notifications/')) {
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/notifications-count/');
+                const data = await response.json();
+
+                // Обновляем бейдж уведомлений
+                const badge = document.getElementById('notificationsBadge');
+                if (badge) {
+                    // Показываем только если количество увеличилось (total > 0)
+                    if (data.total > 0) {
+                        badge.textContent = '+' + data.total;
+                        badge.style.display = 'inline-block';
+                    } else {
+                        badge.style.display = 'none';
+                    }
+                }
+            } catch (error) {
+                console.error('[Notifications Count] Load failed:', error);
+            }
+        };
+
+        // Обновление просмотра категории (когда пользователь заходит на страницу работ)
+        window.markWorksViewed = async function(category) {
+            try {
+                const formData = new FormData();
+                if (category) {
+                    formData.append('category', category);
+                }
+                await fetch('/api/mark-works-viewed/', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRFToken': getCookie('csrftoken')
+                    }
+                });
+                // После отметки просмотра обновляем счетчик
+                if (window.loadNotificationsCount) {
+                    window.loadNotificationsCount();
+                }
+            } catch (error) {
+                console.error('[Mark Viewed] Error:', error);
+            }
+        };
+
+        // Вспомогательная функция для получения CSRF токена
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        // Загружаем при загрузке страницы и обновляем каждые 10 секунд
         document.addEventListener('DOMContentLoaded', () => {
+            // Проверяем, не на странице ли уведомлений мы находимся
+            const isNotificationsPage = window.location.pathname.includes('/notifications/');
+
             loadUnreadCounts();
-            setInterval(loadUnreadCounts, 5000); // Проверка каждые 5 секунд
+            // Не загружаем счетчик на странице уведомлений - он там управляется вручную
+            if (!isNotificationsPage) {
+                loadNotificationsCount();
+                setInterval(loadNotificationsCount, 10000); // Уведомления каждые 10 секунд
+            }
+            setInterval(loadUnreadCounts, 5000); // Чат каждые 5 секунд
         });
 
-        // Обновляем счетчик при возврате на вкладку
+        // Обновляем счетчики при возврате на вкладку
         document.addEventListener('visibilitychange', () => {
             if (document.visibilityState === 'visible') {
+                const isNotificationsPage = window.location.pathname.includes('/notifications/');
                 loadUnreadCounts();
+                // Не обновляем счетчик на странице уведомлений
+                if (!isNotificationsPage) {
+                    loadNotificationsCount();
+                }
             }
         });
+
+        // Функция для добавления анимации вибрации колокольчику
+        function addBellShakeAnimation() {
+            const badge = document.getElementById('notificationsBadge');
+            const link = badge?.closest('a');
+            if (badge && link && badge.style.display !== 'none' && badge.textContent !== '+0') {
+                link.style.display = 'inline-block';
+                link.style.animation = 'bellShake 0.5s ease-in-out';
+                setTimeout(() => {
+                    link.style.animation = '';
+                }, 500);
+            }
+        }
+
+        // Добавляем CSS анимацию для колокольчика
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes bellShake {
+                0%, 100% { transform: rotate(0deg); }
+                10%, 30%, 50%, 70%, 90% { transform: rotate(-10deg); }
+                20%, 40%, 60%, 80% { transform: rotate(10deg); }
+            }
+        `;
+        document.head.appendChild(style);
     </script>
     {% endif %}
 </body>
