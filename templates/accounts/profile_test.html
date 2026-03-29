@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ page_title }} - STL{% endblock %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 0 auto;">
+    <div style="background: white; border-radius: 12px; padding: 30px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 20px;">
+        <h1 style="font-size: 24px; margin-bottom: 20px;">{{ page_title }}</h1>
+
+        <div style="background: #f8f9fa; border-radius: 8px; padding: 20px; border: 2px solid #e9ecef;">
+            <h3 style="margin-bottom: 15px; color: #333;">Тестовые данные:</h3>
+
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <div style="display: flex; justify-content: space-between; padding: 10px; background: white; border-radius: 6px;">
+                    <strong>Сообщение:</strong>
+                    <span style="color: #666;">{{ test_data.message }}</span>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; padding: 10px; background: white; border-radius: 6px;">
+                    <strong>Пользователь:</strong>
+                    <span style="color: #666;">{{ test_data.user }}</span>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; padding: 10px; background: white; border-radius: 6px;">
+                    <strong>Время:</strong>
+                    <span style="color: #666;">{{ test_data.timestamp|date:"d.m.Y H:i:s" }}</span>
+                </div>
+            </div>
+        </div>
+
+        <div style="margin-top: 20px; padding: 15px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 8px; color: white;">
+            <p style="margin: 0; font-weight: 500;">Это тестовая страница для проверки функциональности профиля.</p>
+        </div>
+
+        <div style="margin-top: 20px; display: flex; gap: 10px;">
+            <a href="{% url 'accounts:profile' user.username %}" class="btn btn-secondary">
+                ← Вернуться в профиль
+            </a>
+            <button class="btn btn-primary" onclick="alert('Тестовая кнопка работает!')">
+                Тестовая кнопка
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}

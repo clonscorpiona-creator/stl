@@ -490,3 +490,19 @@ def toggle_favorite_category(request, category_id):
         'is_favorite': is_favorite,
         'category_name': category.name
     })
+
+
+@login_required
+def profile_test(request):
+    """
+    Тестовая страница профиля пользователя.
+    """
+    context = {
+        'page_title': 'Тестовая страница',
+        'test_data': {
+            'message': 'Это тестовая страница профиля',
+            'timestamp': timezone.now(),
+            'user': request.user.username,
+        }
+    }
+    return render(request, 'accounts/profile_test.html', context)

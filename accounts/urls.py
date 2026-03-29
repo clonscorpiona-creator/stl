@@ -16,6 +16,7 @@ urlpatterns = [
     path('edit/', views.edit_profile, name='edit'),
     path('favorite-categories/', views.favorite_categories, name='favorite_categories'),
     path('favorite-categories/<int:category_id>/toggle/', views.toggle_favorite_category, name='toggle_favorite_category'),
+    path('profile/test/', views.profile_test, name='profile_test'),
 
     # Предупреждения и баны
     path('warning/<int:user_id>/give/', views.give_warning, name='warning_give'),

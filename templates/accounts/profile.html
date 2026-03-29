@@ -164,8 +164,14 @@ function toggleBan() {
     <button class="btn btn-secondary">Подборки</button>
     {% if user == profile_user %}
         <div style="margin-left: auto; display: flex; gap: 10px;">
-            <a href="{% url 'accounts:favorite_categories' %}" class="btn btn-secondary" style="background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: white;">❤️ Любимые категории</a>
+            <a href="{% url 'accounts:favorite_categories' %}" class="btn btn-secondary" style="background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: white; display: flex; align-items: center; gap: 6px;">
+                <img src="/static/icons/{{ icon_set }}/heart.svg" alt="" style="width: 16px; height: 16px; filter: brightness(0) invert(1);">
+                Любимые категории
+            </a>
             <a href="{% url 'accounts:edit' %}" class="btn btn-secondary">Редактировать профиль</a>
+            <a href="{% url 'accounts:profile_test' %}" class="btn btn-secondary" style="background: linear-gradient(135deg, #f093fb, #f5576c); color: white;">
+                Тестовая страница
+            </a>
         </div>
     {% endif %}
 </div>
@@ -223,9 +229,18 @@ function toggleBan() {
                     {% endif %}
                 </p>
                 <div class="work-stats">
-                    <span>❤️ {{ work.likes_count }}</span>
-                    <span>👁️ {{ work.views_count }}</span>
-                    <span>💬 {{ work.comments_count }}</span>
+                    <span style="display: flex; align-items: center; gap: 4px;">
+                        <img src="/static/icons/{{ icon_set }}/heart.svg" alt="" style="width: 14px; height: 14px;">
+                        {{ work.likes_count }}
+                    </span>
+                    <span style="display: flex; align-items: center; gap: 4px;">
+                        <img src="/static/icons/{{ icon_set }}/eye.svg" alt="" style="width: 14px; height: 14px;">
+                        {{ work.views_count }}
+                    </span>
+                    <span style="display: flex; align-items: center; gap: 4px;">
+                        <img src="/static/icons/{{ icon_set }}/message.svg" alt="" style="width: 14px; height: 14px;">
+                        {{ work.comments_count }}
+                    </span>
                 </div>
             </div>
         </div>
