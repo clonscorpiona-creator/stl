@@ -36,6 +36,13 @@ class Profile(models.Model):
     is_verified = models.BooleanField('Проверенный', default=False)
     is_pro = models.BooleanField('Pro аккаунт', default=False)
 
+    # Предупреждения и баны
+    warning_count = models.PositiveIntegerField(default=0)
+    is_banned = models.BooleanField('Забанен', default=False)
+    banned_at = models.DateTimeField('Забанен с', null=True, blank=True)
+    banned_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='banned_users')
+    ban_reason = models.TextField('Причина бана', blank=True)
+
     class Meta:
         verbose_name = 'Профиль'
         verbose_name_plural = 'Профили'
@@ -97,3 +104,24 @@ class Follow(models.Model):
         if following_profile:
             following_profile.followers_count = Follow.objects.filter(following=self.following).count()
             following_profile.save()
+
+
+class Warning(models.Model):
+    """Предупреждения пользователям"""
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='warnings')
+    moderator = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='warnings_given')
+    reason = models.TextField('Причина')
+    is_yellow = models.BooleanField('Жёлтое предупреждение', default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    # Связь с работой или комментарием (опционально)
+    work = models.ForeignKey('core.Work', on_delete=models.SET_NULL, null=True, blank=True, related_name='warnings')
+    comment = models.ForeignKey('interactions.Comment', on_delete=models.SET_NULL, null=True, blank=True, related_name='warnings')
+
+    class Meta:
+        verbose_name = 'Предупреждение'
+        verbose_name_plural = 'Предупреждения'
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f'Warning for {self.user.username}: {self.reason[:30]}'

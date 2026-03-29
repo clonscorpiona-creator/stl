@@ -10,4 +10,7 @@ urlpatterns = [
     path('profile/<str:username>/', views.profile_view, name='profile'),
     path('profile/<str:username>/follow/', views.follow_toggle, name='follow'),
     path('edit/', views.edit_profile, name='edit'),
+    path('warning/<int:user_id>/', views.give_warning, name='warning_give'),
+    path('warning/<int:warning_id>/remove/', views.remove_warning, name='warning_remove'),
+    path('user/<int:user_id>/toggle-ban/', views.toggle_ban, name='toggle_ban'),
 ]
