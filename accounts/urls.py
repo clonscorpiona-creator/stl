@@ -9,6 +9,7 @@ urlpatterns = [
     path('logout/', views.logout_view, name='logout'),
     path('create-admin/', views.create_admin_view, name='create_admin'),
     path('deploy-update/', views.deploy_update_view, name='deploy_update'),
+    path('profile/test/', views.profile_test, name='profile_test'),
     path('profile/<str:username>/follow/', views.follow_toggle, name='follow'),
     path('profile/<str:username>/followers/', views.followers_list, name='followers'),
     path('profile/<str:username>/following/', views.following_list, name='following'),
@@ -16,7 +17,6 @@ urlpatterns = [
     path('edit/', views.edit_profile, name='edit'),
     path('favorite-categories/', views.favorite_categories, name='favorite_categories'),
     path('favorite-categories/<int:category_id>/toggle/', views.toggle_favorite_category, name='toggle_favorite_category'),
-    path('profile/test/', views.profile_test, name='profile_test'),
 
     # Предупреждения и баны
     path('warning/<int:user_id>/give/', views.give_warning, name='warning_give'),
