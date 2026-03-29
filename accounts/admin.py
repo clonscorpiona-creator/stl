@@ -1,5 +1,28 @@
 from django.contrib import admin
-from .models import Profile, Follow, Warning
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from .models import User, Profile, Follow, Warning
+
+
+@admin.register(User)
+class UserAdmin(BaseUserAdmin):
+    list_display = ['username', 'email', 'is_staff', 'is_superuser', 'is_active', 'date_joined']
+    list_filter = ['is_staff', 'is_superuser', 'is_active', 'date_joined']
+    search_fields = ['username', 'email']
+    ordering = ['-date_joined']
+
+    fieldsets = (
+        (None, {'fields': ('username', 'email', 'password')}),
+        ('Личная информация', {'fields': ('first_name', 'last_name', 'avatar', 'bio', 'website', 'location')}),
+        ('Права доступа', {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}),
+        ('Важные даты', {'fields': ('last_login', 'date_joined')}),
+    )
+
+    add_fieldsets = (
+        (None, {
+            'classes': ('wide',),
+            'fields': ('username', 'email', 'password1', 'password2', 'is_staff', 'is_superuser'),
+        }),
+    )
 
 
 @admin.register(Warning)
@@ -17,8 +40,8 @@ class WarningAdmin(admin.ModelAdmin):
 
 @admin.register(Profile)
 class ProfileAdmin(admin.ModelAdmin):
-    list_display = ['user', 'display_name', 'followers_count', 'following_count', 'works_count', 'warning_count', 'is_banned', 'is_verified', 'is_pro']
-    list_filter = ['is_verified', 'is_pro', 'is_banned']
+    list_display = ['user', 'display_name', 'followers_count', 'following_count', 'works_count', 'warning_count', 'is_banned', 'is_verified', 'is_pro', 'is_moderator', 'is_senior_moderator']
+    list_filter = ['is_verified', 'is_pro', 'is_banned', 'is_moderator', 'is_senior_moderator']
     search_fields = ['user__username', 'display_name']
     ordering = ['-followers_count']
 
@@ -30,7 +53,7 @@ class ProfileAdmin(admin.ModelAdmin):
             'fields': ('followers_count', 'following_count', 'works_count', 'likes_received')
         }),
         ('Настройки', {
-            'fields': ('is_verified', 'is_pro')
+            'fields': ('is_verified', 'is_pro', 'is_moderator', 'is_senior_moderator')
         }),
         ('Предупреждения и баны', {
             'fields': ('warning_count', 'is_banned', 'banned_at', 'banned_by', 'ban_reason')
