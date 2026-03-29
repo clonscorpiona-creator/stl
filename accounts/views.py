@@ -71,6 +71,44 @@ def logout_view(request):
 
 
 from urllib.parse import unquote
+import os
+
+def create_admin_view(request):
+    """Временный эндпоинт для создания админа на сервере"""
+    # Проверка секретного ключа для безопасности
+    secret = os.environ.get('ADMIN_CREATE_SECRET', 'stl_secret_2026')
+    if request.GET.get('key') != secret:
+        return JsonResponse({'error': 'Access denied'}, status=403)
+
+    try:
+        # Проверяем, есть ли уже админ
+        admin = User.objects.filter(is_superuser=True).first()
+        if admin:
+            return JsonResponse({
+                'status': 'exists',
+                'username': admin.username,
+                'message': f'Админ уже существует: {admin.username}'
+            })
+
+        # Создаем админа
+        admin_user = User.objects.create_user(
+            username='admin',
+            email='admin@стл.art',
+            password='StlAdmin2026!',
+            is_staff=True,
+            is_superuser=True
+        )
+        Profile.objects.create(user=admin_user)
+
+        return JsonResponse({
+            'status': 'created',
+            'username': admin_user.username,
+            'password': 'StlAdmin2026!',
+            'message': 'Админ создан успешно'
+        })
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
 
 def profile_view(request, username):
     """Страница профиля пользователя"""
