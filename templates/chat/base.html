@@ -25,6 +25,8 @@
         background: var(--chat-bg);
         color: var(--chat-text);
         overflow: hidden;
+        position: fixed;
+        width: 100%;
     }
 
     /* Скрываем стандартный main */
@@ -186,6 +188,7 @@
         object-fit: cover;
         border: 2px solid var(--chat-accent);
         flex-shrink: 0;
+        aspect-ratio: 1;
     }
 
     .chat-message-author {

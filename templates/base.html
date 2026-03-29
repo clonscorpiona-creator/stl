@@ -35,17 +35,19 @@
 
         .container {
             width: 100%;
+            max-width: 1400px;
             margin: 0 auto;
             padding: 0 20px;
         }
 
-        /* Header */
+        /* Header - full viewport width */
         .header {
             background: #fff;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             position: sticky;
             top: 0;
             z-index: 100;
+            width: 100vw;
         }
 
         .header-content {
@@ -281,19 +283,21 @@
             color: white;
         }
 
-        /* Footer */
+        /* Footer - full viewport width */
         .footer {
             background: #fff;
             padding: 30px 0;
             margin-top: 40px;
             border-top: 1px solid #eee;
+            width: 100vw;
         }
 
         .footer-content {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 30px;
-            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
             padding: 0 20px;
         }
 
