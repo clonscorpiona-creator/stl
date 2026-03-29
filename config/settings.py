@@ -81,6 +81,8 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'chat.context_processors.chat_context',
                 'core.context_processors.logo_context',
+                'core.context_processors.header_stats_context',
+                'core.context_processors.icon_set_context',
             ],
         },
     },

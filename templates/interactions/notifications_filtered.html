@@ -291,12 +291,18 @@
             {% for notification in notifications %}
             <div class="notification-item">
                 <div class="notification-icon">
-                    {% if notification.type == 'like' %}❤️
-                    {% elif notification.type == 'comment' %}💬
-                    {% elif notification.type == 'repost' %}🔁
-                    {% elif notification.type == 'save' %}🔖
-                    {% elif notification.type == 'complaint' %}⚠️
-                    {% else %}🔔
+                    {% if notification.type == 'like' %}
+                        <img src="/static/icons/{{ icon_set }}/heart.svg" alt="" style="width: 20px; height: 20px;">
+                    {% elif notification.type == 'comment' %}
+                        <img src="/static/icons/{{ icon_set }}/message.svg" alt="" style="width: 20px; height: 20px;">
+                    {% elif notification.type == 'repost' %}
+                        <img src="/static/icons/{{ icon_set }}/share.svg" alt="" style="width: 20px; height: 20px;">
+                    {% elif notification.type == 'save' %}
+                        <img src="/static/icons/{{ icon_set }}/thumb.svg" alt="" style="width: 20px; height: 20px;">
+                    {% elif notification.type == 'complaint' %}
+                        <img src="/static/icons/{{ icon_set }}/block.svg" alt="" style="width: 20px; height: 20px;">
+                    {% else %}
+                        <img src="/static/icons/{{ icon_set }}/notification.svg" alt="" style="width: 20px; height: 20px;">
                     {% endif %}
                 </div>
                 <div class="notification-body">

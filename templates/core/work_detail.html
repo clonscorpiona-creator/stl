@@ -467,20 +467,23 @@
                 {% if user.is_authenticated %}
                     <form action="{% url 'interactions:like' work.id %}" method="post">
                         {% csrf_token %}
-                        <button type="submit" class="btn {% if is_liked %}btn-primary{% else %}btn-secondary{% endif %}" style="width: 100%;">
-                            {% if is_liked %}❤️ Понравилось{% else %}🤍 Понравилось{% endif %}
+                        <button type="submit" class="btn {% if is_liked %}btn-primary{% else %}btn-secondary{% endif %}" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                            <img src="/static/icons/{{ icon_set }}/heart.svg" alt="" style="width: 16px; height: 16px; {% if not is_liked %}filter: brightness(0) saturate(100%) invert(0);{% endif %}">
+                            Понравилось
                         </button>
                     </form>
                     <form action="{% url 'interactions:save' work.id %}" method="post">
                         {% csrf_token %}
-                        <button type="submit" class="btn btn-secondary" style="width: 100%;">
-                            🔖 Сохранить
+                        <button type="submit" class="btn btn-secondary" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                            <img src="/static/icons/{{ icon_set }}/thumb.svg" alt="" style="width: 16px; height: 16px;">
+                            Сохранить
                         </button>
                     </form>
                     <form action="{% url 'interactions:repost' work.id %}" method="post">
                         {% csrf_token %}
-                        <button type="submit" class="btn btn-secondary" style="width: 100%;">
-                            🔁 Репост
+                        <button type="submit" class="btn btn-secondary" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                            <img src="/static/icons/{{ icon_set }}/share.svg" alt="" style="width: 16px; height: 16px;">
+                            Репост
                         </button>
                     </form>
                 {% else %}
@@ -492,11 +495,26 @@
             <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee;">
                 <h4 style="margin-bottom: 15px;">Статистика</h4>
                 <div style="display: flex; flex-direction: column; gap: 10px; color: #666;">
-                    <span>❤️ {{ work.likes_count }} лайков</span>
-                    <span>👁️ {{ work.views_count }} просмотров</span>
-                    <span>💬 {{ work.comments_count }} комментариев</span>
-                    <span>🔁 {{ work.reposts_count }} репостов</span>
-                    <span>🔖 {{ work.saves_count }} сохранений</span>
+                    <span style="display: flex; align-items: center; gap: 8px;">
+                        <img src="/static/icons/{{ icon_set }}/heart.svg" alt="" style="width: 16px; height: 16px;">
+                        {{ work.likes_count }} лайков
+                    </span>
+                    <span style="display: flex; align-items: center; gap: 8px;">
+                        <img src="/static/icons/{{ icon_set }}/eye.svg" alt="" style="width: 16px; height: 16px;">
+                        {{ work.views_count }} просмотров
+                    </span>
+                    <span style="display: flex; align-items: center; gap: 8px;">
+                        <img src="/static/icons/{{ icon_set }}/message.svg" alt="" style="width: 16px; height: 16px;">
+                        {{ work.comments_count }} комментариев
+                    </span>
+                    <span style="display: flex; align-items: center; gap: 8px;">
+                        <img src="/static/icons/{{ icon_set }}/share.svg" alt="" style="width: 16px; height: 16px;">
+                        {{ work.reposts_count }} репостов
+                    </span>
+                    <span style="display: flex; align-items: center; gap: 8px;">
+                        <img src="/static/icons/{{ icon_set }}/thumb.svg" alt="" style="width: 16px; height: 16px;">
+                        {{ work.saves_count }} сохранений
+                    </span>
                 </div>
             </div>
 
@@ -928,9 +946,11 @@
                 .then(data => {
                     if (data.liked !== undefined) {
                         const likesSpan = this.querySelector('.likes-count');
-                        const heartSpan = this.querySelector('span:first-child');
+                        const heartImg = this.querySelector('img:first-child');
                         likesSpan.textContent = data.count;
-                        heartSpan.textContent = data.liked ? '❤️' : '🤍';
+                        if (heartImg) {
+                            heartImg.src = data.liked ? '/static/icons/{{ icon_set }}/heart.svg' : '/static/icons/{{ icon_set }}/heart-outline.svg';
+                        }
                     }
                 })
                 .catch(error => console.error('Error:', error));

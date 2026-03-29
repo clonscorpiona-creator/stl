@@ -506,3 +506,38 @@ def profile_test(request):
         }
     }
     return render(request, 'accounts/profile_test.html', context)
+
+
+@login_required
+def portfolio_page(request, username=None):
+    """
+    Страница портфолио пользователя с шестиугольной инфографикой навыков.
+    """
+    if username is None:
+        username = request.user.username
+
+    user = get_object_or_404(User, username=username)
+    profile, created = Profile.objects.get_or_create(user=user)
+    works = user.works.filter(status='published').order_by('-created_at')[:6]
+
+    # Получаем навыки пользователя (из профиля или дефолтные)
+    skills = profile.skills if hasattr(profile, 'skills') and profile.skills else []
+
+    # Дефолтные направления если навыки не заданы
+    default_directions = [
+        {'slug': 'design', 'name': 'Дизайн', 'icon': 'palette', 'color': '#e60023'},
+        {'slug': 'programming', 'name': 'Программирование', 'icon': 'code', 'color': '#667eea'},
+        {'slug': 'marketing', 'name': 'Маркетинг', 'icon': 'chart', 'color': '#f093fb'},
+        {'slug': 'content', 'name': 'Контент', 'icon': 'book', 'color': '#4facfe'},
+        {'slug': 'management', 'name': 'Управление', 'icon': 'calendar', 'color': '#43e97b'},
+        {'slug': 'legal', 'name': 'Юридические услуги', 'icon': 'scale', 'color': '#fa709a'},
+    ]
+
+    context = {
+        'portfolio_user': user,
+        'profile': profile,
+        'works': works,
+        'directions': default_directions,
+        'is_owner': request.user == user,
+    }
+    return render(request, 'accounts/portfolio.html', context)

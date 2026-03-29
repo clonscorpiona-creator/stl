@@ -194,13 +194,28 @@
     .empty-state a:hover {
         transform: scale(1.05);
     }
+
+    /* Стили для иконок уведомлений */
+    .block-icon-svg {
+        width: 24px;
+        height: 24px;
+        margin-bottom: 6px;
+        transition: transform 0.2s ease;
+    }
+
+    .notification-block:hover .block-icon-svg {
+        transform: scale(1.1);
+    }
 </style>
 {% endblock %}
 
 {% block content %}
 <!-- Updated: 2026-03-28 16:45 -->
 <div class="notifications-container">
-    <h1 style="margin-bottom: 10px;">🔔 Уведомления</h1>
+    <h1 style="margin-bottom: 10px; display: flex; align-items: center; gap: 10px;">
+        <img src="/static/icons/{{ icon_set }}/notification.svg" alt="" style="width: 28px; height: 28px;">
+        Уведомления
+    </h1>
     <p style="color: #666; margin-bottom: 30px;">Уведомления по вашим любимым категориям</p>
 
     {% if category_blocks %}
@@ -218,7 +233,7 @@
                    data-category="{{ block.category.slug }}"
                    data-type="new_work"
                    data-count="{{ block.new_works_count }}">
-                    <div class="block-icon">🎨</div>
+                    <img src="/static/icons/{{ icon_set }}/gallery.svg" alt="" class="block-icon-svg">
                     <div class="block-label">Работы</div>
                     <div class="block-count {% if block.new_works_count == 0 %}zero{% endif %}" data-counter="new_work">
                         {% if block.new_works_count > 0 %}+{{ block.new_works_count }}{% else %}—{% endif %}
@@ -231,7 +246,7 @@
                    data-category="{{ block.category.slug }}"
                    data-type="comment"
                    data-count="{{ block.comments_count }}">
-                    <div class="block-icon">💬</div>
+                    <img src="/static/icons/{{ icon_set }}/message.svg" alt="" class="block-icon-svg">
                     <div class="block-label">Комментарии</div>
                     <div class="block-count {% if block.comments_count == 0 %}zero{% endif %}" data-counter="comment">
                         {% if block.comments_count > 0 %}{{ block.comments_count }}{% else %}—{% endif %}
@@ -244,7 +259,7 @@
                    data-category="{{ block.category.slug }}"
                    data-type="like"
                    data-count="{{ block.likes_count }}">
-                    <div class="block-icon">❤️</div>
+                    <img src="/static/icons/{{ icon_set }}/heart.svg" alt="" class="block-icon-svg">
                     <div class="block-label">Лайки</div>
                     <div class="block-count {% if block.likes_count == 0 %}zero{% endif %}" data-counter="like">
                         {% if block.likes_count > 0 %}{{ block.likes_count }}{% else %}—{% endif %}
@@ -257,7 +272,7 @@
                    data-category="{{ block.category.slug }}"
                    data-type="repost"
                    data-count="{{ block.reposts_count }}">
-                    <div class="block-icon">🔁</div>
+                    <img src="/static/icons/{{ icon_set }}/share.svg" alt="" class="block-icon-svg">
                     <div class="block-label">Репосты</div>
                     <div class="block-count {% if block.reposts_count == 0 %}zero{% endif %}" data-counter="repost">
                         {% if block.reposts_count > 0 %}{{ block.reposts_count }}{% else %}—{% endif %}
@@ -270,7 +285,7 @@
                    data-category="{{ block.category.slug }}"
                    data-type="save"
                    data-count="{{ block.saves_count }}">
-                    <div class="block-icon">🔖</div>
+                    <img src="/static/icons/{{ icon_set }}/thumb.svg" alt="" class="block-icon-svg">
                     <div class="block-label">Сохранения</div>
                     <div class="block-count {% if block.saves_count == 0 %}zero{% endif %}" data-counter="save">
                         {% if block.saves_count > 0 %}{{ block.saves_count }}{% else %}—{% endif %}

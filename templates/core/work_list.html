@@ -58,9 +58,18 @@
                             {% endif %}
                         </p>
                         <div class="work-stats">
-                            <span>❤️ {{ work.likes_count }}</span>
-                            <span>👁️ {{ work.views_count }}</span>
-                            <span>💬 {{ work.comments_count }}</span>
+                            <span style="display: flex; align-items: center; gap: 4px;">
+                                <img src="/static/icons/{{ icon_set }}/heart.svg" alt="" style="width: 14px; height: 14px;">
+                                {{ work.likes_count }}
+                            </span>
+                            <span style="display: flex; align-items: center; gap: 4px;">
+                                <img src="/static/icons/{{ icon_set }}/eye.svg" alt="" style="width: 14px; height: 14px;">
+                                {{ work.views_count }}
+                            </span>
+                            <span style="display: flex; align-items: center; gap: 4px;">
+                                <img src="/static/icons/{{ icon_set }}/message.svg" alt="" style="width: 14px; height: 14px;">
+                                {{ work.comments_count }}
+                            </span>
                         </div>
                         {% if user.is_staff %}
                             <div style="margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap;">

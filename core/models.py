@@ -254,3 +254,40 @@ class CollectionItem(models.Model):
 
     def __str__(self):
         return f'{self.work.title} in {self.collection.title}'
+
+
+class IconSet(models.Model):
+    """
+    Наборы иконок для сайта.
+    Переключение между наборами через админ-панель.
+    """
+    name = models.CharField('Название', max_length=50, unique=True)
+    slug = models.SlugField('Слаг', unique=True, help_text='Имя папки с иконками (например: default, business, minimal)')
+    is_active = models.BooleanField('Активный набор', default=False, help_text='Только один набор может быть активным')
+    description = models.CharField('Описание', max_length=200, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = 'Набор иконок'
+        verbose_name_plural = 'Наборы иконок'
+        ordering = ['name']
+
+    def __str__(self):
+        status = ' (Активный)' if self.is_active else ''
+        return f'{self.name}{status}'
+
+    def save(self, *args, **kwargs):
+        # Если этот набор активен, деактивируем все остальные
+        if self.is_active:
+            IconSet.objects.exclude(pk=self.pk).update(is_active=False)
+        super().save(*args, **kwargs)
+
+    @classmethod
+    def get_active_set(cls):
+        """Получить активный набор иконок"""
+        instance = cls.objects.filter(is_active=True).first()
+        if not instance:
+            # По умолчанию используем 'default'
+            instance = cls.objects.filter(slug='default').first()
+        return instance

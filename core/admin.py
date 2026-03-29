@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.urls import path
 from django.shortcuts import render, redirect
 from django.contrib.admin.views.decorators import staff_member_required
-from .models import Category, Work, WorkImage, WorkVideo, WorkFrame, Collection, CollectionItem, NewWorksSettings
+from .models import Category, Work, WorkImage, WorkVideo, WorkFrame, Collection, CollectionItem, NewWorksSettings, IconSet
 
 
 @admin.register(Category)
@@ -106,3 +106,27 @@ class CollectionItemAdmin(admin.ModelAdmin):
     list_display = ['collection', 'work', 'added_at']
     list_filter = ['collection', 'added_at']
     ordering = ['-added_at']
+
+
+@admin.register(IconSet)
+class IconSetAdmin(admin.ModelAdmin):
+    list_display = ['name', 'slug', 'is_active', 'description', 'updated_at']
+    list_filter = ['is_active']
+    search_fields = ['name', 'description']
+    ordering = ['name']
+
+    fieldsets = (
+        ('Основное', {
+            'fields': ('name', 'slug', 'description')
+        }),
+        ('Статус', {
+            'fields': ('is_active',),
+            'description': 'Активируйте нужный набор иконок. Только один набор может быть активным.'
+        }),
+    )
+
+    def save_model(self, request, obj, form, change):
+        # Если этот набор активен, деактивируем все остальные
+        if obj.is_active:
+            IconSet.objects.exclude(pk=obj.pk).update(is_active=False)
+        super().save_model(request, obj, form, change)
