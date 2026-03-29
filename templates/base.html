@@ -19,6 +19,13 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Icons CSS -->
+    <link rel="stylesheet" href="/static/icons/{{ icon_set }}/icons.css">
+
+    <!-- Appearance Dropdown CSS -->
+    <link rel="stylesheet" href="/static/css/appearance-dropdown.css">
+
     <style>
         * {
             margin: 0;
@@ -148,8 +155,92 @@
 
         .nav-links {
             display: flex;
-            gap: 20px;
+            gap: 16px;
             align-items: center;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.3s ease;
+            padding: 6px 10px;
+            border-radius: 6px;
+        }
+
+        .nav-link:hover {
+            background: linear-gradient(135deg, rgba(90, 63, 138, 0.08) 0%, rgba(122, 92, 153, 0.08) 100%);
+            color: var(--primary);
+        }
+
+        .nav-icon {
+            width: 20px;
+            height: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover .nav-icon {
+            transform: scale(1.1) rotate(5deg);
+            filter: drop-shadow(0 0 6px rgba(90, 63, 138, 0.4));
+        }
+
+        /* Статистика и календарь в шапке */
+        .header-stats-calendar {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 6px;
+            margin-right: 15px;
+        }
+
+        .user-stats {
+            display: flex;
+            gap: 12px;
+            font-size: 13px;
+            color: var(--text-light);
+            background: #f8f9fa;
+            padding: 6px 12px;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .user-stats strong {
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .header-calendar {
+            font-size: 12px;
+            text-align: center;
+            padding: 4px 10px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            border-radius: 8px;
+            min-width: 140px;
+            box-shadow: 0 2px 8px rgba(90, 63, 138, 0.3);
+        }
+
+        #calendar-date {
+            font-weight: 600;
+            text-transform: capitalize;
+        }
+
+        @media (max-width: 768px) {
+            .header-stats-calendar {
+                display: none;
+            }
+
+            .nav-cyber-icon {
+                width: 18px;
+                height: 18px;
+            }
+
+            .nav-link span:not(#chatNotificationBadge, #notificationsBadge) {
+                display: none;
+            }
+
+            .nav-link {
+                padding: 8px;
+            }
         }
 
         .nav-links a {
@@ -363,31 +454,198 @@
             </form>
 
             <nav class="nav-links">
+                <!-- Статистика и календарь в шапке -->
+                <div class="header-stats-calendar" style="display: flex; flex-direction: column; align-items: flex-end; gap: 4px; margin-right: 15px;">
+                    <!-- Статистика пользователей -->
+                    <div class="user-stats" style="display: flex; align-items: center; gap: 12px; font-size: 13px; color: var(--text-light);">
+                        <span class="total-users" title="Всего зарегистрировано" style="display: flex; align-items: center; gap: 6px;">
+                            <img src="/static/icons/{{ icon_set }}/user.svg" alt="" style="width: 16px; height: 16px;">
+                            <strong>{{ total_users|default:"0" }}</strong>
+                        </span>
+                        <span class="online-users" title="Онлайн (5 мин)" style="display: flex; align-items: center; gap: 6px;">
+                            <img src="/static/icons/{{ icon_set }}/follow.svg" alt="" style="width: 16px; height: 16px;">
+                            <strong>{{ online_users|default:"0" }}</strong>
+                        </span>
+                    </div>
+                    <!-- Календарь -->
+                    <div class="header-calendar" style="font-size: 12px; text-align: center; padding: 4px 8px; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); color: white; border-radius: 6px; min-width: 140px;">
+                        <div id="calendar-date" style="font-weight: 600;"></div>
+                    </div>
+                </div>
+
                 {% if user.is_authenticated %}
-                    <a href="{% url 'core:feed' %}">Лента</a>
-                    <a href="{% url 'core:work_list' %}">Работы</a>
-                    <a href="{% url 'chat:index' %}" style="color: var(--primary); position: relative;">
-                        💬 Чат
+                    <a href="{% url 'core:feed' %}" class="nav-link" style="display: flex; align-items: center; gap: 6px;">
+                        <img src="/static/icons/{{ icon_set }}/feed.svg" alt="" class="nav-icon">Лента
+                    </a>
+                    <a href="{% url 'core:work_list' %}" class="nav-link" style="display: flex; align-items: center; gap: 6px;">
+                        <img src="/static/icons/{{ icon_set }}/gallery.svg" alt="" class="nav-icon">Работы
+                    </a>
+                    <a href="{% url 'chat:index' %}" class="nav-link" style="display: flex; align-items: center; gap: 6px; color: var(--primary); position: relative;">
+                        <img src="/static/icons/{{ icon_set }}/message.svg" alt="" class="nav-icon">Чат
                         <span id="chatNotificationBadge" style="display: none; position: absolute; top: -8px; right: -12px; background: #ef4444; color: white; border-radius: 50%; min-width: 18px; height: 18px; font-size: 10px; font-weight: 700; text-align: center; line-height: 18px; padding: 0 4px; box-shadow: 0 2px 4px rgba(239, 68, 68, 0.4);">+0</span>
                     </a>
                     {% if user.is_staff %}
-                        <a href="{% url 'admin:index' %}" style="color: var(--primary-dark); font-weight: 600;">Админ-панель</a>
+                        <!-- Appearance Dropdown Menu -->
+                        <div class="appearance-dropdown">
+                            <button class="appearance-trigger" onclick="toggleAppearanceMenu(event)" title="Внешний вид">
+                                <svg class="appearance-trigger-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <path d="M12 15a3 3 0 100-6 3 3 0 000 6z"/>
+                                    <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/>
+                                </svg>
+                                <span>Внешний вид</span>
+                            </button>
+                            <div class="appearance-menu" id="appearanceMenu">
+                                <div class="appearance-menu-header">
+                                    <h4 class="appearance-menu-title">Настройки внешнего вида</h4>
+                                    <button class="appearance-menu-close" onclick="toggleAppearanceMenu(event)">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M18 6L6 18M6 6l12 12"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                                <div class="appearance-menu-content">
+                                    <!-- Icon Sets Section -->
+                                    <div class="appearance-section">
+                                        <h5 class="appearance-section-title">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                                <rect x="3" y="3" width="7" height="7" rx="1"/>
+                                                <rect x="14" y="3" width="7" height="7" rx="1"/>
+                                                <rect x="14" y="14" width="7" height="7" rx="1"/>
+                                                <rect x="3" y="14" width="7" height="7" rx="1"/>
+                                            </svg>
+                                            Наборы иконок
+                                        </h5>
+                                        <a href="{% url 'core:switch_icon_set' 'default' %}" class="appearance-option {% if icon_set == 'default' %}active{% endif %}">
+                                            <div class="appearance-option-icon">
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                                    <path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                                </svg>
+                                            </div>
+                                            <div class="appearance-option-content">
+                                                <p class="appearance-option-name">Cyberpunk</p>
+                                                <p class="appearance-option-desc">Яркие неоновые иконки</p>
+                                            </div>
+                                            {% if icon_set == 'default' %}
+                                            <svg class="appearance-option-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                                <path d="M20 6L9 17L4 12"/>
+                                            </svg>
+                                            {% endif %}
+                                        </a>
+                                        <a href="{% url 'core:switch_icon_set' 'business' %}" class="appearance-option {% if icon_set == 'business' %}active{% endif %}">
+                                            <div class="appearance-option-icon">
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                                    <path d="M3 3v18h18V3H3zm16 16H5V5h14v14z"/>
+                                                    <path d="M7 15l3-3 2 2 4-4v6H7z"/>
+                                                </svg>
+                                            </div>
+                                            <div class="appearance-option-content">
+                                                <p class="appearance-option-name">Business</p>
+                                                <p class="appearance-option-desc">Строгие деловые иконки</p>
+                                            </div>
+                                            {% if icon_set == 'business' %}
+                                            <svg class="appearance-option-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                                <path d="M20 6L9 17L4 12"/>
+                                            </svg>
+                                            {% endif %}
+                                        </a>
+                                        <a href="{% url 'core:switch_icon_set' 'minimal' %}" class="appearance-option {% if icon_set == 'minimal' %}active{% endif %}">
+                                            <div class="appearance-option-icon">
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                                </svg>
+                                            </div>
+                                            <div class="appearance-option-content">
+                                                <p class="appearance-option-name">Minimal</p>
+                                                <p class="appearance-option-desc">Простые минималистичные</p>
+                                            </div>
+                                            {% if icon_set == 'minimal' %}
+                                            <svg class="appearance-option-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                                <path d="M20 6L9 17L4 12"/>
+                                            </svg>
+                                            {% endif %}
+                                        </a>
+                                    </div>
+                                    <!-- Color Themes Section -->
+                                    <div class="appearance-section">
+                                        <h5 class="appearance-section-title">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                                <circle cx="12" cy="12" r="10"/>
+                                                <path d="M12 2a10 10 0 0110 10"/>
+                                                <path d="M12 22a10 10 0 0010-10"/>
+                                            </svg>
+                                            Цветовые темы
+                                        </h5>
+                                        <button class="appearance-option" onclick="switchTheme('olive-sage', event)">
+                                            <div class="theme-swatch">
+                                                <div class="theme-swatch-color" style="background: #D8D7CC;"></div>
+                                                <div class="theme-swatch-color" style="background: #8FA885;"></div>
+                                            </div>
+                                            <div class="appearance-option-content">
+                                                <p class="appearance-option-name">Оливковый шалфей</p>
+                                                <p class="appearance-option-desc">Природные зелёные оттенки</p>
+                                            </div>
+                                        </button>
+                                        <button class="appearance-option" onclick="switchTheme('coffee', event)">
+                                            <div class="theme-swatch">
+                                                <div class="theme-swatch-color" style="background: #FAF6F1;"></div>
+                                                <div class="theme-swatch-color" style="background: #6F4E37;"></div>
+                                            </div>
+                                            <div class="appearance-option-content">
+                                                <p class="appearance-option-name">Кофейная</p>
+                                                <p class="appearance-option-desc">Тёплые кофейные оттенки</p>
+                                            </div>
+                                        </button>
+                                        <button class="appearance-option" onclick="switchTheme('monochrome', event)">
+                                            <div class="theme-swatch">
+                                                <div class="theme-swatch-color" style="background: #F5F5F5;"></div>
+                                                <div class="theme-swatch-color" style="background: #4A4A4A;"></div>
+                                            </div>
+                                            <div class="appearance-option-content">
+                                                <p class="appearance-option-name">Монохромная</p>
+                                                <p class="appearance-option-desc">Классический ч/б стиль</p>
+                                            </div>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="appearance-footer">
+                                    <a href="{% url 'core:admin_theme' %}" class="appearance-footer-link">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                            <path d="M12 15a3 3 0 100-6 3 3 0 000 6z"/>
+                                            <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/>
+                                        </svg>
+                                        Полные настройки
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <a href="{% url 'admin:index' %}" class="nav-link" style="display: flex; align-items: center; gap: 6px; color: var(--primary-dark); font-weight: 600;">
+                            <img src="/static/icons/{{ icon_set }}/admin.svg" alt="" class="nav-icon">Админ-панель
+                        </a>
                     {% endif %}
-                    <a href="{% url 'core:work_create' %}" class="btn btn-primary" style="color: #ffd700 !important;">Создать</a>
-                    <a href="{% url 'interactions:notifications' %}" style="position: relative;">
-                        🔔 Уведомления
+                    <a href="{% url 'core:work_create' %}" class="btn btn-primary" style="display: flex; align-items: center; gap: 6px; color: #ffd700 !important;">
+                        <img src="/static/icons/{{ icon_set }}/upload.svg" alt="" class="nav-icon" style="filter: brightness(0) invert(1);">Создать
+                    </a>
+                    <a href="{% url 'interactions:notifications' %}" class="nav-link" style="display: flex; align-items: center; gap: 6px; position: relative;">
+                        <img src="/static/icons/{{ icon_set }}/notification.svg" alt="" class="nav-icon">Уведомления
                         <span id="notificationsBadge" style="display: none; position: absolute; top: -8px; right: -12px; background: #ef4444; color: white; border-radius: 50%; min-width: 18px; height: 18px; font-size: 10px; font-weight: 700; text-align: center; line-height: 18px; padding: 0 4px; box-shadow: 0 2px 4px rgba(239, 68, 68, 0.4);">+0</span>
                     </a>
-                    <a href="{% url 'accounts:profile' username=user.username %}" style="display: flex; align-items: center; gap: 8px;">
+                    <a href="{% url 'accounts:profile' username=user.username %}" class="nav-link" style="display: flex; align-items: center; gap: 8px;">
+                        <img src="/static/icons/{{ icon_set }}/user.svg" alt="" class="nav-icon">
                         {% if user.avatar %}
-                            <img src="{{ user.avatar.url }}" alt="{{ user.username }}" class="avatar" style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover;">
+                            <img src="{{ user.avatar.url }}" alt="{{ user.username }}" class="avatar" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;">
                         {% endif %}
                         {{ user.username }}
                     </a>
-                    <a href="{% url 'accounts:logout' %}">Выход</a>
+                    <a href="{% url 'accounts:logout' %}" class="nav-link" style="display: flex; align-items: center; gap: 6px;">
+                        <img src="/static/icons/{{ icon_set }}/logout.svg" alt="" class="nav-icon">Выход
+                    </a>
                 {% else %}
-                    <a href="{% url 'accounts:login' %}" class="btn btn-secondary">Вход</a>
-                    <a href="{% url 'accounts:register' %}" class="btn btn-primary">Регистрация</a>
+                    <a href="{% url 'accounts:login' %}" class="btn btn-secondary" style="display: flex; align-items: center; gap: 6px;">
+                        <img src="/static/icons/{{ icon_set }}/login.svg" alt="" class="nav-icon" style="filter: brightness(0) invert(1);">Вход
+                    </a>
+                    <a href="{% url 'accounts:register' %}" class="btn btn-primary" style="display: flex; align-items: center; gap: 6px;">
+                        <img src="/static/icons/{{ icon_set }}/user.svg" alt="" class="nav-icon" style="filter: brightness(0) invert(1);">Регистрация
+                    </a>
                 {% endif %}
             </nav>
         </div>
@@ -442,6 +700,137 @@
     </footer>
 
     {% block extra_js %}{% endblock %}
+
+    <script>
+        // Календарь в шапке - отображение текущей даты
+        document.addEventListener('DOMContentLoaded', function() {
+            const calendarDate = document.getElementById('calendar-date');
+            if (calendarDate) {
+                const now = new Date();
+                const options = { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' };
+                const dateStr = now.toLocaleDateString('ru-RU', options);
+                // Capitalize first letter
+                calendarDate.textContent = dateStr.charAt(0).toUpperCase() + dateStr.slice(1);
+            }
+        });
+
+        // Appearance Dropdown Menu
+        function toggleAppearanceMenu(event) {
+            if (event) event.stopPropagation();
+            const menu = document.getElementById('appearanceMenu');
+            if (menu) {
+                menu.classList.toggle('open');
+            }
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const dropdown = document.querySelector('.appearance-dropdown');
+            const menu = document.getElementById('appearanceMenu');
+            if (dropdown && menu && !dropdown.contains(event.target)) {
+                menu.classList.remove('open');
+            }
+        });
+
+        // Theme switching via session
+        function switchTheme(themeName, event) {
+            if (event) event.stopPropagation();
+
+            // Apply theme visually (for immediate feedback)
+            applyTheme(themeName);
+
+            // Save to localStorage
+            localStorage.setItem('theme', themeName);
+
+            // Send to server to save in session
+            fetch('/api/theme/switch/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({ theme: themeName })
+            }).catch(error => console.error('[Theme Switch] Error:', error));
+
+            // Close menu
+            const menu = document.getElementById('appearanceMenu');
+            if (menu) {
+                menu.classList.remove('open');
+            }
+        }
+
+        function applyTheme(themeName) {
+            const themes = {
+                'olive-sage': {
+                    background: '#D8D7CC',
+                    foreground: '#EEEEE3',
+                    textPrimary: '#2A2A1A',
+                    textSecondary: '#5A5A4A',
+                    accent: '#8FA885',
+                    accentLight: '#A8B89F',
+                    accentDark: '#7A9370',
+                    gradient: 'linear-gradient(135deg, #D8D7CC 0%, #CCC9BE 100%)'
+                },
+                'coffee': {
+                    background: '#FAF6F1',
+                    foreground: '#FFFDFB',
+                    textPrimary: '#2D1B0E',
+                    textSecondary: '#6B5A4C',
+                    accent: '#6F4E37',
+                    accentLight: '#C9A66B',
+                    accentDark: '#4A3326',
+                    gradient: 'linear-gradient(135deg, #FAF6F1 0%, #F5EDE3 50%, #EFE5D5 100%)'
+                },
+                'monochrome': {
+                    background: '#F5F5F5',
+                    foreground: '#FFFFFF',
+                    textPrimary: '#1A1A1A',
+                    textSecondary: '#666666',
+                    accent: '#4A4A4A',
+                    accentLight: '#7A7A7A',
+                    accentDark: '#2A2A2A',
+                    gradient: 'linear-gradient(135deg, #F5F5F5 0%, #EBEBEB 50%, #E0E0E0 100%)'
+                }
+            };
+
+            const theme = themes[themeName];
+            if (!theme) return;
+
+            const root = document.documentElement;
+            root.style.setProperty('--background', theme.background);
+            root.style.setProperty('--foreground', theme.foreground);
+            root.style.setProperty('--text-primary', theme.textPrimary);
+            root.style.setProperty('--text-secondary', theme.textSecondary);
+            root.style.setProperty('--accent', theme.accent);
+            root.style.setProperty('--accent-light', theme.accentLight);
+            root.style.setProperty('--accent-dark', theme.accentDark);
+            document.body.style.background = theme.gradient;
+        }
+
+        // Get CSRF token helper
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        // Load saved theme on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme) {
+                applyTheme(savedTheme);
+            }
+        });
+    </script>
 
     {% if user.is_authenticated %}
     <script>

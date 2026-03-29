@@ -9,7 +9,12 @@ from django.conf.urls.static import static
 # Импортируем API views напрямую для добавления в urlpatterns
 from interactions import api as interactions_api
 
+from core import views as core_views
+
 urlpatterns = [
+    # Admin theme page (must be before admin/ to avoid conflict)
+    path('admin/theme/', core_views.admin_theme_page, name='admin_theme'),
+
     path('admin/', admin.site.urls),
     path('auth/', include('accounts.urls')),
     path('', include('core.urls')),

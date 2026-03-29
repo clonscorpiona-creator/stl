@@ -1,10 +1,12 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import get_user_model
 from django.db.models import Q, Count, F
 from django.core.paginator import Paginator
 from django.utils import timezone
-from .models import Work, Category, Collection
+from django.http import JsonResponse
+from .models import Work, Category, Collection, IconSet
 from taggit.models import Tag
 
 User = get_user_model()
@@ -604,3 +606,89 @@ def new_works_and_comments(request):
     }
 
     return render(request, 'core/new_works.html', context)
+
+
+@staff_member_required
+def switch_icon_set(request, set_slug):
+    """
+    Переключение набора иконок.
+    Доступно только для персонала (staff).
+    """
+    icon_set = get_object_or_404(IconSet, slug=set_slug)
+
+    # Активируем выбранный набор, деактивируем остальные
+    IconSet.objects.exclude(pk=icon_set.pk).update(is_active=False)
+    icon_set.is_active = True
+    icon_set.save()
+
+    # Сохраняем выбор в сессии (для удобства)
+    request.session['icon_set'] = set_slug
+
+    # Возвращаемся на предыдущую страницу
+    return redirect(request.META.get('HTTP_REFERER', 'core:feed'))
+
+
+@staff_member_required
+def switch_theme(request):
+    """
+    API для переключения цветовой темы.
+    Доступно только для персонала (staff).
+    """
+    from django.http import JsonResponse
+    from django.views.decorators.http import require_http_methods
+
+    if request.method == 'POST':
+        import json
+        try:
+            data = json.loads(request.body)
+            theme_name = data.get('theme')
+
+            # Проверка допустимых тем
+            valid_themes = ['olive-sage', 'coffee', 'monochrome']
+            if theme_name not in valid_themes:
+                return JsonResponse({'error': 'Invalid theme'}, status=400)
+
+            # Сохраняем тему в сессии
+            request.session['color_theme'] = theme_name
+
+            return JsonResponse({'success': True, 'theme': theme_name})
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON'}, status=400)
+
+    return JsonResponse({'error': 'Method not allowed'}, status=405)
+
+
+@staff_member_required
+def get_theme(request):
+    """
+    API для получения текущей темы.
+    Доступно только для персонала (staff).
+    """
+    from django.http import JsonResponse
+
+    current_theme = request.session.get('color_theme', 'olive-sage')
+    return JsonResponse({'theme': current_theme})
+
+
+@login_required
+def admin_theme_page(request):
+    """
+    Страница админ-панели для настройки темы.
+    Доступна только для staff пользователей.
+    """
+    # Проверка на staff пользователя
+    if not request.user.is_staff:
+        return render(request, '403.html', status=403)
+
+    from django.shortcuts import render
+
+    # Получаем текущую тему из сессии
+    current_theme = request.session.get('color_theme', 'olive-sage')
+    icon_set_slug = IconSet.get_active_set().slug if IconSet.get_active_set() else 'default'
+
+    context = {
+        'current_theme': current_theme,
+        'icon_set': icon_set_slug,
+    }
+
+    return render(request, 'core/admin_theme.html', context)

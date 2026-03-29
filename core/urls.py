@@ -51,4 +51,14 @@ urlpatterns = [
     # Admin work moderation API
     path('api/works/<int:work_id>/block/', api.block_work_api, name='api_block_work'),
     path('api/works/<int:work_id>/delete/', api.delete_work_api, name='api_delete_work'),
+
+    # Icon set switcher (staff only)
+    path('icon-set/<str:set_slug>/', views.switch_icon_set, name='switch_icon_set'),
+
+    # Theme switcher API (staff only)
+    path('api/theme/switch/', views.switch_theme, name='switch_theme'),
+    path('api/theme/get/', views.get_theme, name='get_theme'),
+
+    # Admin theme page (staff only)
+    path('admin/theme/', views.admin_theme_page, name='admin_theme'),
 ]
