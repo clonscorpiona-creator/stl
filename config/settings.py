@@ -27,8 +27,8 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-3n72tqhtim!zx2a+8swiu
 DEBUG = os.environ.get('DEBUG', 'True').lower() == 'true'
 
 # Production hosts
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1,testserver').split(',')
-CSRF_TRUSTED_ORIGINS = os.environ.get('CSRF_TRUSTED_ORIGINS', 'http://localhost,http://127.0.0.1').split(',')
+ALLOWED_HOSTS = ['*']
+CSRF_TRUSTED_ORIGINS = ['http://localhost', 'http://127.0.0.1', 'http://77.232.129.41', 'http://стл.art', 'http://www.стл.art']
 
 # Добавляем домен Render для CSRF
 if not DEBUG:
