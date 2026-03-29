@@ -110,6 +110,63 @@ def create_admin_view(request):
         return JsonResponse({'error': str(e)}, status=500)
 
 
+def deploy_update_view(request):
+    """Эндпоинт для обновления кода через git pull и создания админа"""
+    secret = os.environ.get('ADMIN_CREATE_SECRET', 'stl_secret_2026')
+    if request.GET.get('key') != secret:
+        return JsonResponse({'error': 'Access denied'}, status=403)
+
+    import subprocess
+
+    result = {
+        'git_pull': '',
+        'migrate': '',
+        'create_admin': '',
+        'restart': ''
+    }
+
+    try:
+        # Git pull
+        proc = subprocess.run(
+            ['git', 'pull', 'origin', 'master'],
+            cwd='/var/www/stl',
+            capture_output=True,
+            text=True,
+            timeout=60
+        )
+        result['git_pull'] = proc.stdout + proc.stderr
+
+        # Migrate
+        proc = subprocess.run(
+            ['/var/www/stl/venv/bin/python', 'manage.py', 'migrate', '--noinput'],
+            cwd='/var/www/stl',
+            capture_output=True,
+            text=True,
+            timeout=60
+        )
+        result['migrate'] = proc.stdout + proc.stderr
+
+        # Create admin
+        proc = subprocess.run(
+            ['/var/www/stl/venv/bin/python', 'manage.py', 'create_admin'],
+            cwd='/var/www/stl',
+            capture_output=True,
+            text=True,
+            timeout=30
+        )
+        result['create_admin'] = proc.stdout + proc.stderr
+
+        return JsonResponse({
+            'status': 'success',
+            'result': result,
+            'message': 'Обновление завершено. Админ: admin / StlAdmin2026!'
+        })
+    except subprocess.TimeoutExpired:
+        return JsonResponse({'error': 'Command timed out'}, status=500)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+
 def profile_view(request, username):
     """Страница профиля пользователя"""
     # Декодируем URL-кодированные символы (например, %20 -> пробел)
