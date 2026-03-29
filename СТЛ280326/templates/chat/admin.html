@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Управление каналом - {{ channel.name }} - STL</title>
+    <style>
+        :root {
+            --bg: #0a0a0a;
+            --surface: #1a1a1a;
+            --surface-hover: #252525;
+            --border: #333;
+            --text: #fff;
+            --text-muted: #888;
+            --accent: #e60023;
+            --accent-hover: #ff1a41;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --radius: 12px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: var(--radius);
+            border: none;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-hover);
+        }
+
+        .btn-secondary {
+            background: var(--surface);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--surface-hover);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: var(--surface);
+            border-radius: var(--radius);
+            padding: 20px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-top: 8px;
+        }
+
+        /* Sections */
+        .section {
+            background: var(--surface);
+            border-radius: var(--radius);
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .section-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            font-weight: 600;
+            font-size: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .section-content {
+            padding: 20px;
+        }
+
+        /* Tables */
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table th,
+        .table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .table th {
+            font-weight: 500;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .table td {
+            font-size: 14px;
+        }
+
+        .table tr:hover {
+            background: var(--surface-hover);
+        }
+
+        .user-cell {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .badge-moderator {
+            background: rgba(230, 0, 35, 0.15);
+            color: var(--accent);
+        }
+
+        .badge-muted {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--warning);
+        }
+
+        .badge-banned {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--danger);
+        }
+
+        .message-content {
+            max-width: 400px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            color: var(--text-muted);
+        }
+
+        .actions-cell {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-icon {
+            padding: 6px 10px;
+            border-radius: 6px;
+            background: var(--surface-hover);
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.2s;
+        }
+
+        .btn-icon:hover {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-icon.danger:hover {
+            background: var(--danger);
+        }
+
+        .btn-icon.success:hover {
+            background: var(--success);
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-overlay.open {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--surface);
+            border-radius: var(--radius);
+            padding: 24px;
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .modal-body {
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            margin-bottom: 8px;
+            color: var(--text-muted);
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 10px 14px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-size: 14px;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-muted);
+        }
+
+        .empty-state h3 {
+            color: var(--text);
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div>
+                <h1>Управление каналом #{{ channel.name }}</h1>
+                <p style="color: var(--text-muted); margin-top: 8px;">{{ channel.description }}</p>
+            </div>
+            <div class="header-actions">
+                <a href="{% url 'chat:room' channel.slug %}" class="btn btn-secondary">← В чат</a>
+                <a href="{% url 'chat:index' %}" class="btn btn-secondary">Все каналы</a>
+            </div>
+        </header>
+
+        <!-- Статистика -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value">{{ stats.messages }}</div>
+                <div class="stat-label">Сообщений</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{{ stats.members }}</div>
+                <div class="stat-label">Участников</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{{ stats.banned }}</div>
+                <div class="stat-label">Забанено</div>
+            </div>
+        </div>
+
+        <!-- Последние сообщения -->
+        <div class="section">
+            <div class="section-header">
+                <span>Последние сообщения</span>
+            </div>
+            <div class="section-content">
+                {% if recent_messages %}
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Пользователь</th>
+                            <th>Сообщение</th>
+                            <th>Лайки</th>
+                            <th>Дата</th>
+                            <th>Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for msg in recent_messages %}
+                        <tr>
+                            <td>
+                                <div class="user-cell">
+                                    <a href="{% url 'accounts:profile' msg.user.username %}" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 8px;">
+                                        {% if msg.user.avatar %}
+                                        <img src="{{ msg.user.avatar.url }}" alt="{{ msg.user.username }}" class="user-avatar">
+                                        {% endif %}
+                                        {{ msg.user.username }}
+                                    </a>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="message-content">{{ msg.content }}</div>
+                            </td>
+                            <td>{{ msg.likes_count }}</td>
+                            <td>{{ msg.created_at|date:"d.m.Y H:i" }}</td>
+                            <td>
+                                <div class="actions-cell">
+                                    {% if not msg.is_deleted %}
+                                    <button class="btn-icon danger" onclick="deleteMessage({{ msg.id }})" title="Удалить">🗑️</button>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <div class="empty-state">
+                    <h3>Нет сообщений</h3>
+                    <p>В этом канале пока нет сообщений</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Участники -->
+        <div class="section">
+            <div class="section-header">
+                <span>Участники</span>
+            </div>
+            <div class="section-content">
+                {% if recent_members %}
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Пользователь</th>
+                            <th>Роль</th>
+                            <th>Статус</th>
+                            <th>Вступил</th>
+                            <th>Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for member in recent_members %}
+                        <tr>
+                            <td>
+                                <div class="user-cell">
+                                    <a href="{% url 'accounts:profile' member.user.username %}" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 8px;">
+                                        {% if member.user.avatar %}
+                                        <img src="{{ member.user.avatar.url }}" alt="{{ member.user.username }}" class="user-avatar">
+                                        {% endif %}
+                                        {{ member.user.username }}
+                                    </a>
+                                </div>
+                            </td>
+                            <td>
+                                {% if member.is_moderator %}
+                                <span class="badge badge-moderator">Модератор</span>
+                                {% else %}
+                                <span style="color: var(--text-muted);">Участник</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if member.is_muted %}
+                                <span class="badge badge-muted">Заглушен</span>
+                                {% else %}
+                                <span style="color: var(--success);">Активен</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ member.joined_at|date:"d.m.Y" }}</td>
+                            <td>
+                                <div class="actions-cell">
+                                    {% if not member.is_moderator %}
+                                    <button class="btn-icon success" onclick="promoteUser({{ member.user.id }})" title="Сделать модератором">⭐</button>
+                                    {% endif %}
+                                    {% if member.is_muted %}
+                                    <button class="btn-icon" onclick="unmuteUser({{ member.user.id }})" title="Разглушить">🔊</button>
+                                    {% else %}
+                                    <button class="btn-icon" onclick="muteUser({{ member.user.id }})" title="Заглушить">🔇</button>
+                                    {% endif %}
+                                    <button class="btn-icon danger" onclick="banUser({{ member.user.id }})" title="Забанить">🚫</button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <div class="empty-state">
+                    <h3>Нет участников</h3>
+                    <p>В этом канале пока нет участников</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Забаненные -->
+        <div class="section">
+            <div class="section-header">
+                <span>Забаненные пользователи</span>
+            </div>
+            <div class="section-content">
+                {% if banned_users %}
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Пользователь</th>
+                            <th>Причина</th>
+                            <th>Кем забанен</th>
+                            <th>Дата</th>
+                            <th>Истекает</th>
+                            <th>Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for ban in banned_users %}
+                        <tr>
+                            <td>
+                                <div class="user-cell">
+                                    {{ ban.user.username }}
+                                </div>
+                            </td>
+                            <td>{{ ban.reason|default:"—" }}</td>
+                            <td>{{ ban.moderator.username|default:"Система" }}</td>
+                            <td>{{ ban.created_at|date:"d.m.Y H:i" }}</td>
+                            <td>
+                                {% if ban.expires_at %}
+                                    {{ ban.expires_at|date:"d.m.Y H:i" }}
+                                {% else %}
+                                    <span class="badge badge-banned">Навсегда</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="actions-cell">
+                                    <button class="btn-icon success" onclick="unbanUser({{ ban.user.id }})" title="Разбанить">✅</button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <div class="empty-state">
+                    <h3>Нет забаненных</h3>
+                    <p>В этом канале нет забаненных пользователей</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно для бана -->
+    <div class="modal-overlay" id="banModal">
+        <div class="modal">
+            <h3 class="modal-title">Забанить пользователя</h3>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Причина (необязательно)</label>
+                    <input type="text" id="banReason" placeholder="Нарушение правил">
+                </div>
+                <div class="form-group">
+                    <label>Срок (дней, необязательно)</label>
+                    <input type="number" id="banDuration" min="1" placeholder="30">
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeBanModal()">Отмена</button>
+                <button class="btn btn-danger" onclick="confirmBan()">Забанить</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const CHANNEL_SLUG = '{{ channel.slug }}';
+        const CSRF_TOKEN = '{{ csrf_token }}';
+        let userIdToBan = null;
+
+        // Удаление сообщения
+        function deleteMessage(messageId) {
+            if (!confirm('Удалить это сообщение?')) return;
+
+            fetch(`/chat/api/messages/${messageId}/delete/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': CSRF_TOKEN,
+                },
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert('Ошибка: ' + (data.error || 'Неизвестная ошибка'));
+                }
+            });
+        }
+
+        // Заглушить пользователя
+        function muteUser(userId) {
+            if (!confirm('Заглушить этого пользователя?')) return;
+
+            fetch(`/chat/api/channels/${CHANNEL_SLUG}/mute/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': CSRF_TOKEN,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ user_id: userId }),
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert('Ошибка: ' + (data.error || 'Неизвестная ошибка'));
+                }
+            });
+        }
+
+        // Разглушить пользователя
+        function unmuteUser(userId) {
+            if (!confirm('Разглушить этого пользователя?')) return;
+
+            fetch(`/chat/api/channels/${CHANNEL_SLUG}/unmute/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': CSRF_TOKEN,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ user_id: userId }),
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                }
+            });
+        }
+
+        // Назначить модератором
+        function promoteUser(userId) {
+            if (!confirm('Назначить этого пользователя модератором?')) return;
+
+            fetch(`/chat/api/channels/${CHANNEL_SLUG}/promote/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': CSRF_TOKEN,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ user_id: userId }),
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert('Ошибка: ' + (data.error || 'Неизвестная ошибка'));
+                }
+            });
+        }
+
+        // Бан пользователя
+        function banUser(userId) {
+            userIdToBan = userId;
+            document.getElementById('banModal').classList.add('open');
+        }
+
+        function closeBanModal() {
+            userIdToBan = null;
+            document.getElementById('banModal').classList.remove('open');
+            document.getElementById('banReason').value = '';
+            document.getElementById('banDuration').value = '';
+        }
+
+        function confirmBan() {
+            if (!userIdToBan) return;
+
+            const reason = document.getElementById('banReason').value;
+            const duration = document.getElementById('banDuration').value;
+
+            fetch(`/chat/api/channels/${CHANNEL_SLUG}/ban/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': CSRF_TOKEN,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    user_id: userIdToBan,
+                    reason: reason,
+                    duration_days: duration ? parseInt(duration) : null,
+                }),
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.banned) {
+                    location.reload();
+                } else {
+                    alert('Ошибка: ' + (data.error || 'Неизвестная ошибка'));
+                }
+            });
+
+            closeBanModal();
+        }
+
+        // Разбан пользователя
+        function unbanUser(userId) {
+            if (!confirm('Разбанить этого пользователя?')) return;
+
+            fetch(`/chat/api/channels/${CHANNEL_SLUG}/unban/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': CSRF_TOKEN,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ user_id: userId }),
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                }
+            });
+        }
+
+        // Закрытие модального окна по клику вне
+        document.getElementById('banModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeBanModal();
+            }
+        });
+    </script>
+</body>
+</html>

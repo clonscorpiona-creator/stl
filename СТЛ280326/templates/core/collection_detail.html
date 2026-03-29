@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ collection.title }} - STL{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 30px;">
+    <div style="display: flex; gap: 30px; align-items: flex-start;">
+        {% if collection.cover %}
+            <img src="{{ collection.cover.url }}" alt="{{ collection.title }}"
+                style="width: 200px; height: 200px; object-fit: cover; border-radius: 12px;">
+        {% endif %}
+        <div style="flex: 1;">
+            <h1 style="font-size: 32px; margin-bottom: 10px;">{{ collection.title }}</h1>
+            <p style="color: #666; margin-bottom: 15px;">
+                Автор: <a href="{% url 'accounts:profile' collection.author.username %}" style="color: #e60023;">{{ collection.author.username }}</a>
+                • {{ collection.items.count }} работ
+            </p>
+            {% if collection.description %}
+                <p style="color: #333;">{{ collection.description }}</p>
+            {% endif %}
+        </div>
+        {% if is_owner %}
+            <div style="display: flex; gap: 10px;">
+                <a href="{% url 'core:collection_edit' collection.author.username collection.slug %}" class="btn btn-secondary">Редактировать</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+{% if items %}
+    <div class="works-grid">
+        {% for item in items %}
+            <div class="work-card">
+                {% if item.work.cover %}
+                    <a href="{% url 'core:work_detail' item.work.author.username item.work.slug %}">
+                        <img src="{{ item.work.cover.url }}" alt="{{ item.work.title }}">
+                    </a>
+                {% endif %}
+                <div class="work-card-body">
+                    <h3 class="work-card-title">
+                        <a href="{% url 'core:work_detail' item.work.author.username item.work.slug %}" style="color: inherit; text-decoration: none;">
+                            {{ item.work.title }}
+                        </a>
+                    </h3>
+                    <p class="work-card-author">от {{ item.work.author.username }}</p>
+                    {% if is_owner %}
+                        <form action="{% url 'core:collection_remove' collection.slug item.work.id %}" method="post" style="margin-top: 10px;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-secondary" style="font-size: 12px; padding: 5px 10px;">Удалить</button>
+                        </form>
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <p style="text-align: center; padding: 40px; color: #666;">В этой подборке пока нет работ</p>
+{% endif %}
+{% endblock %}

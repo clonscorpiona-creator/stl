@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block title %}Мои подборки - STL{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+    <h1>Мои подборки</h1>
+    <a href="{% url 'core:collection_create' %}" class="btn btn-primary">Создать подборку</a>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;">
+    {% for collection in collections %}
+        <div class="work-card">
+            {% if collection.cover %}
+                <a href="{% url 'core:collection_detail' collection.author.username collection.slug %}">
+                    <img src="{{ collection.cover.url }}" alt="{{ collection.title }}" style="height: 200px;">
+                </a>
+            {% endif %}
+            <div class="work-card-body">
+                <h3 class="work-card-title">
+                    <a href="{% url 'core:collection_detail' collection.author.username collection.slug %}" style="color: inherit; text-decoration: none;">
+                        {{ collection.title }}
+                    </a>
+                </h3>
+                <p style="color: #666; font-size: 14px;">{{ collection.items.count }} работ</p>
+                {% if collection.description %}
+                    <p style="color: #999; font-size: 14px; margin-top: 10px;">{{ collection.description|truncatewords:20 }}</p>
+                {% endif %}
+            </div>
+        </div>
+    {% empty %}
+        <p style="grid-column: 1/-1; text-align: center; padding: 40px; color: #666;">
+            У вас пока нет подборок
+        </p>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block title %}Вход - STL{% endblock %}
+
+{% block content %}
+<div style="max-width: 400px; margin: 50px auto; background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+    <h1 style="text-align: center; margin-bottom: 30px; color: #333;">Вход</h1>
+
+    {% if error %}
+        <div style="background: #f8d7da; color: #721c24; padding: 12px; border-radius: 8px; margin-bottom: 20px;">
+            {{ error }}
+        </div>
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+        <div style="margin-bottom: 20px;">
+            <label style="display: block; margin-bottom: 8px; font-weight: 500;">Имя пользователя</label>
+            <input type="text" name="username" required
+                style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 16px;">
+        </div>
+        <div style="margin-bottom: 20px;">
+            <label style="display: block; margin-bottom: 8px; font-weight: 500;">Пароль</label>
+            <input type="password" name="password" required
+                style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 16px;">
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%; margin-bottom: 20px;">Войти</button>
+    </form>
+
+    <p style="text-align: center; color: #666;">
+        Нет аккаунта? <a href="{% url 'accounts:register' %}" style="color: #e60023;">Зарегистрироваться</a>
+    </p>
+</div>
+{% endblock %}

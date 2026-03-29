@@ -1,0 +1,494 @@
+{% extends 'base.html' %}
+
+{% block title %}STL - Платформа для творческих людей{% endblock %}
+
+{% block content %}
+<!-- Герой секция -->
+<section class="hero-section">
+    <div class="hero-content">
+        <div class="hero-bg-shapes">
+            <div class="shape shape-1"></div>
+            <div class="shape shape-2"></div>
+            <div class="shape shape-3"></div>
+        </div>
+        <h1 class="hero-title">
+            сообщество<br>творческих людей
+        </h1>
+        <p class="hero-subtitle">
+            Платформа для дизайнеров, 3D-специалистов и других творцов.
+            Делитесь работами, находите вдохновение, общайтесь в чате.
+        </p>
+        <div class="hero-buttons">
+            {% if not user.is_authenticated %}
+                <a href="{% url 'accounts:register' %}" class="hero-btn hero-btn-primary">
+                    Начать творить
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </a>
+            {% else %}
+                <a href="{% url 'core:work_create' %}" class="hero-btn hero-btn-primary">
+                    Опубликовать работу
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </a>
+            {% endif %}
+            <a href="{% url 'chat:index' %}" class="hero-btn hero-btn-secondary">
+                Перейти в чат
+            </a>
+        </div>
+        <div class="hero-stats">
+            <div class="hero-stat">
+                <span class="hero-stat-number">{{ works.count }}+</span>
+                <span class="hero-stat-label">работ</span>
+            </div>
+            <div class="hero-stat">
+                <span class="hero-stat-number">4</span>
+                <span class="hero-stat-label">чата</span>
+            </div>
+            <div class="hero-stat">
+                <span class="hero-stat-number">∞</span>
+                <span class="hero-stat-label">вдохновения</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+.hero-section {
+    position: relative;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 50%, var(--accent) 100%);
+    border-radius: 20px;
+    overflow: hidden;
+    margin-bottom: 40px;
+    box-shadow: 0 8px 32px rgba(125, 95, 184, 0.3);
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+    padding: 48px 40px;
+    text-align: center;
+    color: white;
+}
+
+.hero-bg-shapes {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.shape {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    animation: float 6s ease-in-out infinite;
+}
+
+.shape-1 {
+    width: 200px;
+    height: 200px;
+    top: -50px;
+    left: -50px;
+    animation-delay: 0s;
+}
+
+.shape-2 {
+    width: 150px;
+    height: 150px;
+    bottom: -30px;
+    right: -30px;
+    animation-delay: 2s;
+}
+
+.shape-3 {
+    width: 100px;
+    height: 100px;
+    top: 50%;
+    right: 10%;
+    animation-delay: 4s;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-20px) rotate(10deg); }
+}
+
+.hero-title {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 52px;
+    font-weight: 800;
+    line-height: 1.2;
+    margin-bottom: 20px;
+    text-transform: lowercase;
+    letter-spacing: -1px;
+    text-shadow: 0 6px 24px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.hero-subtitle {
+    font-size: 18px;
+    line-height: 1.6;
+    margin-bottom: 35px;
+    opacity: 0.95;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.hero-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 40px;
+}
+
+.hero-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 32px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 10;
+    cursor: pointer;
+}
+
+.hero-btn-primary {
+    background: white;
+    color: var(--primary);
+}
+
+.hero-btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(255, 255, 255, 0.3);
+}
+
+.hero-btn-secondary {
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.hero-btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: translateY(-3px);
+}
+
+.hero-stats {
+    display: flex;
+    gap: 40px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.hero-stat {
+    text-align: center;
+}
+
+.hero-stat-number {
+    display: block;
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.hero-stat-label {
+    font-size: 14px;
+    opacity: 0.85;
+}
+
+@media (max-width: 768px) {
+    .hero-content {
+        padding: 40px 20px;
+    }
+
+    .hero-title {
+        font-size: 36px;
+    }
+
+    .hero-subtitle {
+        font-size: 16px;
+    }
+
+    .hero-stat-number {
+        font-size: 24px;
+    }
+}
+</style>
+
+<!-- Категории -->
+<div style="margin-bottom: 40px;">
+    <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
+        <h2 style="font-size: 24px; margin: 0;">Категории</h2>
+        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+            {% for category in categories %}
+                <a href="{% url 'core:work_list' %}?category={{ category.slug }}"
+                    class="category-glass-btn"
+                    style="padding: 9px 18px; background: rgba(255, 255, 255, 0.25); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-radius: 18px; text-decoration: none; color: #333; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border: 1px solid rgba(255, 255, 255, 0.3); font-size: 13px; font-weight: 500; transition: all 0.3s ease; display: inline-block;">
+                    {{ category.name }}
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Класс "стекло" для кнопок категорий - цвет как у герой-секции */
+    .category-glass-btn {
+        background: linear-gradient(135deg, rgba(90, 63, 138, 0.3) 0%, rgba(122, 92, 153, 0.25) 50%, rgba(230, 0, 35, 0.2) 100%);
+        backdrop-filter: blur(12px) saturate(180%);
+        -webkit-backdrop-filter: blur(12px) saturate(180%);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        padding: 9px 18px;
+        border-radius: 18px;
+        font-size: 13px;
+        font-weight: 500;
+        color: #333;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        display: inline-block;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .category-glass-btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -50%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+        transform: skewX(-25deg);
+        transition: left 0.5s ease;
+    }
+
+    .category-glass-btn:hover::before {
+        left: 150%;
+    }
+
+    .category-glass-btn:hover {
+        background: linear-gradient(135deg, rgba(90, 63, 138, 0.4) 0%, rgba(122, 92, 153, 0.35) 50%, rgba(230, 0, 35, 0.3) 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+        color: #333;
+    }
+
+    .category-glass-btn:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+</style>
+
+<!-- Популярные работы -->
+<div>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h2 style="font-size: 24px;">Популярные работы</h2>
+        <a href="{% url 'core:work_list' %}" style="color: #e60023; text-decoration: none;">Смотреть все →</a>
+    </div>
+    <style>
+        /* Стили для заблокированных работ */
+        .work-card-blocked {
+            opacity: 0.7;
+            border: 2px solid #dc3545 !important;
+        }
+
+        .work-card-blocked .work-card-link {
+            pointer-events: none;
+        }
+
+        .work-lock-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 50%;
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+
+        .work-card {
+            position: relative;
+        }
+    </style>
+    <div class="works-grid">
+        {% for work in works %}
+            {% if work.slug and work.author %}
+            <div class="work-card {% if work.is_blocked %}work-card-blocked{% endif %}">
+                {% if work.cover %}
+                    {% if not work.is_blocked %}
+                        <a href="{% url 'core:work_detail' work.author.username work.slug %}" class="work-card-link">
+                            <img src="{{ work.cover.url }}" alt="{{ work.title }}">
+                        </a>
+                    {% else %}
+                        <img src="{{ work.cover.url }}" alt="{{ work.title }}">
+                        <div class="work-lock-overlay">
+                            <span style="font-size: 32px;">🔒</span>
+                        </div>
+                    {% endif %}
+                {% endif %}
+                <div class="work-card-body">
+                    <h3 class="work-card-title">
+                        {% if not work.is_blocked %}
+                            <a href="{% url 'core:work_detail' work.author.username work.slug %}" style="color: inherit; text-decoration: none;">
+                                {{ work.title }}
+                            </a>
+                        {% else %}
+                            {{ work.title }}
+                            <span style="font-size: 14px; color: #dc3545;">🔒 Заблокировано</span>
+                        {% endif %}
+                    </h3>
+                    <p class="work-card-author">
+                        от <a href="{% url 'accounts:profile' work.author.username %}">{{ work.author.username }}</a>
+                    </p>
+                    <div class="work-stats">
+                        <span>❤️ {{ work.likes_count }}</span>
+                        <span>👁️ {{ work.views_count }}</span>
+                    </div>
+                    {% if user.is_staff %}
+                        <div style="margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap;">
+                            <button type="button" class="toggle-recommend-btn" data-work-id="{{ work.id }}" style="background: {% if work.is_admin_recommended %}var(--primary){% else %}#eee{% endif %}; color: {% if work.is_admin_recommended %}#fff{% else %}#333{% endif %}; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px;">
+                                {% if work.is_admin_recommended %}★ Снять{% else %}☆ Рекомендовать{% endif %}
+                            </button>
+                            <button type="button" class="block-work-btn" data-work-id="{{ work.id }}" style="background: {% if work.is_blocked %}#28a745{% else %}#ffc107{% endif %}; color: {% if work.is_blocked %}#fff{% else %}#333{% endif %}; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px;">
+                                {% if work.is_blocked %}✓ Разблокировать{% else %}⚠ Блокировать{% endif %}
+                            </button>
+                            <button type="button" class="delete-work-btn" data-work-id="{{ work.id }}" style="background: #dc3545; color: #fff; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px;">
+                                ✕ Удалить
+                            </button>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+// Кнопка "Рекомендует администрация" на главной странице
+document.querySelectorAll('.toggle-recommend-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        const workId = this.dataset.workId;
+        const csrfToken = '{{ csrf_token }}';
+
+        fetch(`/api/works/${workId}/toggle-recommend/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrfToken,
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Переключаем состояние кнопки
+                const isRecommended = data.is_admin_recommended;
+                this.style.background = isRecommended ? 'var(--primary)' : '#eee';
+                this.style.color = isRecommended ? '#fff' : '#333';
+                this.innerHTML = isRecommended ? '★ Снять' : '☆ Рекомендовать';
+            } else {
+                alert('Ошибка: ' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Ошибка при переключении рекомендации');
+        });
+    });
+});
+
+// Кнопка блокировки/разблокировки работы
+document.querySelectorAll('.block-work-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        const workId = this.dataset.workId;
+        const csrfToken = '{{ csrf_token }}';
+        const isBlocked = this.innerHTML.includes('Разблокировать');
+
+        if (isBlocked) {
+            // Разблокировка
+            if (!confirm('Разблокировать работу?')) return;
+        } else {
+            // Блокировка
+            const reason = prompt('Укажите причину блокировки:', 'Нарушение правил сайта');
+            if (!reason) return;
+        }
+
+        fetch(`/api/works/${workId}/block/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrfToken,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                block: !isBlocked,
+                reason: reason || ''
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Перезагружаем страницу
+                location.reload();
+            } else {
+                alert('Ошибка: ' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Ошибка при блокировке/разблокировке');
+        });
+    });
+});
+
+// Кнопка удаления работы
+document.querySelectorAll('.delete-work-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        const workId = this.dataset.workId;
+        const csrfToken = '{{ csrf_token }}';
+
+        if (!confirm('Вы уверены, что хотите удалить эту работу? Это действие необратимо.')) return;
+
+        fetch(`/api/works/${workId}/delete/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrfToken,
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Перезагружаем страницу
+                location.reload();
+            } else {
+                alert('Ошибка: ' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Ошибка при удалении работы');
+        });
+    });
+});
+</script>
+{% endblock %}
+{% endblock %}

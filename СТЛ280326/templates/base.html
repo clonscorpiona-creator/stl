@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>{% block title %}СТЛ - Платформа портфолио{% endblock %}</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/static/apple-touch-icon.png">
+    <link rel="manifest" href="/static/site.webmanifest">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            width: 100%;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        .header {
+            background: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 5px 20px;
+            width: 100%;
+        }
+
+        /* Цветовая схема */
+        :root {
+            --primary: #5a3f8a;
+            --primary-light: #7a5c99;
+            --primary-dark: #3d2a5f;
+            --accent: #9a7bb9;
+            --text: #333;
+            --text-light: #666;
+            --bg-light: #f5f5f5;
+            --white: #fff;
+            --coffee-white: #f5f0eb;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 80px;
+            height: 80px;
+            flex-shrink: 0;
+            filter: drop-shadow(0 2px 4px rgba(156, 175, 61, 0.3));
+        }
+
+        .logo-text {
+            font-family: 'Montserrat', 'Segoe UI', Roboto, sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 50%, var(--accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-transform: lowercase;
+            position: relative;
+            line-height: 1.4;
+            max-width: 200px;
+        }
+
+        .logo:hover .logo-icon {
+            transform: scale(1.08);
+            filter: drop-shadow(0 4px 8px rgba(156, 175, 61, 0.5))
+                    drop-shadow(0 0 12px rgba(197, 216, 109, 0.4));
+        }
+
+        .logo:hover .logo-text {
+            background: linear-gradient(135deg, var(--primary-light) 0%, var(--accent) 50%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .logo-icon, .logo-text {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .search-form {
+            flex: 1;
+            max-width: 400px;
+            margin: 0 20px;
+            display: flex;
+        }
+
+        .search-form input {
+            flex: 1;
+            padding: 10px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px 0 0 8px;
+            font-size: 14px;
+        }
+
+        .search-form button {
+            padding: 10px 20px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 0 8px 8px 0;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .search-form button:hover {
+            background: var(--primary-dark);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--primary-dark);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background: #eee;
+            color: #333;
+        }
+
+        .avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        /* Main content */
+        .main {
+            padding: 30px 0;
+            min-height: calc(100vh - 200px);
+        }
+
+        /* Grid for works */
+        .works-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .work-card {
+            background: #fff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .work-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+        }
+
+        .work-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .work-card-body {
+            padding: 15px;
+        }
+
+        .work-card-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .work-card-author {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .work-card-author a {
+            color: #e60023;
+            text-decoration: none;
+        }
+
+        .work-stats {
+            display: flex;
+            gap: 15px;
+            font-size: 13px;
+            color: #999;
+        }
+
+        .work-stats span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* Tags */
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .tag {
+            background: #f0f0f0;
+            color: #666;
+            padding: 4px 10px;
+            border-radius: 16px;
+            font-size: 12px;
+            text-decoration: none;
+        }
+
+        .tag:hover {
+            background: #e60023;
+            color: white;
+        }
+
+        /* Footer */
+        .footer {
+            background: #fff;
+            padding: 30px 0;
+            margin-top: 40px;
+            border-top: 1px solid #eee;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 30px;
+            width: 100%;
+            padding: 0 20px;
+        }
+
+        .footer-section h4 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .footer-section a {
+            display: block;
+            color: var(--primary-dark);
+            text-decoration: none;
+            margin-bottom: 8px;
+        }
+
+        .footer-section a:hover {
+            color: var(--primary);
+        }
+
+        /* Flash messages */
+        .messages {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+
+        .message {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .message.info {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <a href="{% url 'core:home' %}" class="logo" title="СТЛ Platform - Творческая платформа">
+                <img src="{% if logo_image %}{{ logo_image }}{% else %}/media/images/logo.png{% endif %}" alt="СТЛ логотип" class="logo-icon" style="object-fit: contain;">
+                <div>
+                    <span class="logo-text">сообщество<br>творческих людей</span>
+                </div>
+            </a>
+
+            <form action="{% url 'core:work_list' %}" method="get" class="search-form">
+                <input type="text" name="q" placeholder="Поиск работ, авторов, тегов..." value="{{ request.GET.q }}">
+                <button type="submit">Найти</button>
+            </form>
+
+            <nav class="nav-links">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'core:feed' %}">Лента</a>
+                    <a href="{% url 'core:work_list' %}">Работы</a>
+                    <a href="{% url 'chat:index' %}" style="color: var(--primary); position: relative;">
+                        💬 Чат
+                        <span id="chatNotificationBadge" style="display: none; position: absolute; top: -8px; right: -12px; background: #ef4444; color: white; border-radius: 50%; min-width: 18px; height: 18px; font-size: 10px; font-weight: 700; text-align: center; line-height: 18px; padding: 0 4px; box-shadow: 0 2px 4px rgba(239, 68, 68, 0.4);">+0</span>
+                    </a>
+                    {% if user.is_staff %}
+                        <a href="{% url 'admin:index' %}" style="color: var(--primary-dark); font-weight: 600;">Админ-панель</a>
+                    {% endif %}
+                    <a href="{% url 'core:work_create' %}" class="btn btn-primary" style="color: #ffd700 !important;">Создать</a>
+                    <a href="{% url 'interactions:notifications' %}" style="position: relative;">
+                        🔔 Уведомления
+                        <span id="notificationsBadge" style="display: none; position: absolute; top: -8px; right: -12px; background: #ef4444; color: white; border-radius: 50%; min-width: 18px; height: 18px; font-size: 10px; font-weight: 700; text-align: center; line-height: 18px; padding: 0 4px; box-shadow: 0 2px 4px rgba(239, 68, 68, 0.4);">+0</span>
+                    </a>
+                    <a href="{% url 'accounts:profile' username=user.username %}" style="display: flex; align-items: center; gap: 8px;">
+                        {% if user.avatar %}
+                            <img src="{{ user.avatar.url }}" alt="{{ user.username }}" class="avatar" style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover;">
+                        {% endif %}
+                        {{ user.username }}
+                    </a>
+                    <a href="{% url 'accounts:logout' %}">Выход</a>
+                {% else %}
+                    <a href="{% url 'accounts:login' %}" class="btn btn-secondary">Вход</a>
+                    <a href="{% url 'accounts:register' %}" class="btn btn-primary">Регистрация</a>
+                {% endif %}
+            </nav>
+        </div>
+    </header>
+
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+            <div class="message {{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <main class="main">
+        <div class="container">
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4 style="display: flex; align-items: center; gap: 8px;">
+                    <img src="/media/images/logo.png" alt="СТЛ логотип" width="96" height="96" style="object-fit: contain;">
+                    сообщество творческих людей
+                </h4>
+                <p style="color: #666; font-size: 14px;">
+                    Платформа для творческих людей. Делитесь работами, находите вдохновение, создавайте сообщества.
+                </p>
+            </div>
+            <div class="footer-section">
+                <h4>Навигация</h4>
+                <a href="{% url 'core:home' %}">Главная</a>
+                <a href="{% url 'core:feed' %}">Лента</a>
+                <a href="{% url 'core:work_list' %}">Работы</a>
+                <a href="{% url 'core:tag_list' %}">Теги</a>
+            </div>
+            <div class="footer-section">
+                <h4>Сообщество</h4>
+                <a href="#">Правила</a>
+                <a href="#">Помощь</a>
+                <a href="#">Блог</a>
+                <a href="#">Вакансии</a>
+            </div>
+            <div class="footer-section">
+                <h4>Юридическая информация</h4>
+                <a href="#">Условия использования</a>
+                <a href="#">Конфиденциальность</a>
+                <a href="#">Cookie</a>
+            </div>
+        </div>
+    </footer>
+
+    {% block extra_js %}{% endblock %}
+
+    {% if user.is_authenticated %}
+    <script>
+        // Загрузка количества непрочитанных сообщений в чатах (глобальная функция)
+        window.loadUnreadCounts = async function() {
+            try {
+                const response = await fetch('/chat/api/unread-counts/');
+                const data = await response.json();
+
+                const badge = document.getElementById('chatNotificationBadge');
+                if (badge) {
+                    if (data.total_unread > 0) {
+                        badge.textContent = '+' + data.total_unread;
+                        badge.style.display = 'inline-block';
+                    } else {
+                        badge.style.display = 'none';
+                    }
+                }
+            } catch (error) {
+                console.error('[Unread Counts] Load failed:', error);
+            }
+        };
+
+        // Загрузка количества всех уведомлений (глобальная функция)
+        window.loadNotificationsCount = async function() {
+            // Не обновляем счетчик на странице уведомлений
+            if (window.location.pathname.includes('/interactions/notifications/')) {
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/notifications-count/');
+                const data = await response.json();
+
+                // Обновляем бейдж уведомлений
+                const badge = document.getElementById('notificationsBadge');
+                if (badge) {
+                    // Показываем только если количество увеличилось (total > 0)
+                    if (data.total > 0) {
+                        badge.textContent = '+' + data.total;
+                        badge.style.display = 'inline-block';
+                    } else {
+                        badge.style.display = 'none';
+                    }
+                }
+            } catch (error) {
+                console.error('[Notifications Count] Load failed:', error);
+            }
+        };
+
+        // Обновление просмотра категории (когда пользователь заходит на страницу работ)
+        window.markWorksViewed = async function(category) {
+            try {
+                const formData = new FormData();
+                if (category) {
+                    formData.append('category', category);
+                }
+                await fetch('/api/mark-works-viewed/', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRFToken': getCookie('csrftoken')
+                    }
+                });
+                // После отметки просмотра обновляем счетчик
+                if (window.loadNotificationsCount) {
+                    window.loadNotificationsCount();
+                }
+            } catch (error) {
+                console.error('[Mark Viewed] Error:', error);
+            }
+        };
+
+        // Вспомогательная функция для получения CSRF токена
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        // Загружаем при загрузке страницы и обновляем каждые 10 секунд
+        document.addEventListener('DOMContentLoaded', () => {
+            // Проверяем, не на странице ли уведомлений мы находимся
+            const isNotificationsPage = window.location.pathname.includes('/notifications/');
+
+            loadUnreadCounts();
+            // Не загружаем счетчик на странице уведомлений - он там управляется вручную
+            if (!isNotificationsPage) {
+                loadNotificationsCount();
+                setInterval(loadNotificationsCount, 10000); // Уведомления каждые 10 секунд
+            }
+            setInterval(loadUnreadCounts, 5000); // Чат каждые 5 секунд
+        });
+
+        // Обновляем счетчики при возврате на вкладку
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') {
+                const isNotificationsPage = window.location.pathname.includes('/notifications/');
+                loadUnreadCounts();
+                // Не обновляем счетчик на странице уведомлений
+                if (!isNotificationsPage) {
+                    loadNotificationsCount();
+                }
+            }
+        });
+
+        // Функция для добавления анимации вибрации колокольчику
+        function addBellShakeAnimation() {
+            const badge = document.getElementById('notificationsBadge');
+            const link = badge?.closest('a');
+            if (badge && link && badge.style.display !== 'none' && badge.textContent !== '+0') {
+                link.style.display = 'inline-block';
+                link.style.animation = 'bellShake 0.5s ease-in-out';
+                setTimeout(() => {
+                    link.style.animation = '';
+                }, 500);
+            }
+        }
+
+        // Добавляем CSS анимацию для колокольчика
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes bellShake {
+                0%, 100% { transform: rotate(0deg); }
+                10%, 30%, 50%, 70%, 90% { transform: rotate(-10deg); }
+                20%, 40%, 60%, 80% { transform: rotate(10deg); }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+    {% endif %}
+</body>
+</html>

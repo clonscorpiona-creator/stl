@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+{% load stl_tags %}
+
+{% block title %}Любимые категории - STL{% endblock %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 0 auto;">
+    <h1 style="font-size: 28px; margin-bottom: 10px;">Любимые категории</h1>
+    <p style="color: #666; margin-bottom: 30px;">
+        Выберите категории, на которые вы хотите подписаться для получения уведомлений о новых работах и комментариях.
+    </p>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="message {{ message.tags }}" style="padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <form method="post" style="background: white; padding: 30px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+        {% csrf_token %}
+
+        <div style="margin-bottom: 20px;">
+            <p style="color: #e60023; font-weight: 600; margin-bottom: 15px;">
+                Важно: Если вы не выберете ни одну категорию, уведомления о новых работах приходить не будут.
+            </p>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 15px;">
+            {% for category in categories %}
+                <div class="category-item" style="padding: 15px; border: 2px solid {% if category.id in selected_category_ids %}var(--primary){% else %}#eee{% endif %}; border-radius: 8px; transition: all 0.2s;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+                        <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; flex: 1;">
+                            <input
+                                type="checkbox"
+                                name="categories"
+                                value="{{ category.id }}"
+                                id="category-{{ category.id }}"
+                                {% if category.id in selected_category_ids %}checked{% endif %}
+                                style="width: 18px; height: 18px; cursor: pointer;"
+                            >
+                            <span style="font-weight: 600; font-size: 16px;">{{ category.name }}</span>
+                        </label>
+                    </div>
+
+                    {% if category.id in selected_category_ids %}
+                        <div class="notification-settings" style="margin-left: 28px; margin-top: 10px; padding-top: 10px; border-top: 1px solid #eee;">
+                            {% with fav_setting=favorite_settings|get_item:category.id %}
+                            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; margin-bottom: 8px;">
+                                <input
+                                    type="checkbox"
+                                    name="notify_works"
+                                    value="{{ category.id }}"
+                                    {% if fav_setting %}{% if fav_setting.notify_works %}checked{% endif %}{% else %}checked{% endif %}
+                                    style="width: 16px; height: 16px;"
+                                >
+                                <span style="font-size: 14px; color: #666;">Новые работы</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                                <input
+                                    type="checkbox"
+                                    name="notify_comments"
+                                    value="{{ category.id }}"
+                                    {% if fav_setting %}{% if fav_setting.notify_comments %}checked{% endif %}{% else %}checked{% endif %}
+                                    style="width: 16px; height: 16px;"
+                                >
+                                <span style="font-size: 14px; color: #666;">Новые комментарии</span>
+                            </label>
+                            {% endwith %}
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+
+        <div style="margin-top: 30px; display: flex; gap: 15px;">
+            <button type="submit" class="btn btn-primary" style="background: var(--primary); color: white; padding: 12px 30px; border: none; border-radius: 8px; font-size: 16px; cursor: pointer;">
+                Сохранить выбор
+            </button>
+            <a href="{% url 'accounts:profile' request.user.username %}" class="btn btn-secondary" style="padding: 12px 30px; border-radius: 8px; text-decoration: none;">
+                Отмена
+            </a>
+        </div>
+    </form>
+
+    <script>
+        // Показывать/скрывать настройки уведомлений при изменении состояния чекбокса категории
+        document.querySelectorAll('input[name="categories"]').forEach(function(checkbox) {
+            checkbox.addEventListener('change', function() {
+                const categoryItem = this.closest('.category-item');
+                const notificationSettings = categoryItem.querySelector('.notification-settings');
+
+                if (this.checked) {
+                    // Добавляем настройки уведомлений, если их нет
+                    if (!notificationSettings) {
+                        const categoryId = this.value;
+                        const newSettings = document.createElement('div');
+                        newSettings.className = 'notification-settings';
+                        newSettings.style.cssText = 'margin-left: 28px; margin-top: 10px; padding-top: 10px; border-top: 1px solid #eee;';
+                        newSettings.innerHTML = `
+                            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; margin-bottom: 8px;">
+                                <input type="checkbox" name="notify_works" value="${categoryId}" checked style="width: 16px; height: 16px;">
+                                <span style="font-size: 14px; color: #666;">Новые работы</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                                <input type="checkbox" name="notify_comments" value="${categoryId}" checked style="width: 16px; height: 16px;">
+                                <span style="font-size: 14px; color: #666;">Новые комментарии</span>
+                            </label>
+                        `;
+                        categoryItem.appendChild(newSettings);
+                    } else {
+                        notificationSettings.style.display = 'block';
+                    }
+                    categoryItem.style.borderColor = 'var(--primary)';
+                } else {
+                    // Скрываем или удаляем настройки уведомлений
+                    if (notificationSettings) {
+                        notificationSettings.remove();
+                    }
+                    categoryItem.style.borderColor = '#eee';
+                }
+            });
+        });
+    </script>
+</div>
+{% endblock %}

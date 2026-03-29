@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STL - Платформа для творческих</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0a0a;
+            --surface: #1a1a1a;
+            --surface-hover: #252525;
+            --border: #333;
+            --text: #fff;
+            --text-muted: #888;
+            --accent: #e60023;
+            --accent-hover: #ff1a41;
+            --success: #22c55e;
+            --radius: 8px;
+            --shadow: 0 4px 24px rgba(0,0,0,0.4);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Скрытый header - появляется при наведении */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 48px;
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            padding: 0 12px;
+            transition: transform 0.3s ease;
+        }
+
+        .header.hidden {
+            transform: translateY(-100%);
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            width: 100%;
+        }
+
+        .logo {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--accent);
+            text-decoration: none;
+            letter-spacing: -0.5px;
+            opacity: 0.8;
+            transition: opacity 0.2s;
+        }
+
+        .logo:hover { opacity: 1; }
+
+        /* Поиск - скрыт по умолчанию */
+        .search-bar {
+            flex: 1;
+            max-width: 320px;
+            position: relative;
+            transition: opacity 0.2s;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 6px 12px 6px 32px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text);
+            font-size: 13px;
+            transition: border-color 0.2s;
+        }
+
+        .search-bar input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .search-bar::before {
+            content: "🔍";
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 12px;
+            opacity: 0.5;
+        }
+
+        /* Минималистичные кнопки навигации */
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-left: auto;
+        }
+
+        .icon-btn {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            color: var(--text-muted);
+            font-size: 16px;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .icon-btn:hover {
+            background: var(--surface);
+            color: var(--text);
+        }
+
+        .icon-btn.active {
+            color: var(--accent);
+        }
+
+        .icon-btn .badge {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            width: 8px;
+            height: 8px;
+            background: var(--accent);
+            border-radius: 50%;
+        }
+
+        /* Скрытая боковая панель */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 48px;
+            width: 200px;
+            height: calc(100vh - 48px);
+            background: var(--surface);
+            border-right: 1px solid var(--border);
+            padding: 8px 0;
+            transform: translateX(-100%);
+            transition: transform 0.25s ease;
+            z-index: 999;
+            overflow-y: auto;
+        }
+
+        .sidebar.open {
+            transform: translateX(0);
+        }
+
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .sidebar-item:hover {
+            background: var(--surface-hover);
+            color: var(--text);
+        }
+
+        .sidebar-item.active {
+            color: var(--accent);
+            background: rgba(230, 0, 35, 0.1);
+        }
+
+        /* Основной контент - максимум пространства */
+        .main {
+            margin-top: 48px;
+            min-height: calc(100vh - 48px);
+            padding: 8px;
+        }
+
+        .content-wrapper {
+            width: 100%;
+            max-width: none;
+        }
+
+        /* Grid для работ - адаптивный */
+        .works-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 8px;
+        }
+
+        @media (min-width: 768px) {
+            .works-grid { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+        }
+
+        @media (min-width: 1200px) {
+            .works-grid { grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; }
+        }
+
+        .work-card {
+            background: var(--surface);
+            border-radius: var(--radius);
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+        }
+
+        .work-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .work-card-image {
+            width: 100%;
+            aspect-ratio: 4/3;
+            object-fit: cover;
+            background: var(--border);
+        }
+
+        .work-card-body {
+            padding: 10px;
+        }
+
+        .work-card-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .work-card-author {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .work-card-author a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        .work-stats {
+            display: flex;
+            gap: 12px;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* Модальные окна */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.25s;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: var(--surface);
+            border-radius: var(--radius);
+            max-width: 90vw;
+            max-height: 90vh;
+            overflow: auto;
+            transform: scale(0.95);
+            transition: transform 0.25s;
+        }
+
+        .modal-overlay.active .modal {
+            transform: scale(1);
+        }
+
+        .modal-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .modal-close {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 24px;
+            cursor: pointer;
+            width: 28px;
+            height: 28px;
+            transition: color 0.2s;
+        }
+
+        .modal-close:hover { color: var(--text); }
+
+        /* Уведомления */
+        .toast-container {
+            position: fixed;
+            bottom: 12px;
+            right: 12px;
+            z-index: 3000;
+        }
+
+        .toast {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 10px 16px;
+            border-radius: 6px;
+            margin-top: 8px;
+            font-size: 13px;
+            animation: slideIn 0.25s ease;
+            max-width: 300px;
+        }
+
+        .toast.success { border-left: 3px solid var(--success); }
+        .toast.error { border-left: 3px solid var(--accent); }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* Skeleton loading */
+        .skeleton {
+            background: linear-gradient(90deg, var(--surface) 25%, var(--surface-hover) 50%, var(--surface) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        /* Filters bar - компактный */
+        .filters-bar {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+            padding: 8px 0;
+        }
+
+        .filter-chip {
+            padding: 6px 12px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            font-size: 12px;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .filter-chip:hover {
+            background: var(--surface-hover);
+            color: var(--text);
+        }
+
+        .filter-chip.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+
+        /* Кнопка создания - компактная */
+        .fab {
+            position: fixed;
+            bottom: 16px;
+            right: 16px;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--accent);
+            color: white;
+            border: none;
+            font-size: 22px;
+            cursor: pointer;
+            box-shadow: var(--shadow);
+            transition: transform 0.2s, background 0.2s;
+            z-index: 900;
+        }
+
+        .fab:hover {
+            transform: scale(1.05);
+            background: var(--accent-hover);
+        }
+
+        /* Скрытие скроллбара */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg); }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+        /* Скрываем header при скролле вниз */
+        body.scroll-down .header {
+            transform: translateY(-100%);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <button class="icon-btn" id="menuToggle" aria-label="Menu">☰</button>
+            <a href="/" class="logo">STL</a>
+            <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="Поиск работ, авторов, тегов...">
+            </div>
+            <div class="nav-actions">
+                {% if user.is_authenticated %}
+                    <button class="icon-btn" id="notificationsBtn" aria-label="Notifications">
+                        🔔<span class="badge" id="notifBadge" style="display:none;"></span>
+                    </button>
+                    <a href="/profile/{{ user.username }}" class="icon-btn" title="Профиль">👤</a>
+                    <button class="icon-btn" id="createBtn" title="Создать работу">+</button>
+                {% else %}
+                    <a href="/auth/login/" class="icon-btn" title="Вход">🔑</a>
+                {% endif %}
+            </div>
+        </div>
+    </header>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <nav>
+            <a href="/" class="sidebar-item active">🏠 Главная</a>
+            <a href="/feed/" class="sidebar-item">📰 Лента</a>
+            <a href="/works/" class="sidebar-item">🎨 Работы</a>
+            <a href="/tags/" class="sidebar-item">🏷️ Теги</a>
+            <a href="/collections/" class="sidebar-item">📚 Подборки</a>
+            <hr style="border: none; border-top: 1px solid var(--border); margin: 12px 0;">
+            <a href="/profile/{% if user.is_authenticated %}{{ user.username }}{% else %}me{% endif %}" class="sidebar-item">👤 Профиль</a>
+            <a href="/settings/" class="sidebar-item">⚙️ Настройки</a>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main">
+        <div class="content-wrapper" id="content">
+            <!-- Контент загружается через JS -->
+        </div>
+    </main>
+
+    <!-- Floating Action Button -->
+    {% if user.is_authenticated %}
+        <button class="fab" id="fab" aria-label="Create">+</button>
+    {% endif %}
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Modal -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal" id="modal">
+            <div class="modal-header">
+                <h3 id="modalTitle">Modal</h3>
+                <button class="modal-close" id="modalClose">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody"></div>
+        </div>
+    </div>
+
+    <script>
+        // Глобальное состояние
+        window.STL = {
+            user: {% if user.is_authenticated %}{{ user.id }}{% else %}null{% endif %},
+            csrf: '{{ csrf_token }}',
+            // Категории с русскими названиями
+            categories: [
+                { slug: '', name: 'Все' },
+                { slug: '3d-modeling', name: '3D Моделирование' },
+                { slug: 'animation', name: 'Анимация' },
+                { slug: 'graphic-design', name: 'Графический дизайн' },
+                { slug: 'illustrations', name: 'Иллюстрации' },
+                { slug: 'ui/ux', name: 'UI/UX' },
+                { slug: 'web-design', name: 'Веб-дизайн' },
+                { slug: 'ai-images', name: 'ИИ Изображения' },
+                { slug: 'ai-video', name: 'ИИ Видео' },
+            ],
+            urls: {
+                works: '/api/works/',
+                feed: '/api/feed/',
+                like: '/interactions/',
+                comment: '/interactions/',
+            }
+        };
+
+        // Текущий выбранный фильтр
+        window.currentFilter = { type: 'all', value: '' };
+
+        // Скрытие header при скролле - максимум пространства для контента
+        let lastScrollY = window.scrollY;
+        let scrollTimeout;
+
+        window.addEventListener('scroll', () => {
+            clearTimeout(scrollTimeout);
+            scrollTimeout = setTimeout(() => {
+                const header = document.querySelector('.header');
+                if (header) {
+                    if (window.scrollY > lastScrollY && window.scrollY > 100) {
+                        document.body.classList.add('scroll-down');
+                    } else {
+                        document.body.classList.remove('scroll-down');
+                    }
+                }
+                lastScrollY = window.scrollY;
+            }, 100);
+        }, { passive: true });
+
+        // Sidebar toggle - боковая панель скрыта по умолчанию
+        const sidebar = document.getElementById('sidebar');
+        const menuToggle = document.getElementById('menuToggle');
+        menuToggle?.addEventListener('click', () => sidebar.classList.toggle('open'));
+
+        // Закрыть sidebar при клике вне его
+        document.addEventListener('click', (e) => {
+            if (sidebar && !sidebar.contains(e.target) && menuToggle && !menuToggle.contains(e.target)) {
+                sidebar.classList.remove('open');
+            }
+        });
+
+        // Modal functions
+        const modalOverlay = document.getElementById('modalOverlay');
+        const modalClose = document.getElementById('modalClose');
+
+        function openModal(title, content) {
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalBody').innerHTML = content;
+            modalOverlay.classList.add('active');
+        }
+
+        function closeModal() {
+            modalOverlay.classList.remove('active');
+        }
+
+        modalClose?.addEventListener('click', closeModal);
+        modalOverlay?.addEventListener('click', (e) => {
+            if (e.target === modalOverlay) closeModal();
+        });
+
+        // Toast notifications
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        window.showToast = showToast;
+
+        // Lazy loading images
+        const lazyImages = document.querySelectorAll('img[data-src]');
+        const imageObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const img = entry.target;
+                    img.src = img.dataset.src;
+                    img.classList.remove('lazy-image');
+                    imageObserver.unobserve(img);
+                }
+            });
+        });
+
+        lazyImages.forEach(img => imageObserver.observe(img));
+
+        // API helpers
+        async function api(url, options = {}) {
+            const response = await fetch(url, {
+                ...options,
+                headers: {
+                    'X-CSRFToken': window.STL.csrf,
+                    'Content-Type': 'application/json',
+                    ...options.headers,
+                },
+            });
+            if (!response.ok) throw new Error('Request failed');
+            return response.json();
+        }
+
+        window.api = api;
+
+        // Search
+        const searchInput = document.getElementById('searchInput');
+        let searchTimeout;
+        searchInput?.addEventListener('input', (e) => {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                loadWorks({ q: e.target.value });
+            }, 300);
+        });
+
+        // Load works
+        // Загружает работы с API с debounce для поиска (300ms задержка)
+        async function loadWorks(filters = {}) {
+            const content = document.getElementById('content');
+            console.log('[SPA] Loading works with filters:', filters);
+
+            // Показываем skeleton loader во время загрузки
+            content.innerHTML = '<div class="works-grid">' + Array(8).fill('<div class="work-card skeleton" style="height: 300px;"></div>').join('') + '</div>';
+
+            try {
+                const params = new URLSearchParams(filters);
+                const url = `/api/works/?${params}`;
+                console.log('[SPA] Fetching:', url);
+
+                const response = await fetch(url);
+                console.log('[SPA] Response status:', response.status);
+
+                // Проверяем статус ответа
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                console.log('[SPA] Received data:', data);
+
+                // API возвращает {works: [...], pagination: {...}}
+                // Проверяем, что работы есть
+                if (data.works && Array.isArray(data.works) && data.works.length > 0) {
+                    console.log('[SPA] Rendering', data.works.length, 'works');
+                    renderWorks(data.works);
+                } else {
+                    console.log('[SPA] No works found');
+                    // Работ нет - показываем пустое состояние
+                    content.innerHTML = '<div style="text-align:center;padding:60px 20px;color:#888;"><h2>Работ пока нет</h2><p>Будьте первым, кто опубликует работу!</p></div>';
+                }
+            } catch (error) {
+                console.error('[SPA] Load works error:', error);
+                showToast('Ошибка загрузки работ', 'error');
+                // Показываем пользователю, что пошло не так
+                content.innerHTML = '<div style="text-align:center;padding:60px 20px;color:#888;"><h2>Ошибка загрузки</h2><p>Попробуйте обновить страницу</p><pre style="text-align:left;font-size:12px;margin-top:20px;">' + error.message + '</pre></div>';
+            }
+        }
+
+        // Рендерит массив работ в grid
+        // Оптимизация: используем template literals для быстрого создания HTML
+        function renderWorks(works) {
+            const content = document.getElementById('content');
+
+            if (!works || works.length === 0) {
+                content.innerHTML = '<div style="text-align:center;padding:60px 20px;color:#888;"><h2>Ничего не найдено</h2><p>Попробуйте изменить параметры поиска</p></div>';
+                return;
+            }
+
+            // Генерируем HTML для кнопок категорий
+            const categoryButtons = window.STL.categories.map(function(cat) {
+                var isActive = (window.currentFilter.type === 'category' && window.currentFilter.value === cat.slug) ||
+                               (cat.slug === '' && window.currentFilter.type === 'all');
+                return '<button class="filter-chip ' + (isActive ? 'active' : '') + '" data-category="' + cat.slug + '">' + cat.name + '</button>';
+            }).join('');
+
+            var popularActive = window.currentFilter.type === 'popular' ? 'active' : '';
+            var newestActive = window.currentFilter.type === 'newest' ? 'active' : '';
+
+            // Генерируем карточки работ
+            var worksHtml = works.map(function(work) {
+                var author = typeof work.author === 'object' ? work.author.username : work.author;
+                var cover = work.cover || '/static/placeholder.png';
+                var stats = work.stats || {likes: 0, views: 0, comments: 0};
+
+                return '<div class="work-card" data-id="' + work.id + '">' +
+                    '<img src="' + cover + '" alt="' + (work.title || 'Work') + '" class="work-card-image" loading="lazy">' +
+                    '<div class="work-card-body">' +
+                        '<h3 class="work-card-title">' + (work.title || 'Без названия') + '</h3>' +
+                        '<p class="work-card-author">от <a href="/profile/' + author + '">' + author + '</a></p>' +
+                        '<div class="work-stats">' +
+                            '<span>❤️ ' + stats.likes + '</span>' +
+                            '<span>👁️ ' + stats.views + '</span>' +
+                            '<span>💬 ' + stats.comments + '</span>' +
+                        '</div>' +
+                    '</div>' +
+                '</div>';
+            }).join('');
+
+            content.innerHTML = '<div class="filters-bar">' +
+                categoryButtons +
+                '<button class="filter-chip ' + popularActive + '" data-filter="popular">Популярные</button>' +
+                '<button class="filter-chip ' + newestActive + '" data-filter="newest">Свежие</button>' +
+                '</div>' +
+                '<div class="works-grid">' + worksHtml + '</div>';
+
+            // Навешиваем обработчики на кнопки фильтров
+            document.querySelectorAll('.filter-chip').forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    var category = this.dataset.category;
+                    var filter = this.dataset.filter;
+
+                    // Снимаем активный класс со всех кнопок
+                    document.querySelectorAll('.filter-chip').forEach(function(b) {
+                        b.classList.remove('active');
+                    });
+                    this.classList.add('active');
+
+                    if (category !== undefined) {
+                        window.currentFilter = { type: 'category', value: category };
+                        loadWorks(category ? { category } : {});
+                    } else if (filter === 'popular') {
+                        window.currentFilter = { type: 'popular', value: '' };
+                        loadWorks({ sort: '-likes_count' });
+                    } else if (filter === 'newest') {
+                        window.currentFilter = { type: 'newest', value: '' };
+                        loadWorks({ sort: '-created_at' });
+                    }
+                });
+            });
+        }
+
+        // Initial load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadWorks();
+        });
+    </script>
+</body>
+</html>
