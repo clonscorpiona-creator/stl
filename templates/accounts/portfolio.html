@@ -34,41 +34,45 @@
     /* Центральная инфографика */
     .infographic-container {
         position: relative;
-        width: 600px;
-        height: 600px;
+        width: 700px;
+        height: 700px;
         margin: 0 auto 60px;
     }
 
-    /* Sci-Fi центральное фото */
+    /* Монохромное Sci-Fi центральное фото */
     .center-photo {
         position: absolute;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        width: 150px;
-        height: 150px;
+        width: 220px;
+        height: 220px;
         border-radius: 50%;
         overflow: hidden;
         z-index: 10;
-        background: #0a192f;
-        border: 3px solid #00f5ff;
+        background: #000;
+        border: 4px solid #fff;
         box-shadow:
-            0 0 20px rgba(0, 245, 255, 0.5),
-            0 0 40px rgba(0, 245, 255, 0.3),
-            inset 0 0 20px rgba(0, 245, 255, 0.2);
-        animation: pulse-glow 3s ease-in-out infinite;
+            0 0 0 8px #000,
+            0 0 0 10px #fff,
+            0 0 30px rgba(255, 255, 255, 0.3);
+        animation: pulse-ring 4s ease-in-out infinite;
     }
 
-    @keyframes pulse-glow {
-        0%, 100% { box-shadow: 0 0 20px rgba(0, 245, 255, 0.5), 0 0 40px rgba(0, 245, 255, 0.3), inset 0 0 20px rgba(0, 245, 255, 0.2); }
-        50% { box-shadow: 0 0 30px rgba(0, 245, 255, 0.7), 0 0 60px rgba(0, 245, 255, 0.4), inset 0 0 30px rgba(0, 245, 255, 0.3); }
+    @keyframes pulse-ring {
+        0%, 100% {
+            box-shadow: 0 0 0 8px #000, 0 0 0 10px #fff, 0 0 30px rgba(255, 255, 255, 0.3);
+        }
+        50% {
+            box-shadow: 0 0 0 8px #000, 0 0 0 10px #fff, 0 0 50px rgba(255, 255, 255, 0.5);
+        }
     }
 
     .center-photo img {
         width: 100%;
         height: 100%;
         object-fit: cover;
-        filter: contrast(1.1) saturate(1.2);
+        filter: grayscale(100%) contrast(1.2);
     }
 
     .center-photo .placeholder {
@@ -77,18 +81,18 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 48px;
+        font-size: 72px;
         font-weight: 700;
-        background: linear-gradient(135deg, #00f5ff, #7b2ff7);
-        color: white;
-        text-shadow: 0 0 20px rgba(0, 245, 255, 0.8);
+        background: #000;
+        color: #fff;
+        border: 3px solid #fff;
     }
 
-    /* Sci-Fi шестиугольные модули */
+    /* Монохромные Sci-Fi шестиугольные модули */
     .hex-module {
         position: absolute;
-        width: 100px;
-        height: 115px;
+        width: 140px;
+        height: 160px;
         clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
         display: flex;
         flex-direction: column;
@@ -97,67 +101,75 @@
         cursor: pointer;
         transition: all 0.3s ease;
         text-decoration: none;
-        color: white;
-        border: 2px solid rgba(0, 245, 255, 0.3);
+        color: #fff;
+        background: #000;
+        border: 3px solid #fff;
     }
 
     .hex-module::before {
         content: '';
         position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: linear-gradient(135deg, rgba(0, 245, 255, 0.1), rgba(123, 47, 247, 0.2));
-        clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+        top: 6px;
+        left: 6px;
+        right: 6px;
+        bottom: 6px;
+        background: #000;
+        clip-path: polygon(50% 3%, 100% 28%, 100% 72%, 50% 97%, 0% 72%, 0% 28%);
         z-index: -1;
     }
 
     .hex-module::after {
         content: '';
         position: absolute;
-        top: 5px;
-        left: 5px;
-        right: 5px;
-        bottom: 5px;
+        top: 12px;
+        left: 12px;
+        right: 12px;
+        bottom: 12px;
         background: transparent;
-        clip-path: polygon(50% 2%, 100% 27%, 100% 73%, 50% 98%, 0% 73%, 0% 27%);
-        border: 1px solid rgba(0, 245, 255, 0.5);
+        clip-path: polygon(50% 6%, 100% 31%, 100% 69%, 50% 94%, 0% 69%, 0% 31%);
+        border: 2px solid #fff;
         z-index: -1;
     }
 
     .hex-module:hover {
-        transform: scale(1.1);
-        box-shadow:
-            0 0 30px rgba(0, 245, 255, 0.6),
-            0 0 60px rgba(0, 245, 255, 0.3);
-        border-color: #00f5ff;
+        transform: scale(1.05);
+        background: #fff;
+        box-shadow: 0 0 40px rgba(255, 255, 255, 0.5);
+    }
+
+    .hex-module:hover .icon {
+        fill: #000;
+    }
+
+    .hex-module:hover .label {
+        color: #000;
     }
 
     .hex-module .icon {
-        width: 32px;
-        height: 32px;
-        margin-bottom: 8px;
-        fill: #00f5ff;
-        filter: drop-shadow(0 0 8px rgba(0, 245, 255, 0.8));
+        width: 48px;
+        height: 48px;
+        margin-bottom: 10px;
+        fill: #fff;
+        z-index: 1;
     }
 
     .hex-module .label {
-        font-size: 11px;
+        font-size: 13px;
         font-weight: 700;
         text-align: center;
-        color: #00f5ff;
-        text-shadow: 0 0 10px rgba(0, 245, 255, 0.8);
-        letter-spacing: 0.5px;
+        color: #fff;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        z-index: 1;
     }
 
-    /* Позиции шестиугольников (расположение вокруг центра) */
-    .hex-1 { top: 0; left: 50%; transform: translateX(-50%); }
-    .hex-2 { top: 25%; right: 5%; }
-    .hex-3 { bottom: 25%; right: 5%; }
-    .hex-4 { bottom: 0; left: 50%; transform: translateX(-50%); }
-    .hex-5 { bottom: 25%; left: 5%; }
-    .hex-6 { top: 25%; left: 5%; }
+    /* Позиции шестиугольников - плотно к центру */
+    .hex-1 { top: 8%; left: 50%; transform: translateX(-50%); }
+    .hex-2 { top: 22%; right: 8%; }
+    .hex-3 { bottom: 22%; right: 8%; }
+    .hex-4 { bottom: 8%; left: 50%; transform: translateX(-50%); }
+    .hex-5 { bottom: 22%; left: 8%; }
+    .hex-6 { top: 22%; left: 8%; }
 
     /* Sci-Fi соединительные линии */
     .connector {
@@ -254,45 +266,43 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        border: 2px solid #00f5ff;
-        box-shadow: 0 0 15px rgba(0, 245, 255, 0.4);
+        border: 2px solid #fff;
+        background: #000;
     }
 
     .modal-icon svg {
         width: 28px;
         height: 28px;
-        fill: #00f5ff;
-        filter: drop-shadow(0 0 8px rgba(0, 245, 255, 0.6));
+        fill: #fff;
     }
 
     .modal-title {
         font-size: 22px;
         font-weight: 700;
-        color: #00f5ff;
-        text-shadow: 0 0 15px rgba(0, 245, 255, 0.5);
+        color: #fff;
     }
 
     .modal-body {
-        color: #8892b0;
+        color: #ccc;
         line-height: 1.6;
     }
 
     .modal-body h4 {
-        color: #7b2ff7;
+        color: #fff;
         margin: 15px 0 8px;
         font-size: 16px;
     }
 
     .modal-body ul {
         margin-left: 20px;
-        color: #8892b0;
+        color: #ccc;
     }
 
     .modal-body li {
         margin-bottom: 5px;
     }
 
-    /* Секция работ - Sci-Fi */
+    /* Секция работ - Монохром */
     .portfolio-works {
         margin-top: 40px;
     }
@@ -300,8 +310,7 @@
     .portfolio-works h2 {
         font-size: 24px;
         margin-bottom: 20px;
-        color: #00f5ff;
-        text-shadow: 0 0 15px rgba(0, 245, 255, 0.5);
+        color: #fff;
     }
 
     .works-grid {
@@ -311,23 +320,29 @@
     }
 
     .work-card {
-        background: linear-gradient(135deg, #0a192f, #112240);
-        border: 1px solid rgba(0, 245, 255, 0.2);
+        background: #000;
+        border: 2px solid #fff;
         border-radius: 12px;
         overflow: hidden;
         transition: all 0.3s ease;
     }
 
     .work-card:hover {
-        border-color: #00f5ff;
-        box-shadow: 0 0 25px rgba(0, 245, 255, 0.3);
+        background: #fff;
+        box-shadow: 0 0 30px rgba(255, 255, 255, 0.4);
         transform: translateY(-3px);
+    }
+
+    .work-card:hover img {
+        filter: grayscale(100%);
     }
 
     .work-card img {
         width: 100%;
         height: 180px;
         object-fit: cover;
+        filter: grayscale(80%);
+        transition: filter 0.3s ease;
     }
 
     .work-card-body {
@@ -337,14 +352,22 @@
     .work-card-title {
         font-size: 16px;
         margin-bottom: 10px;
-        color: #e6f1ff;
+        color: #fff;
+    }
+
+    .work-card:hover .work-card-title {
+        color: #000;
     }
 
     .work-stats {
         display: flex;
         gap: 15px;
-        color: #8892b0;
+        color: #888;
         font-size: 13px;
+    }
+
+    .work-card:hover .work-stats {
+        color: #333;
     }
 
     .work-stats span {
@@ -354,41 +377,49 @@
     }
 
     .work-stats img {
-        filter: brightness(0) saturate(1000%) hue-rotate(130deg) brightness(100%) contrast(100%);
+        filter: brightness(0) invert(1);
+    }
+
+    .work-card:hover .work-stats img {
+        filter: brightness(0);
     }
 
     /* Адаптивность */
     @media (max-width: 768px) {
         .infographic-container {
-            width: 340px;
-            height: 340px;
+            width: 400px;
+            height: 400px;
         }
 
         .center-photo {
-            width: 100px;
-            height: 100px;
+            width: 140px;
+            height: 140px;
+        }
+
+        .center-photo .placeholder {
+            font-size: 48px;
         }
 
         .hex-module {
-            width: 70px;
-            height: 80px;
+            width: 90px;
+            height: 105px;
         }
 
         .hex-module .icon {
-            width: 24px;
-            height: 24px;
+            width: 32px;
+            height: 32px;
         }
 
         .hex-module .label {
-            font-size: 9px;
+            font-size: 10px;
         }
 
-        .hex-1 { top: 10px; }
-        .hex-2 { top: 35%; right: 0; }
-        .hex-3 { bottom: 35%; right: 0; }
-        .hex-4 { bottom: 10px; }
-        .hex-5 { bottom: 35%; left: 0; }
-        .hex-6 { top: 35%; left: 0; }
+        .hex-1 { top: 5%; }
+        .hex-2 { top: 20%; right: 2%; }
+        .hex-3 { bottom: 20%; right: 2%; }
+        .hex-4 { bottom: 5%; }
+        .hex-5 { bottom: 20%; left: 2%; }
+        .hex-6 { top: 20%; left: 2%; }
     }
 </style>
 
@@ -417,53 +448,53 @@
             {% endif %}
         </div>
 
-        <!-- Соединительные линии (SVG) - Sci-Fi -->
+        <!-- Монохромные соединительные линии -->
         <svg style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1;">
-            <line x1="50%" y1="50%" x2="50%" y2="15%" stroke="rgba(0,245,255,0.4)" stroke-width="2" style="filter: drop-shadow(0 0 5px rgba(0,245,255,0.8));"/>
-            <line x1="50%" y1="50%" x2="85%" y2="35%" stroke="rgba(0,245,255,0.4)" stroke-width="2" style="filter: drop-shadow(0 0 5px rgba(0,245,255,0.8));"/>
-            <line x1="50%" y1="50%" x2="85%" y2="65%" stroke="rgba(0,245,255,0.4)" stroke-width="2" style="filter: drop-shadow(0 0 5px rgba(0,245,255,0.8));"/>
-            <line x1="50%" y1="50%" x2="50%" y2="85%" stroke="rgba(0,245,255,0.4)" stroke-width="2" style="filter: drop-shadow(0 0 5px rgba(0,245,255,0.8));"/>
-            <line x1="50%" y1="50%" x2="15%" y2="65%" stroke="rgba(0,245,255,0.4)" stroke-width="2" style="filter: drop-shadow(0 0 5px rgba(0,245,255,0.8));"/>
-            <line x1="50%" y1="50%" x2="15%" y2="35%" stroke="rgba(0,245,255,0.4)" stroke-width="2" style="filter: drop-shadow(0 0 5px rgba(0,245,255,0.8));"/>
+            <line x1="50%" y1="50%" x2="50%" y2="22%" stroke="#fff" stroke-width="3" opacity="0.6"/>
+            <line x1="50%" y1="50%" x2="78%" y2="35%" stroke="#fff" stroke-width="3" opacity="0.6"/>
+            <line x1="50%" y1="50%" x2="78%" y2="65%" stroke="#fff" stroke-width="3" opacity="0.6"/>
+            <line x1="50%" y1="50%" x2="50%" y2="78%" stroke="#fff" stroke-width="3" opacity="0.6"/>
+            <line x1="50%" y1="50%" x2="22%" y2="65%" stroke="#fff" stroke-width="3" opacity="0.6"/>
+            <line x1="50%" y1="50%" x2="22%" y2="35%" stroke="#fff" stroke-width="3" opacity="0.6"/>
         </svg>
 
-        <!-- Шестиугольные модули - Sci-Fi с градиентами -->
-        <div class="hex-module hex-1" style="background: linear-gradient(135deg, rgba(230,0,35,0.8), rgba(0,245,255,0.3));" data-direction="design">
+        <!-- Монохромные шестиугольные модули -->
+        <div class="hex-module hex-1" data-direction="design">
             <svg class="icon" viewBox="0 0 24 24">
                 <path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9c.83 0 1.5-.67 1.5-1.5 0-.39-.15-.74-.39-1.01-.23-.26-.38-.61-.38-.99 0-.83.67-1.5 1.5-1.5H16c2.76 0 5-2.24 5-5 0-4.42-4.03-8-9-8zm-5.5 9c-.83 0-1.5-.67-1.5-1.5S5.67 9 6.5 9 8 9.67 8 10.5 7.33 12 6.5 12zm3-4C8.67 8 8 7.33 8 6.5S8.67 5 9.5 5s1.5.67 1.5 1.5S10.33 8 9.5 8zm5 0c-.83 0-1.5-.67-1.5-1.5S13.67 5 14.5 5s1.5.67 1.5 1.5S15.33 8 14.5 8zm3 4c-.83 0-1.5-.67-1.5-1.5S16.67 9 17.5 9s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/>
             </svg>
             <span class="label">{{ directions.0.name }}</span>
         </div>
 
-        <div class="hex-module hex-2" style="background: linear-gradient(135deg, rgba(102,126,234,0.8), rgba(0,245,255,0.3));" data-direction="programming">
+        <div class="hex-module hex-2" data-direction="programming">
             <svg class="icon" viewBox="0 0 24 24">
                 <path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/>
             </svg>
             <span class="label">{{ directions.1.name }}</span>
         </div>
 
-        <div class="hex-module hex-3" style="background: linear-gradient(135deg, rgba(240,147,251,0.8), rgba(0,245,255,0.3));" data-direction="marketing">
+        <div class="hex-module hex-3" data-direction="marketing">
             <svg class="icon" viewBox="0 0 24 24">
                 <path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/>
             </svg>
             <span class="label">{{ directions.2.name }}</span>
         </div>
 
-        <div class="hex-module hex-4" style="background: linear-gradient(135deg, rgba(79,172,254,0.8), rgba(0,245,255,0.3));" data-direction="content">
+        <div class="hex-module hex-4" data-direction="content">
             <svg class="icon" viewBox="0 0 24 24">
                 <path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 4h5v8l-2.5-1.5L6 12V4z"/>
             </svg>
             <span class="label">{{ directions.3.name }}</span>
         </div>
 
-        <div class="hex-module hex-5" style="background: linear-gradient(135deg, rgba(67,233,123,0.8), rgba(0,245,255,0.3));" data-direction="management">
+        <div class="hex-module hex-5" data-direction="management">
             <svg class="icon" viewBox="0 0 24 24">
                 <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11z"/>
             </svg>
             <span class="label">{{ directions.4.name }}</span>
         </div>
 
-        <div class="hex-module hex-6" style="background: linear-gradient(135deg, rgba(250,112,154,0.8), rgba(0,245,255,0.3));" data-direction="legal">
+        <div class="hex-module hex-6" data-direction="legal">
             <svg class="icon" viewBox="0 0 24 24">
                 <path d="M12 3L9.5 9.5 3 12l6.5 2.5L12 21l2.5-6.5L21 12l-6.5-2.5L12 3z"/>
             </svg>
