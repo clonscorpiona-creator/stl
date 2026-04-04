@@ -42,11 +42,31 @@
                             {{ item.work.title }}
                         </a>
                     </h3>
-                    <p class="work-card-author">от {{ item.work.author.username }}</p>
+                    <p class="work-card-author" style="display: flex; align-items: center; gap: 10px;">
+                        {% if item.work.author.avatar %}
+                            <img src="{{ item.work.author.avatar.url }}" alt="{{ item.work.author.username }}"
+                                style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover;">
+                        {% else %}
+                            <div style="width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 18px; font-weight: bold;">
+                                {{ item.work.author.username|first|upper }}
+                            </div>
+                        {% endif %}
+                        <span>{{ item.work.author.username }}</span>
+                    </p>
+                    <div style="font-size: 11px; color: #999; margin-top: 8px;">
+                        {{ item.work.created_at|date:"d.m.Y" }}
+                    </div>
+                    {% if item.work.tags.all %}
+                        <div class="tags" style="margin-top: 8px;">
+                            {% for tag in item.work.tags.all|slice:":5" %}
+                                <a href="{% url 'core:tag_detail' tag.slug %}" class="tag">#{{ tag.name }}</a>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
                     {% if is_owner %}
                         <form action="{% url 'core:collection_remove' collection.slug item.work.id %}" method="post" style="margin-top: 10px;">
                             {% csrf_token %}
-                            <button type="submit" class="btn btn-secondary" style="font-size: 12px; padding: 5px 10px;">Удалить</button>
+                            <button type="submit" class="btn btn-danger btn-sm" style="font-size: 12px; padding: 5px 10px;">Удалить</button>
                         </form>
                     {% endif %}
                 </div>

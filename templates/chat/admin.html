@@ -59,22 +59,32 @@
             border-radius: var(--radius);
             border: none;
             font-size: 14px;
-            font-weight: 500;
+            font-weight: 600;
             cursor: pointer;
             text-decoration: none;
             display: inline-flex;
             align-items: center;
+            justify-content: center;
             gap: 8px;
-            transition: all 0.2s;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            white-space: nowrap;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
 
         .btn-primary {
-            background: var(--accent);
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%);
             color: white;
+            box-shadow: 0 2px 8px rgba(230, 0, 35, 0.3);
         }
 
-        .btn-primary:hover {
-            background: var(--accent-hover);
+        .btn-primary:hover:not(:disabled) {
+            background: linear-gradient(135deg, var(--accent-hover) 0%, var(--accent) 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(230, 0, 35, 0.4);
         }
 
         .btn-secondary {
@@ -83,17 +93,49 @@
             border: 1px solid var(--border);
         }
 
-        .btn-secondary:hover {
+        .btn-secondary:hover:not(:disabled) {
             background: var(--surface-hover);
+            transform: translateY(-1px);
         }
 
         .btn-danger {
             background: var(--danger);
             color: white;
+            box-shadow: 0 2px 6px rgba(239, 68, 68, 0.3);
         }
 
-        .btn-danger:hover {
+        .btn-danger:hover:not(:disabled) {
             background: #dc2626;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+        }
+
+        .btn-icon {
+            padding: 8px 12px;
+            border-radius: 8px;
+            background: var(--surface-hover);
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-icon:hover {
+            background: var(--accent);
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .btn-icon.danger:hover {
+            background: var(--danger);
+        }
+
+        .btn-icon.success:hover {
+            background: var(--success);
         }
 
         /* Stats */
@@ -219,30 +261,6 @@
         .actions-cell {
             display: flex;
             gap: 8px;
-        }
-
-        .btn-icon {
-            padding: 6px 10px;
-            border-radius: 6px;
-            background: var(--surface-hover);
-            border: none;
-            color: var(--text-muted);
-            cursor: pointer;
-            font-size: 13px;
-            transition: all 0.2s;
-        }
-
-        .btn-icon:hover {
-            background: var(--accent);
-            color: white;
-        }
-
-        .btn-icon.danger:hover {
-            background: var(--danger);
-        }
-
-        .btn-icon.success:hover {
-            background: var(--success);
         }
 
         /* Modal */

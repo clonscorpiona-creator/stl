@@ -1,0 +1,355 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ project.title }} — STL{% endblock %}
+
+{% block extra_css %}
+<style>
+.project-detail-page { max-width: 900px; margin: 0 auto; }
+
+/* Cover */
+.project-cover {
+    width: 100%; border-radius: 12px; overflow: hidden;
+    background: #E8D5B7; margin-bottom: 24px;
+}
+.project-cover img { width: 100%; display: block; }
+
+/* Header info */
+.project-header { margin-bottom: 24px; }
+.project-header h1 { font-size: 26px; color: #4A3728; margin: 0 0 8px 0; }
+.project-header .proj-author { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.project-header .proj-avatar {
+    width: 36px; height: 36px; border-radius: 50%; background: #E8D5B7;
+    display: flex; align-items: center; justify-content: center; font-weight: 700; color: #8B5E3C;
+    overflow: hidden; flex-shrink: 0;
+}
+.project-header .proj-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.project-header .proj-meta { font-size: 13px; color: #8B7355; }
+.project-header .proj-meta a { color: #8B5E3C; text-decoration: none; font-weight: 600; }
+.project-header .proj-meta a:hover { text-decoration: underline; }
+.project-header .proj-desc-text { color: #5C3D24; font-size: 15px; line-height: 1.6; margin-top: 10px; }
+
+/* Actions bar */
+.project-actions-bar {
+    display: flex; gap: 12px; align-items: center; padding: 14px 0;
+    border-top: 1px solid #D4B896; border-bottom: 1px solid #D4B896;
+    margin-bottom: 0;
+}
+.like-btn, .unlike-btn {
+    background: none; border: 1px solid #D4B896; border-radius: 8px; padding: 8px 14px;
+    cursor: pointer; font-size: 13px; display: flex; align-items: center; gap: 6px;
+    color: #8B5E3C;
+}
+.like-btn:hover, .unlike-btn.active { background: #FEE2E2; border-color: #EF4444; color: #DC2626; }
+.stat-label { font-size: 12px; color: #A08B72; }
+
+/* Единый блок шагов с фоном проекта */
+.project-steps-container {
+    border-radius: 12px; overflow: hidden;
+    background-color: {{ project.bg_color|default:'#FFFFFF' }};
+    border: 1px solid #D4B896; margin-bottom: 32px;
+    position: relative;
+}
+.project-steps-container.has-bg-image {
+    background-color: transparent;
+}
+.project-steps-container .steps-inner {
+    {% if project.bg_image %}
+    background-image: url('{{ project.bg_image.url }}');
+    background-repeat: repeat;
+    background-size: auto;
+    {% endif %}
+    padding: 32px;
+}
+
+/* Отдельный шаг внутри общего блока */
+.project-step {
+    margin-bottom: 32px; padding-bottom: 32px;
+    border-bottom: 1px solid rgba(139,94,60,0.15);
+}
+.project-step:last-child {
+    margin-bottom: 0; padding-bottom: 0; border-bottom: none;
+}
+.step-number {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 26px; height: 26px; border-radius: 4px;
+    background: rgba(139,94,60,0.15); color: #8B5E3C; font-size: 13px; font-weight: 700;
+    margin-right: 10px; flex-shrink: 0;
+}
+.step-header { display: flex; align-items: center; margin-bottom: 12px; }
+.step-header h3 { font-size: 17px; color: #4A3728; margin: 0; }
+.project-step img {
+    max-width: 100%; border-radius: 8px; margin-bottom: 12px; display: block;
+    max-height: 600px; object-fit: cover;
+}
+.project-step .step-desc {
+    color: #5C3D24; line-height: 1.6; font-size: 14px;
+}
+.project-step .step-desc p { margin: 0; }
+
+/* Similar projects */
+.similar-projects { margin-top: 32px; }
+.similar-projects h3 { font-size: 16px; color: #4A3728; margin-bottom: 14px; }
+.similar-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; }
+.similar-card a { text-decoration: none; }
+.similar-card img { width: 100%; height: 140px; object-fit: cover; border-radius: 8px; background: #E8D5B7; }
+.similar-card h4 { font-size: 13px; margin: 6px 0 0; color: #4A3728; }
+
+/* Comments */
+.comments-section { margin-top: 32px; }
+.comments-section h3 { font-size: 18px; color: #4A3728; margin-bottom: 14px; }
+.comment-form textarea {
+    width: 100%; padding: 10px 12px; border: 1px solid #D4B896; border-radius: 8px;
+    font-size: 14px; background: #FDF8F3; resize: vertical; min-height: 80px;
+}
+.comment-form button {
+    margin-top: 8px; background: #8B5E3C; color: #fff; border: none;
+    padding: 8px 18px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer;
+}
+.comment-item {
+    padding: 14px 0; border-bottom: 1px solid #E8D5B7;
+}
+.comment-item .c-header { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.comment-item .c-avatar {
+    width: 28px; height: 28px; border-radius: 50%; background: #E8D5B7;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700; color: #8B5E3C; overflow: hidden; flex-shrink: 0;
+}
+.comment-item .c-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.comment-item .c-author { font-size: 13px; font-weight: 600; color: #5C3D24; }
+.comment-item .c-author a { color: inherit; text-decoration: none; }
+.comment-item .c-date { font-size: 11px; color: #A08B72; }
+.comment-item .c-content { font-size: 14px; color: #4A3728; line-height: 1.5; }
+.comment-item .c-actions { display: flex; gap: 8px; margin-top: 6px; }
+.comment-item .c-actions button, .comment-item .c-actions a {
+    background: none; border: none; font-size: 11px; color: #8B7355; cursor: pointer; text-decoration: none;
+}
+.comment-item .c-actions button:hover, .comment-item .c-actions a:hover { color: #8B5E3C; }
+.comment-item .deleted { color: #A08B72; font-style: italic; }
+
+.edit-comment-area { margin-top: 6px; }
+.edit-comment-area textarea {
+    width: 100%; padding: 8px; border: 1px solid #D4B896; border-radius: 6px;
+    font-size: 13px; background: #FDF8F3; resize: vertical;
+}
+.edit-comment-area .edit-actions { display: flex; gap: 6px; margin-top: 4px; }
+.edit-comment-area .edit-actions button {
+    padding: 4px 10px; border-radius: 4px; font-size: 11px; cursor: pointer;
+}
+.btn-save-sm { background: #8B5E3C; color: #fff; border: none; }
+.btn-cancel-sm { background: #E8D5B7; color: #5C3D24; border: none; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="project-detail-page">
+
+    {# Cover #}
+    {% if project.cover %}
+    <div class="project-cover">
+        <img src="{{ project.cover.url }}" alt="{{ project.title }}">
+    </div>
+    {% endif %}
+
+    {# Header #}
+    <div class="project-header">
+        <h1>{{ project.title }}</h1>
+        <div class="proj-author">
+            <div class="proj-avatar">
+                {% if project.author.avatar %}
+                    <img src="{{ project.author.avatar.url }}" alt="">
+                {% else %}
+                    {{ project.author.username|first|upper }}
+                {% endif %}
+            </div>
+            <div class="proj-meta">
+                <a href="{% url 'accounts:profile' project.author.username %}">{{ project.author.username }}</a>
+                {% if project.category %}
+                    <span> • {{ project.category.name }}</span>
+                {% endif %}
+                <span> • {{ project.created_at|date:"d.m.Y" }}</span>
+            </div>
+        </div>
+        {% if project.description %}
+        <div class="proj-desc-text">{{ project.description|linebreaks }}</div>
+        {% endif %}
+    </div>
+
+    {# Actions bar #}
+    <div class="project-actions-bar">
+        <form method="post" action="{% url 'interactions:project_like' project.id %}" id="project-like-form">
+            {% csrf_token %}
+            <button type="submit" id="project-like-btn" class="{% if is_liked %}unlike-btn active{% else %}like-btn{% endif %}">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="{% if is_liked %}#EF4444{% else %}none{% endif %}" stroke="{% if is_liked %}#EF4444{% else %}currentColor{% endif %}" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                <span id="project-like-count">{{ project.likes_count }}</span>
+            </button>
+        </form>
+        <span class="stat-label"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> {{ project.views_count }}</span>
+        {% if is_owner or request.user.is_staff %}
+        <div style="margin-left:auto;display:flex;gap:8px;">
+            <a href="{% url 'core:project_edit' project.author.username project.slug %}" style="font-size:12px;color:#8B5E3C;">Редактировать</a>
+            <a href="{% url 'core:project_delete' project.author.username project.slug %}" style="font-size:12px;color:#DC2626;" onclick="return confirm('Удалить проект?')">Удалить</a>
+        </div>
+        {% endif %}
+    </div>
+
+    {# Steps — единый блок без заголовка #}
+    {% if steps %}
+    <div class="project-steps-container {% if project.bg_image %}has-bg-image{% endif %}">
+        <div class="steps-inner">
+            {% for step in steps %}
+            <div class="project-step">
+                <div class="step-header">
+                    <span class="step-number">{{ forloop.counter }}</span>
+                    {% if step.title %}<h3>{{ step.title }}</h3>{% endif %}
+                </div>
+                {% if step.image %}<img src="{{ step.image.url }}" alt="{{ step.title|default:'шаг' }}">{% endif %}
+                {% if step.description %}<div class="step-desc">{{ step.description|linebreaks }}</div>{% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    {# Similar projects #}
+    {% if similar_projects %}
+    <div class="similar-projections similar-projects">
+        <h3>Похожие проекты</h3>
+        <div class="similar-grid">
+            {% for sim in similar_projects %}
+            <div class="similar-card">
+                <a href="{% url 'core:project_detail' sim.author.username sim.slug %}">
+                    {% if sim.cover %}<img src="{{ sim.cover.url }}" alt="{{ sim.title }}">{% endif %}
+                    <h4>{{ sim.title }}</h4>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    {# Comments #}
+    <div class="comments-section">
+        <h3>Комментарии ({{ project.comments_count }})</h3>
+
+        {% if user.is_authenticated %}
+        <form method="post" action="{% url 'interactions:project_comment' project.id %}" class="comment-form">
+            {% csrf_token %}
+            <textarea name="content" placeholder="Написать комментарий..." required></textarea>
+            <button type="submit">Отправить</button>
+        </form>
+        {% else %}
+        <p style="color:#A08B72;font-size:13px;margin-bottom:16px;">Войдите, чтобы комментировать.</p>
+        {% endif %}
+
+        {% for comment in comments %}
+        <div class="comment-item" id="comment-{{ comment.pk }}">
+            <div class="c-header">
+                <div class="c-avatar">
+                    {% if comment.user.avatar %}
+                        <img src="{{ comment.user.avatar.url }}" alt="">
+                    {% else %}
+                        {{ comment.user.username|first|upper }}
+                    {% endif %}
+                </div>
+                <span class="c-author"><a href="{% url 'accounts:profile' comment.user.username %}">{{ comment.user.username }}</a></span>
+                <span class="c-date">{{ comment.created_at|date:"d.m.Y H:i" }}</span>
+            </div>
+            <div class="c-content">
+                {% if comment.is_deleted %}
+                    <span class="deleted">Комментарий удалён</span>
+                {% else %}
+                    {{ comment.content|linebreaks }}
+                    {% if comment.is_edited %}<span style="font-size:11px;color:#A08B72;"> (ред.)</span>{% endif %}
+                {% endif %}
+            </div>
+            {% if comment.is_deleted %}{% else %}
+            <div class="c-actions">
+                <button onclick="toggleProjectCommentLike({{ comment.pk }})" id="pcl-{{ comment.pk }}">
+                    <span id="pcl-count-{{ comment.pk }}">{{ comment.likes_count }}</span>
+                </button>
+                {% if comment.user == request.user %}
+                <button onclick="showProjectCommentEdit({{ comment.pk }})">Редактировать</button>
+                <button onclick="deleteProjectComment({{ comment.pk }})" style="color:#DC2626;">Удалить</button>
+                {% endif %}
+            </div>
+            <div class="edit-comment-area" id="ce-{{ comment.pk }}" style="display:none;">
+                <textarea id="ce-text-{{ comment.pk }}">{{ comment.content }}</textarea>
+                <div class="edit-actions">
+                    <button class="btn-save-sm" onclick="saveProjectEditComment({{ comment.pk }})">Сохранить</button>
+                    <button class="btn-cancel-sm" onclick="document.getElementById('ce-{{ comment.pk }}').style.display='none'">Отмена</button>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        {% empty %}
+        <div style="text-align:center;padding:24px;color:#A08B72;">Комментариев пока нет</div>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+// Project Like
+document.getElementById('project-like-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const formData = new FormData();
+    formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+    try {
+        const resp = await fetch(this.action, { method: 'POST', headers: { 'X-Requested-With': 'XMLHttpRequest' }, body: formData });
+        const data = await resp.json();
+        const btn = document.getElementById('project-like-btn');
+        const countEl = document.getElementById('project-like-count');
+        countEl.textContent = data.count;
+        if (data.liked) {
+            btn.className = 'unlike-btn active';
+            btn.querySelector('svg').setAttribute('fill', '#EF4444');
+            btn.querySelector('svg').setAttribute('stroke', '#EF4444');
+        } else {
+            btn.className = 'like-btn';
+            btn.querySelector('svg').setAttribute('fill', 'none');
+            btn.querySelector('svg').setAttribute('stroke', 'currentColor');
+        }
+    } catch (err) { this.submit(); }
+});
+
+// Project Comment Like
+async function toggleProjectCommentLike(commentId) {
+    const formData = new FormData();
+    formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+    try {
+        const resp = await fetch(`/interactions/project-comment/like/${commentId}/`, { method: 'POST', headers: { 'X-Requested-With': 'XMLHttpRequest' }, body: formData });
+        const data = await resp.json();
+        document.getElementById('pcl-count-' + commentId).textContent = data.count;
+    } catch (err) { window.location.reload(); }
+}
+
+// Project Comment Edit
+function showProjectCommentEdit(id) {
+    document.getElementById('ce-' + id).style.display = 'block';
+}
+
+async function saveProjectEditComment(id) {
+    const text = document.getElementById('ce-text-' + id).value;
+    const formData = new FormData();
+    formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+    formData.append('content', text);
+    try {
+        const resp = await fetch(`/interactions/project-comment/edit/${id}/`, { method: 'POST', headers: { 'X-Requested-With': 'XMLHttpRequest' }, body: formData });
+        const data = await resp.json();
+        document.querySelector('#comment-' + id + ' .c-content').innerHTML = data.content.replace(/\n/g, '<br>') + (data.is_edited ? ' <span style="font-size:11px;color:#A08B72;">(ред.)</span>' : '');
+        document.getElementById('ce-' + id).style.display = 'none';
+    } catch (err) { window.location.reload(); }
+}
+
+// Project Comment Delete
+async function deleteProjectComment(id) {
+    if (!confirm('Удалить комментарий?')) return;
+    const formData = new FormData();
+    formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+    try {
+        await fetch(`/interactions/project-comment/delete/${id}/`, { method: 'POST', headers: { 'X-Requested-With': 'XMLHttpRequest' }, body: formData });
+        document.querySelector('#comment-' + id + ' .c-content').innerHTML = '<span class="deleted">Комментарий удалён</span>';
+        document.querySelector('#comment-' + id + ' .c-actions')?.remove();
+    } catch (err) { window.location.reload(); }
+}
+</script>
+{% endblock %}

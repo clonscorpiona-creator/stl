@@ -57,6 +57,8 @@ def login_view(request):
 
         if user:
             login(request, user)
+            # Явно сохраняем сессию после login()
+            request.session.save()
             return redirect('core:feed')
         return render(request, 'accounts/login.html', {'error': 'Неверное имя пользователя или пароль'})
 
@@ -169,29 +171,52 @@ def deploy_update_view(request):
 
 def profile_view(request, username):
     """Страница профиля пользователя"""
-    # Декодируем URL-кодированные символы (например, %20 -> пробел)
     username = unquote(username)
-    user = get_object_or_404(User, username=username)
-    profile, created = Profile.objects.get_or_create(user=user)
-    works = user.works.filter(status='published').order_by('-created_at')
-    collections = user.collections.filter(is_public=True).order_by('-created_at')
+    profile_user = get_object_or_404(User, username=username)
+    profile, created = Profile.objects.get_or_create(user=profile_user)
+    all_works = profile_user.works.filter(status='published').order_by('-created_at')
+    collections = profile_user.collections.filter(is_public=True).order_by('-created_at')
 
-    # Обновляем счетчики профиля на основе данных в БД
-    profile.followers_count = user.followers.count()
-    profile.following_count = user.following.count()
-    profile.works_count = works.count()
+    profile.followers_count = profile_user.followers.count()
+    profile.following_count = profile_user.following.count()
+    profile.works_count = all_works.count()
     profile.save(update_fields=['followers_count', 'following_count', 'works_count'])
 
     is_following = False
     if request.user.is_authenticated:
-        is_following = Follow.objects.filter(follower=request.user, following=user).exists()
+        is_following = Follow.objects.filter(follower=request.user, following=profile_user).exists()
+
+    # Последние работы (макс. 5 для отображения)
+    recent_works = list(all_works[:5])
+    works_count = all_works.count()
+
+    # Лучшая работа (по лайкам)
+    top_work = all_works.order_by('-likes_count').first() if works_count else None
+
+    # Подсчёт общих лайков и просмотров
+    total_likes = sum(w.likes_count for w in all_works)
+    total_views = sum(w.views_count for w in all_works)
+
+    # Drafts — visible to owner and staff
+    drafted_works = []
+    can_view_drafts = (request.user == profile_user) or request.user.is_staff
+    if can_view_drafts:
+        drafted_works = list(profile_user.works.filter(status='draft').order_by('-created_at'))
 
     context = {
-        'profile_user': user,
+        'profile_user': profile_user,
         'profile': profile,
-        'works': works,
+        'recent_works': recent_works,
+        'published_works': list(all_works),
+        'drafted_works': drafted_works,
+        'top_work': top_work,
+        'total_likes': total_likes,
+        'total_views': total_views,
         'collections': collections,
         'is_following': is_following,
+        'drafts': drafted_works if drafted_works else None,
+        'works': recent_works,
+        'works_count': works_count,
     }
     return render(request, 'accounts/profile.html', context)
 
@@ -225,6 +250,8 @@ def follow_toggle(request, username):
         request.user.profile.following_count += 1
         request.user.profile.save(update_fields=['following_count'])
 
+    return redirect('accounts:profile', username=username)
+
 
 def followers_list(request, username):
     """Список подписчиков пользователя"""
@@ -253,30 +280,31 @@ def following_list(request, username):
     }
     return render(request, 'accounts/following_list.html', context)
 
-    return redirect('accounts:profile', username=username)
-
 
 @login_required
 def edit_profile(request):
     """Редактирование профиля"""
-    profile = Profile.objects.filter(user=request.user).first()
+    profile, _ = Profile.objects.get_or_create(user=request.user)
 
     if request.method == 'POST':
         request.user.first_name = request.POST.get('first_name', '')
         request.user.last_name = request.POST.get('last_name', '')
         request.user.email = request.POST.get('email', request.user.email)
+        request.user.bio = request.POST.get('bio', '') if request.POST.get('bio') else request.POST.get('user_bio', '')
+        request.user.website = request.POST.get('website', '')
+        request.user.location = request.POST.get('location', '')
+        if request.POST.get('bio'):
+            profile.bio = request.POST.get('bio')
 
-        if profile:
-            profile.display_name = request.POST.get('display_name', '')
-            profile.bio = request.POST.get('bio', '')
-            profile.website = request.POST.get('website', '')
-            profile.location = request.POST.get('location', '')
-            profile.save()
+        profile.display_name = request.POST.get('display_name', '')
+        profile.tools = request.POST.get('tools', '')
+        profile.show_email = request.POST.get('show_email') == 'on'
 
         if 'avatar' in request.FILES:
             request.user.avatar = request.FILES['avatar']
-            request.user.save()
 
+        request.user.save()
+        profile.save()
         return redirect('accounts:profile', username=request.user.username)
 
     return render(request, 'accounts/edit_profile.html', {'profile': profile})
@@ -495,12 +523,27 @@ def toggle_favorite_category(request, category_id):
 @login_required
 def profile_test(request):
     """
-    Тестовая страница профиля пользователя.
+    Тестовая страница профиля в стиле крафт.
     """
+    profile, _ = Profile.objects.get_or_create(user=request.user)
+    works = request.user.works.filter(status='published').order_by('-created_at')
+    drafted_works = request.user.works.filter(status='draft').order_by('-created_at')
+    total_likes = sum(w.likes_count for w in works)
+    total_views = sum(w.views_count for w in works)
+    top_work = works.first() if works else None
+    recent_works = works[:5]
+
     context = {
-        'page_title': 'Тестовая страница',
+        'page_title': 'Профиль (тест)',
+        'profile_user': request.user,
+        'profile': profile,
+        'drafted_works': drafted_works,
+        'total_likes': total_likes,
+        'total_views': total_views,
+        'top_work': top_work,
+        'recent_works': recent_works,
         'test_data': {
-            'message': 'Это тестовая страница профиля',
+            'message': 'Тестовая страница профиля',
             'timestamp': timezone.now(),
             'user': request.user.username,
         }
@@ -511,33 +554,101 @@ def profile_test(request):
 @login_required
 def portfolio_page(request, username=None):
     """
-    Страница портфолио пользователя с шестиугольной инфографикой навыков.
+    Страница портфолио пользователя — категории-плитки + проекты.
     """
     if username is None:
         username = request.user.username
 
     user = get_object_or_404(User, username=username)
     profile, created = Profile.objects.get_or_create(user=user)
-    works = user.works.filter(status='published').order_by('-created_at')[:6]
+    works = user.works.filter(status='published').order_by('-created_at')
+    is_owner = (request.user == user)
 
-    # Получаем навыки пользователя (из профиля или дефолтные)
-    skills = profile.skills if hasattr(profile, 'skills') and profile.skills else []
+    # Категории, для которых есть работы
+    from core.models import Category, Project
 
-    # Дефолтные направления если навыки не заданы
-    default_directions = [
-        {'slug': 'design', 'name': 'Дизайн', 'icon': 'palette', 'color': '#e60023'},
-        {'slug': 'programming', 'name': 'Программирование', 'icon': 'code', 'color': '#667eea'},
-        {'slug': 'marketing', 'name': 'Маркетинг', 'icon': 'chart', 'color': '#f093fb'},
-        {'slug': 'content', 'name': 'Контент', 'icon': 'book', 'color': '#4facfe'},
-        {'slug': 'management', 'name': 'Управление', 'icon': 'calendar', 'color': '#43e97b'},
-        {'slug': 'legal', 'name': 'Юридические услуги', 'icon': 'scale', 'color': '#fa709a'},
-    ]
+    # Категории, для которых есть работы
+    category_cards = []
+    categories = Category.objects.filter(works__author=user, works__status='published').distinct()
+    for cat in categories:
+        cat_works = works.filter(category=cat)
+        top_work = cat_works.order_by('-likes_count').first()
+        category_cards.append({'category': cat, 'top_work': top_work, 'count': cat_works.count()})
+
+    # Проекты пользователя
+    projects = user.projects.filter(status='published').order_by('-created_at')
+
+    # --- Все проекты на сайте, сгруппированные по категориям ---
+    project_cat_cards = []
+    project_categories = Category.objects.filter(
+        projects__status='published'
+    ).distinct().order_by('name')
+    for cat in project_categories:
+        cat_projects = Project.objects.filter(status='published', category=cat).order_by('-created_at')
+        if cat_projects.exists():
+            project_cat_cards.append({
+                'category': cat,
+                'projects': list(cat_projects[:6]),
+                'count': cat_projects.count(),
+            })
 
     context = {
         'portfolio_user': user,
         'profile': profile,
-        'works': works,
-        'directions': default_directions,
-        'is_owner': request.user == user,
+        'is_owner': is_owner,
+        'category_cards': category_cards,
+        'projects': projects,
+        'project_cat_cards': project_cat_cards,
     }
     return render(request, 'accounts/portfolio.html', context)
+
+
+def user_projects(request, username=None):
+    """Проекты конкретного пользователя"""
+    from core.models import Category, Project
+
+    if username is None:
+        username = request.user.username
+
+    user = get_object_or_404(User, username=username)
+    profile, _ = Profile.objects.get_or_create(user=user)
+    is_owner = (request.user == user)
+
+    # Проекты этого пользователя, сгруппированные по категориям
+    project_cat_cards = []
+    project_categories = Category.objects.filter(
+        projects__author=user, projects__status='published'
+    ).distinct().order_by('name')
+    for cat in project_categories:
+        cat_projects = Project.objects.filter(status='published', category=cat, author=user).order_by('-created_at')
+        if cat_projects.exists():
+            project_cat_cards.append({
+                'category': cat,
+                'projects': list(cat_projects[:6]),
+                'count': cat_projects.count(),
+            })
+
+    context = {
+        'portfolio_user': user,
+        'profile': profile,
+        'is_owner': is_owner,
+        'project_cat_cards': project_cat_cards,
+    }
+    return render(request, 'accounts/user_projects.html', context)
+
+
+@login_required
+def users_list(request):
+    """Список всех зарегистрированных пользователей"""
+    users = User.objects.filter(is_active=True).select_related('profile').order_by(
+        '-date_joined'
+    )
+    query = request.GET.get('q', '')
+    if query:
+        users = users.filter(
+            Q(username__icontains=query) |
+            Q(first_name__icontains=query) |
+            Q(last_name__icontains=query) |
+            Q(profile__display_name__icontains=query)
+        )
+    return render(request, 'accounts/users_list.html', {'users': users, 'query': query})

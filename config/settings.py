@@ -83,6 +83,7 @@ TEMPLATES = [
                 'core.context_processors.logo_context',
                 'core.context_processors.header_stats_context',
                 'core.context_processors.icon_set_context',
+                'core.context_processors.calendar_context',
             ],
         },
     },
@@ -174,9 +175,13 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 # Session settings
 SESSION_COOKIE_AGE = 1209600  # 2 недели в секундах
 SESSION_COOKIE_SAMESITE = 'Lax'
+SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SECURE = False  # True для HTTPS
+SESSION_SAVE_EVERY_REQUEST = True  # Сохранять сессию для каждого запроса
 CSRF_COOKIE_SAMESITE = 'Lax'
+CSRF_COOKIE_HTTPONLY = False  # Разрешить JavaScript доступ к CSRF cookie
 CSRF_COOKIE_SECURE = False  # True для HTTPS
+CSRF_USE_SESSIONS = False  # Использовать cookie для CSRF, а не сессию
 
 # Django Channels (WebSocket)
 ASGI_APPLICATION = 'config.asgi.application'

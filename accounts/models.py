@@ -26,16 +26,24 @@ class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     display_name = models.CharField('Отображаемое имя', max_length=100, blank=True)
     slug = models.SlugField(unique=True, blank=True)
+    bio = models.TextField('О себе', blank=True)
 
     # Статистика
     followers_count = models.PositiveIntegerField(default=0)
     following_count = models.PositiveIntegerField(default=0)
     works_count = models.PositiveIntegerField(default=0)
     likes_received = models.PositiveIntegerField(default=0)
+    blocked_works_count = models.PositiveIntegerField(default=0)
 
     # Настройки
     is_verified = models.BooleanField('Проверенный', default=False)
     is_pro = models.BooleanField('Pro аккаунт', default=False)
+
+    # Настройки приватности
+    show_email = models.BooleanField('Показывать email', default=False)
+
+    # Программное обеспечение
+    tools = models.TextField('Программы', blank=True, help_text='Программы, в которых работает пользователь (через запятую)')
 
     # Роли пользователя
     is_moderator = models.BooleanField('Модератор', default=False)

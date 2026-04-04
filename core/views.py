@@ -2,12 +2,12 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import get_user_model
-from django.db.models import Q, Count, F
+from django.db.models import Q, Count, F, Max
 from django.core.paginator import Paginator
 from django.utils import timezone
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
-from .models import Work, Category, Collection, IconSet
+from .models import Work, Category, Collection, IconSet, Project, ProjectStep
 from taggit.models import Tag
 
 User = get_user_model()
@@ -810,7 +810,7 @@ def switch_theme(request):
             theme_name = data.get('theme')
 
             # Проверка допустимых тем
-            valid_themes = ['olive-sage', 'coffee', 'monochrome']
+            valid_themes = ['olive-sage', 'coffee', 'monochrome', 'craft']
             if theme_name not in valid_themes:
                 return JsonResponse({'error': 'Invalid theme'}, status=400)
 
@@ -887,3 +887,231 @@ def admin_theme_page(request):
     }
 
     return render(request, 'core/admin_theme.html', context)
+
+
+# ========================
+# Project views
+# ========================
+
+def project_list_view(request):
+    """Список всех опубликованных проектов"""
+    projects = Project.objects.filter(status='published').select_related('author', 'category').order_by('-created_at')
+    paginator = Paginator(projects, 12)
+    page = request.GET.get('page')
+    projects = paginator.get_page(page)
+    return render(request, 'core/project_list.html', {'projects': projects})
+
+
+@login_required
+def my_projects(request):
+    """Мои проекты"""
+    projects = request.user.projects.all().order_by('-created_at')
+    return render(request, 'core/project_list.html', {'projects': projects, 'show_draft': True})
+
+
+@login_required
+def create_project(request):
+    """Создание проекта с шагами"""
+    if request.method == 'POST':
+        title = request.POST.get('title', '').strip()
+        description = request.POST.get('description', '').strip()
+        category_id = request.POST.get('category')
+        status = request.POST.get('status', 'moderation')
+        if status not in ('draft', 'published', 'moderation'):
+            status = 'moderation'
+
+        # Создаём базовый slug
+        from django.utils.text import slugify
+        base_slug = slugify(title)
+        if not base_slug:
+            base_slug = f'project-{timezone.now().timestamp()}'
+        slug = base_slug
+        counter = 1
+        while Project.objects.filter(slug=slug, author=request.user).exists():
+            slug = f'{base_slug}-{counter}'
+            counter += 1
+
+        bg_color = request.POST.get('bg_color', '#FFFFFF')
+
+        project = Project.objects.create(
+            author=request.user,
+            title=title,
+            description=description,
+            category_id=category_id if category_id else None,
+            slug=slug,
+            status=status,
+            bg_color=bg_color,
+        )
+
+        if 'cover' in request.FILES:
+            project.cover = request.FILES['cover']
+        if 'bg_image' in request.FILES:
+            project.bg_image = request.FILES['bg_image']
+        project.save()
+
+        # Шаги из POST-данных
+        step_titles = request.POST.getlist('new_step_title')
+        step_descs = request.POST.getlist('new_step_desc')
+        step_imgs = request.FILES.getlist('new_step_image')
+
+        for i in range(len(step_titles)):
+            title = (step_titles[i] or '').strip()
+            desc = (step_descs[i] or '').strip() if i < len(step_descs) else ''
+            has_image = i < len(step_imgs) and step_imgs[i].name
+            if not title and not has_image:
+                continue
+            step = ProjectStep.objects.create(
+                project=project,
+                title=title,
+                description=desc,
+                order=i,
+            )
+            if has_image:
+                step.image = step_imgs[i]
+                step.save(update_fields=['image'])
+
+        if status == 'published':
+            project.published_at = timezone.now()
+            project.save(update_fields=['published_at'])
+
+        return redirect('core:project_detail', username=request.user.username, slug=project.slug)
+
+    categories = Category.objects.all()
+    return render(request, 'core/project_form.html', {'categories': categories, 'editing': False})
+
+
+@login_required
+def edit_project(request, username, slug):
+    """Редактирование проекта"""
+    project = get_object_or_404(Project, slug=slug, author__username=username)
+    if project.author != request.user and not request.user.is_staff:
+        return redirect('core:project_detail', username=username, slug=slug)
+
+    if request.method == 'POST':
+        project.title = request.POST.get('title', project.title)
+        project.description = request.POST.get('description', project.description)
+        category_id = request.POST.get('category')
+        project.category_id = category_id if category_id else None
+        new_status = request.POST.get('status')
+        if new_status and new_status in ('draft', 'published', 'moderation'):
+            project.status = new_status
+        if 'cover' in request.FILES:
+            project.cover = request.FILES['cover']
+        bg_color = request.POST.get('bg_color')
+        if bg_color:
+            project.bg_color = bg_color
+        if 'bg_image' in request.FILES:
+            project.bg_image = request.FILES['bg_image']
+
+        # Удаляем шаги
+        del_ids = request.POST.getlist('delete_steps')
+        if del_ids:
+            project.steps.filter(id__in=del_ids).delete()
+
+        # Обновляем существующие шаги
+        existing_ids = list(project.steps.values_list('id', flat=True))
+        for step_id in existing_ids:
+            title = request.POST.get(f'step_title_{step_id}')
+            desc = request.POST.get(f'step_desc_{step_id}')
+            order = request.POST.get(f'step_order_{step_id}')
+            if title is not None:
+                s = project.steps.get(id=step_id)
+                s.title = title
+                s.description = desc or ''
+                s.order = int(order) if order else s.order
+                if f'step_image_{step_id}' in request.FILES:
+                    s.image = request.FILES[f'step_image_{step_id}']
+                s.save()
+
+        # Новые шаги
+        new_titles = request.POST.getlist('new_step_title')
+        new_descs = request.POST.getlist('new_step_desc')
+
+        max_order = project.steps.aggregate(mx=Max('order'))['mx'] or 0
+        for i in range(len(new_titles)):
+            if new_titles[i] or f'new_step_image_{i}' in request.FILES:
+                imgs = request.FILES.getlist('new_step_image')
+                ProjectStep.objects.create(
+                    project=project,
+                    title=new_titles[i],
+                    description=new_descs[i] if i < len(new_descs) else '',
+                    order=max_order + i + 1,
+                    image=imgs[i] if i < len(imgs) else None,
+                )
+
+        project.save()
+        return redirect('core:project_detail', username=username, slug=slug)
+
+    categories = Category.objects.all()
+    return render(request, 'core/project_form.html', {
+        'project': project,
+        'categories': categories,
+        'editing': True,
+    })
+
+
+@login_required
+def delete_project(request, username, slug):
+    """Удаление проекта"""
+    project = get_object_or_404(Project, slug=slug)
+    if project.author != request.user and not request.user.is_staff:
+        return redirect('core:project_detail', username=username, slug=slug)
+    project.delete()
+    return redirect('accounts:portfolio', username=username)
+
+
+@login_required
+@require_POST
+def publish_project(request, username, slug):
+    project = get_object_or_404(Project, slug=slug)
+    if project.author != request.user and not request.user.is_staff:
+        return JsonResponse({'error': 'Нет прав'}, status=403)
+    project.status = 'published'
+    project.published_at = timezone.now()
+    project.save(update_fields=['status', 'published_at'])
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return JsonResponse({'success': True, 'status': 'published'})
+    return redirect('core:project_detail', username=username, slug=slug)
+
+
+@login_required
+@require_POST
+def unpublish_project(request, username, slug):
+    project = get_object_or_404(Project, slug=slug)
+    if project.author != request.user and not request.user.is_staff:
+        return JsonResponse({'error': 'Нет прав'}, status=403)
+    project.status = 'draft'
+    project.save(update_fields=['status'])
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return JsonResponse({'success': True, 'status': 'draft'})
+    return redirect('core:project_detail', username=username, slug=slug)
+
+
+def project_detail_view(request, username, slug):
+    """Страница проекта"""
+    project = get_object_or_404(
+        Project.objects.select_related('author', 'category').prefetch_related('steps'),
+        slug=slug,
+        author__username=username,
+    )
+
+    project.views_count += 1
+    project.save(update_fields=['views_count'])
+
+    steps = project.steps.all()
+    comments = project.comments.filter(parent=None).select_related('user')
+
+    is_liked = False
+    if request.user.is_authenticated:
+        is_liked = project.likes.filter(user=request.user).exists()
+
+    similar = Project.objects.filter(status='published', category=project.category).exclude(pk=project.pk).select_related('author')[:6]
+
+    context = {
+        'project': project,
+        'steps': steps,
+        'comments': comments,
+        'is_liked': is_liked,
+        'similar_projects': similar,
+    }
+    return render(request, 'core/project_detail.html', context)

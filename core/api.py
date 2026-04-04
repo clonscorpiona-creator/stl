@@ -65,24 +65,13 @@ def home_api(request):
     - Ограничение выборки ([:12]) для быстрого ответа
     - Только опубликованные работы
     """
-    # Обычные пользователи не видят заблокированные работы
-    if request.user.is_authenticated and request.user.is_staff:
-        works = Work.objects.filter(
-            status='published'
-        ).select_related(
-            'author', 'category'
-        ).prefetch_related(
-            'tags'
-        )[:12]
-    else:
-        works = Work.objects.filter(
-            status='published',
-            is_blocked=False
-        ).select_related(
-            'author', 'category'
-        ).prefetch_related(
-            'tags'
-        )[:12]
+    works = Work.objects.filter(
+        status='published'
+    ).select_related(
+        'author', 'category'
+    ).prefetch_related(
+        'tags'
+    )[:12]
 
     return JsonResponse({
         'works': [serialize_work(w) for w in works],
@@ -108,41 +97,21 @@ def feed_api(request):
     # Получаем ID авторов, на которых подписан пользователь
     following_ids = request.user.following.values_list('following_id', flat=True)
 
-    # Обычные пользователи не видят заблокированные работы
-    if request.user.is_staff:
-        if following_ids:
-            # Работы от подписок
-            following_works = Work.objects.filter(
-                status='published',
-                author_id__in=following_ids
-            ).select_related('author', 'category').order_by('-created_at')[:20]
-        else:
-            following_works = []
-
-        # Рекомендации (популярные работы)
-        recommended = Work.objects.filter(
-            status='published'
-        ).exclude(author=request.user).annotate(
-            score=F('likes_count') + F('views_count') * 0.5
-        ).order_by('-score', '-created_at')[:10]
-    else:
-        if following_ids:
-            # Работы от подписок
-            following_works = Work.objects.filter(
-                status='published',
-                is_blocked=False,
-                author_id__in=following_ids
-            ).select_related('author', 'category').order_by('-created_at')[:20]
-        else:
-            following_works = []
-
-        # Рекомендации (популярные работы)
-        recommended = Work.objects.filter(
+    if following_ids:
+        # Работы от подписок
+        following_works = Work.objects.filter(
             status='published',
-            is_blocked=False
-        ).exclude(author=request.user).annotate(
-            score=F('likes_count') + F('views_count') * 0.5
-        ).order_by('-score', '-created_at')[:10]
+            author_id__in=following_ids
+        ).select_related('author', 'category').order_by('-created_at')[:20]
+    else:
+        following_works = []
+
+    # Рекомендации (популярные работы)
+    recommended = Work.objects.filter(
+        status='published'
+    ).exclude(author=request.user).annotate(
+        score=F('likes_count') + F('views_count') * 0.5
+    ).order_by('-score', '-created_at')[:10]
 
     return JsonResponse({
         'following': [serialize_work(w) for w in following_works],
@@ -165,11 +134,7 @@ def works_list_api(request):
     - select_related для связанных моделей
     - Индексы в БД на часто используемых полях
     """
-    # Обычные пользователи не видят заблокированные работы
-    if request.user.is_authenticated and request.user.is_staff:
-        works = Work.objects.filter(status='published').select_related('author', 'category').prefetch_related('tags')
-    else:
-        works = Work.objects.filter(status='published', is_blocked=False).select_related('author', 'category').prefetch_related('tags')
+    works = Work.objects.filter(status='published').select_related('author', 'category').prefetch_related('tags')
 
     # Применяем фильтры
     category = request.GET.get('category')
@@ -649,48 +614,6 @@ def toggle_admin_recommend_api(request, work_id):
         'is_admin_recommended': work.is_admin_recommended,
         'recommended_at': work.recommended_at.isoformat() if work.recommended_at else None,
         'recommended_by': work.recommended_by.username if work.recommended_by else None
-    })
-
-
-@login_required
-@require_http_methods(['POST'])
-def block_work_api(request, work_id):
-    """
-    Заблокировать/разблокировать работу.
-    Только для staff пользователей.
-    """
-    work = get_object_or_404(Work, pk=work_id)
-
-    # Только для staff
-    if not request.user.is_staff:
-        return JsonResponse({'error': 'Требуется права администратора'}, status=403)
-
-    from django.utils import timezone
-
-    data = json.loads(request.body)
-    block = data.get('block', True)
-    reason = data.get('reason', '')
-
-    if block:
-        # Заблокировать
-        work.is_blocked = True
-        work.blocked_at = timezone.now()
-        work.blocked_by = request.user
-        work.block_reason = reason
-    else:
-        # Разблокировать
-        work.is_blocked = False
-        work.blocked_at = None
-        work.blocked_by = None
-        work.block_reason = ''
-
-    work.save(update_fields=['is_blocked', 'blocked_at', 'blocked_by', 'block_reason'])
-
-    return JsonResponse({
-        'success': True,
-        'is_blocked': work.is_blocked,
-        'blocked_at': work.blocked_at.isoformat() if work.blocked_at else None,
-        'blocked_by': request.user.username,
     })
 
 

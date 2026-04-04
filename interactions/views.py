@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST, require_GET
 
-from core.models import Work
+from core.models import Work, Project, ProjectComment, ProjectCommentLike
 from .models import Like, Comment, Repost, SavedWork, Notification, CommentLike
 
 User = get_user_model()
@@ -87,13 +87,17 @@ def comment_delete(request, comment_id):
 
 @login_required
 @require_POST
-def repost_create(request, work_id):
-    """Создание репоста"""
+def repost_toggle(request, work_id):
+    """Репост/отмена репоста работы"""
     work = get_object_or_404(Work, pk=work_id)
 
     repost, created = Repost.objects.get_or_create(user=request.user, work=work)
 
-    if created:
+    if not created:
+        # Уже есть реост - удаляем (отменяем)
+        repost.delete()
+        reposted = False
+    else:
         # Создаём уведомление
         if work.author != request.user:
             Notification.objects.create(
@@ -102,20 +106,28 @@ def repost_create(request, work_id):
                 type='repost',
                 work=work
             )
+        reposted = True
+
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return JsonResponse({'reposted': reposted, 'count': work.reposts_count})
 
     return redirect('core:work_detail', username=work.author.username, slug=work.slug)
 
 
 @login_required
 @require_POST
-def save_work(request, work_id):
-    """Сохранить работу"""
+def save_work_toggle(request, work_id):
+    """Сохранить/убрать из сохранённых работу"""
     work = get_object_or_404(Work, pk=work_id)
     collection_id = request.POST.get('collection')
 
     saved, created = SavedWork.objects.get_or_create(user=request.user, work=work)
 
-    if created:
+    if not created:
+        # Уже сохранено - удаляем (отменяем)
+        saved.delete()
+        is_saved = False
+    else:
         if collection_id:
             saved.collection_id = collection_id
             saved.save()
@@ -128,6 +140,10 @@ def save_work(request, work_id):
                 type='save',
                 work=work
             )
+        is_saved = True
+
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return JsonResponse({'is_saved': is_saved, 'count': work.saves_count})
 
     return redirect('core:work_detail', username=work.author.username, slug=work.slug)
 
@@ -361,3 +377,88 @@ def comment_delete_permanently(request, comment_id):
         return JsonResponse({'success': True})
 
     return redirect('core:work_detail', username=comment.work.author.username, slug=comment.work.slug)
+
+
+# ========================
+# Project interaction views
+# ========================
+
+@login_required
+@require_POST
+def project_like_toggle(request, project_id):
+    project = get_object_or_404(Project, pk=project_id)
+    from core.models import ProjectLike
+    like, created = ProjectLike.objects.get_or_create(user=request.user, project=project)
+    if not created:
+        like.delete()
+        liked = False
+    else:
+        liked = True
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return JsonResponse({'liked': liked, 'count': project.likes_count})
+    return redirect('core:project_detail', username=project.author.username, slug=project.slug)
+
+
+@login_required
+@require_POST
+def project_comment_create(request, project_id):
+    project = get_object_or_404(Project, pk=project_id)
+    content = request.POST.get('content', '').strip()
+    if content:
+        parent_id = request.POST.get('parent')
+        parent = None
+        if parent_id:
+            parent = get_object_or_404(ProjectComment, pk=parent_id)
+        ProjectComment.objects.create(
+            user=request.user,
+            project=project,
+            content=content,
+            parent=parent,
+        )
+    return redirect('core:project_detail', username=project.author.username, slug=project.slug)
+
+
+@login_required
+@require_POST
+def project_comment_edit(request, comment_id):
+    comment = get_object_or_404(ProjectComment, pk=comment_id)
+    if comment.user != request.user and not request.user.is_staff:
+        return JsonResponse({'error': 'Нет прав'}, status=403)
+    content = request.POST.get('content', '').strip()
+    if content:
+        comment.content = content
+        comment.is_edited = True
+        comment.save(update_fields=['content', 'is_edited'])
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return JsonResponse({
+            'success': True,
+            'content': comment.content,
+            'is_edited': comment.is_edited,
+        })
+    return redirect('core:project_detail', username=comment.project.author.username, slug=comment.project.slug)
+
+
+@login_required
+@require_POST
+def project_comment_delete(request, comment_id):
+    comment = get_object_or_404(ProjectComment, pk=comment_id)
+    if comment.user == request.user or request.user.is_staff:
+        comment.is_deleted = True
+        comment.content = ''
+        comment.save()
+    return redirect('core:project_detail', username=comment.project.author.username, slug=comment.project.slug)
+
+
+@login_required
+@require_POST
+def project_comment_like_toggle(request, comment_id):
+    comment = get_object_or_404(ProjectComment, pk=comment_id)
+    like, created = ProjectCommentLike.objects.get_or_create(user=request.user, comment=comment)
+    if not created:
+        like.delete()
+        liked = False
+    else:
+        liked = True
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return JsonResponse({'liked': liked, 'count': comment.likes_count})
+    return redirect('core:project_detail', username=comment.project.author.username, slug=comment.project.slug)

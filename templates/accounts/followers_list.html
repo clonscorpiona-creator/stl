@@ -4,195 +4,108 @@
 
 {% block extra_css %}
 <style>
-    .followers-container {
-        max-width: 800px;
-        margin: 0 auto;
-    }
-
-    .back-button {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        color: #666;
-        text-decoration: none;
-        padding: 10px 16px;
-        background: #f8f9fa;
-        border-radius: 8px;
-        margin-bottom: 20px;
-        transition: all 0.2s;
-    }
-
-    .back-button:hover {
-        background: #e9ecef;
-        color: #333;
-    }
-
-    .list-header {
-        background: white;
-        border-radius: 16px;
-        padding: 24px 30px;
-        margin-bottom: 24px;
-        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
-        display: flex;
-        align-items: center;
-        gap: 16px;
-    }
-
-    .list-icon {
-        font-size: 32px;
-    }
-
-    .list-info {
-        flex: 1;
-    }
-
-    .list-title {
-        font-size: 20px;
-        font-weight: 700;
-        color: #333;
-        margin-bottom: 4px;
-    }
-
-    .list-count {
-        font-size: 14px;
-        color: #666;
-    }
-
-    .user-list {
-        background: white;
-        border-radius: 16px;
-        overflow: hidden;
-        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
-    }
-
-    .user-item {
-        display: flex;
-        align-items: center;
-        gap: 16px;
-        padding: 16px 20px;
-        border-bottom: 1px solid #f0f0f0;
-        transition: background 0.2s;
-        text-decoration: none;
-        color: inherit;
-    }
-
-    .user-item:last-child {
-        border-bottom: none;
-    }
-
-    .user-item:hover {
-        background: #f8f9fa;
-    }
-
-    .user-avatar {
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        background: #f0f0f0;
-        overflow: hidden;
-        flex-shrink: 0;
-    }
-
-    .user-avatar img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-
-    .user-avatar-placeholder {
-        width: 100%;
-        height: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 20px;
-        color: #999;
-        background: linear-gradient(135deg, #667eea, #764ba2);
-        color: white;
-        font-weight: 600;
-    }
-
-    .user-info {
-        flex: 1;
-        min-width: 0;
-    }
-
-    .user-name {
-        font-weight: 600;
-        color: #333;
-        font-size: 16px;
-        margin-bottom: 2px;
-    }
-
-    .user-username {
-        color: #666;
-        font-size: 13px;
-    }
-
-    .user-stats {
-        display: flex;
-        gap: 16px;
-        font-size: 13px;
-        color: #666;
-    }
-
-    .empty-list {
-        padding: 60px 20px;
-        text-align: center;
-        color: #666;
-        background: white;
-        border-radius: 16px;
-    }
-
-    .empty-list h3 {
-        margin-bottom: 12px;
-        color: #333;
-    }
+.list-page { max-width: 800px; margin: 0 auto; }
+.back-link {
+    display: inline-flex; align-items: center; gap: 6px;
+    color: #8B7355; text-decoration: none; padding: 8px 14px;
+    background: #F7EDE2; border-radius: 8px; margin-bottom: 20px;
+    border: 1px solid #D4B896; font-size: 13px; font-weight: 500;
+    transition: all 0.2s;
+}
+.back-link:hover { background: #D4B896; text-decoration: none; }
+.list-header-card {
+    background: #F7EDE2; border: 2px solid #D4B896; border-radius: 16px;
+    padding: 20px 24px; margin-bottom: 20px;
+    box-shadow: 0 4px 12px rgba(93, 64, 35, 0.1);
+    display: flex; align-items: center; gap: 14px;
+}
+.list-header-icon svg { width: 28px; height: 28px; stroke: #8B5E3C; }
+.list-header-info h2 { margin: 0; font-size: 18px; color: #4A3728; }
+.list-header-info span { font-size: 13px; color: #8B7355; }
+.user-list-craft {
+    background: #F7EDE2; border: 2px solid #D4B896; border-radius: 16px;
+    overflow: hidden; box-shadow: 0 4px 12px rgba(93, 64, 35, 0.1);
+}
+.user-item-craft {
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px 20px; transition: background 0.2s;
+    text-decoration: none; color: inherit;
+}
+.user-item-craft:not(:last-child) { border-bottom: 1px solid #E8D5B7; }
+.user-item-craft:hover { background: #F0E4D4; text-decoration: none; }
+.user-avatar-craft {
+    width: 48px; height: 48px; border-radius: 50%; overflow: hidden;
+    flex-shrink: 0; border: 2px solid #D4B896; background: #E8D5B7;
+}
+.user-avatar-craft img { width: 100%; height: 100%; object-fit: cover; }
+.user-avatar-initials {
+    width: 100%; height: 100%; display: flex; align-items: center;
+    justify-content: center; font-size: 18px; color: #8B5E3C; font-weight: 700;
+}
+.user-info-craft { flex: 1; min-width: 0; }
+.user-info-craft .name { font-weight: 600; color: #4A3728; font-size: 15px; }
+.user-info-craft .uname { color: #8B7355; font-size: 12px; }
+.user-info-craft .meta { font-size: 12px; color: #A08B72; margin-top: 2px; }
+.empty-craft {
+    text-align: center; padding: 50px 20px; color: #A08B72;
+    background: #F7EDE2; border: 2px solid #D4B896; border-radius: 16px;
+}
+.empty-craft h3 { color: #8B7355; margin-bottom: 8px; }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="followers-container">
-    <a href="{% url 'accounts:profile' profile_user.username %}" class="back-button">
-        ← Назад к профилю
+<div class="list-page">
+    <a href="{% url 'accounts:profile' profile_user.username %}" class="back-link">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        Назад к профилю
     </a>
 
-    <div class="list-header">
-        <div class="list-icon">👥</div>
-        <div class="list-info">
-            <div class="list-title">Подписчики {{ profile_user.username }}</div>
-            <div class="list-count">{{ followers.count }} подписчиков</div>
+    <div class="list-header-card">
+        <div class="list-header-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+        </div>
+        <div class="list-header-info">
+            <h2>Подписчики {{ profile_user.username }}</h2>
+            <span>{{ followers.count }} подписчиков</span>
         </div>
     </div>
 
     {% if followers %}
-        <div class="user-list">
-            {% for follow in followers %}
-                <a href="{% url 'accounts:profile' follow.follower.username %}" class="user-item">
-                    <div class="user-avatar">
-                        {% if follow.follower.avatar %}
-                            <img src="{{ follow.follower.avatar.url }}" alt="{{ follow.follower.username }}">
-                        {% else %}
-                            <div class="user-avatar-placeholder">
-                                {{ follow.follower.username|first|upper }}
-                            </div>
-                        {% endif %}
-                    </div>
-                    <div class="user-info">
-                        <div class="user-name">{{ follow.follower.profile.display_name|default:follow.follower.username }}</div>
-                        <div class="user-username">@{{ follow.follower.username }}</div>
-                    </div>
-                    <div class="user-stats">
-                        <span>{{ follow.follower.profile.followers_count|default:0 }} подписчиков</span>
-                    </div>
-                </a>
-            {% endfor %}
-        </div>
+    <div class="user-list-craft">
+        {% for follow in followers %}
+        <a href="{% url 'accounts:profile' follow.follower.username %}" class="user-item-craft">
+            <div class="user-avatar-craft">
+                {% if follow.follower.avatar %}
+                    <img src="{{ follow.follower.avatar.url }}" alt="{{ follow.follower.username }}">
+                {% else %}
+                    <div class="user-avatar-initials">{{ follow.follower.username|first|upper }}</div>
+                {% endif %}
+            </div>
+            <div class="user-info-craft">
+                <div class="name">{{ follow.follower.profile.display_name|default:follow.follower.username }}</div>
+                <div class="uname">@{{ follow.follower.username }}</div>
+                <div class="meta">{{ follow.follower.profile.followers_count|default:0 }} подписчиков</div>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
     {% else %}
-        <div class="empty-list">
-            <h3>Пока нет подписчиков</h3>
-            <p>У пользователя {{ profile_user.username }} ещё нет подписчиков</p>
-        </div>
+    <div class="empty-craft">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#C49A6C" stroke-width="1.5" style="margin-bottom:12px;">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+        </svg>
+        <h3>Пока нет подписчиков</h3>
+        <p>У пользователя {{ profile_user.username }} ещё нет подписчиков</p>
+    </div>
     {% endif %}
 </div>
 {% endblock %}

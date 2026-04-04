@@ -5,6 +5,15 @@ from . import api
 app_name = 'core'
 
 urlpatterns = [
+    # Project views
+    path('projects/', views.project_list_view, name='project_list'),
+    path('projects/create/', views.create_project, name='project_create'),
+    path('projects/mine/', views.my_projects, name='my_projects'),
+    path('projects/<str:username>/<str:slug>/', views.project_detail_view, name='project_detail'),
+    path('projects/<str:username>/<str:slug>/edit/', views.edit_project, name='project_edit'),
+    path('projects/<str:username>/<str:slug>/delete/', views.delete_project, name='project_delete'),
+    path('projects/<str:username>/<str:slug>/publish/', views.publish_project, name='project_publish'),
+    path('projects/<str:username>/<str:slug>/unpublish/', views.unpublish_project, name='project_unpublish'),
     # Page views
     path('', views.home_view, name='home'),
     path('feed/', views.feed_view, name='feed'),

@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils.text import slugify
 from django.contrib.auth import get_user_model
+from django.utils import timezone
 from taggit.managers import TaggableManager
 from .utils import custom_upload_to
 
@@ -148,6 +149,9 @@ class Work(models.Model):
     def save(self, *args, **kwargs):
         if not self.slug:
             base_slug = slugify(self.title)
+            if not base_slug:
+                # Fallback для нелатинских заголовков (кириллица и др.)
+                base_slug = f'work-{timezone.now().timestamp()}'
             slug = base_slug
             counter = 1
             while Work.objects.filter(slug=slug, author=self.author).exists():
@@ -188,6 +192,22 @@ class WorkVideo(models.Model):
 
     def __str__(self):
         return f'Video {self.order} for {self.work.title}'
+
+
+class WorkAudio(models.Model):
+    """Аудио работы"""
+    work = models.ForeignKey(Work, on_delete=models.CASCADE, related_name='audio_files')
+    audio = models.FileField('Аудио', upload_to=custom_upload_to)
+    order = models.PositiveIntegerField(default=0)
+    title = models.CharField('Название', max_length=200, blank=True)
+
+    class Meta:
+        verbose_name = 'Аудио'
+        verbose_name_plural = 'Аудио'
+        ordering = ['order']
+
+    def __str__(self):
+        return f'Audio {self.order} for {self.work.title}'
 
 
 class WorkFrame(models.Model):
@@ -291,3 +311,165 @@ class IconSet(models.Model):
             # По умолчанию используем 'default'
             instance = cls.objects.filter(slug='default').first()
         return instance
+
+
+class Project(models.Model):
+    """Проект в стиле Behance (многостраничный проект с шагами)"""
+    STATUS_CHOICES = [
+        ('draft', 'Черновик'),
+        ('published', 'Опубликовано'),
+        ('moderation', 'На модерации'),
+    ]
+
+    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='projects')
+    title = models.CharField('Название', max_length=200)
+    slug = models.SlugField(blank=True)
+    description = models.TextField('Описание', blank=True)
+    cover = models.ImageField('Обложка', upload_to='projects/covers/', null=True, blank=True)
+    category = models.ForeignKey(Category, null=True, blank=True, on_delete=models.SET_NULL, related_name='projects')
+    status = models.CharField('Статус', max_length=20, choices=STATUS_CHOICES, default='moderation')
+    views_count = models.PositiveIntegerField(default=0)
+    likes_count = models.PositiveIntegerField(default=0)
+    comments_count = models.PositiveIntegerField(default=0)
+    bg_color = models.CharField('Цвет фона', max_length=20, default='#FFFFFF')
+    bg_image = models.ImageField('Фоновое изображение', upload_to='projects/bg/', null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    published_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        verbose_name = 'Проект'
+        verbose_name_plural = 'Проекты'
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['-created_at']),
+            models.Index(fields=['status', '-created_at']),
+            models.Index(fields=['-likes_count']),
+        ]
+
+    def __str__(self):
+        return self.title
+
+    def get_absolute_url(self):
+        if self.author and self.slug:
+            return f'/projects/{self.author.username}/{self.slug}/'
+        return None
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            base_slug = slugify(self.title)
+            if not base_slug:
+                base_slug = f'project-{timezone.now().timestamp()}'
+            slug = base_slug
+            counter = 1
+            while Project.objects.filter(slug=slug, author=self.author).exists():
+                slug = f'{base_slug}-{counter}'
+                counter += 1
+            self.slug = slug
+        super().save(*args, **kwargs)
+
+
+class ProjectStep(models.Model):
+    """Шаг проекта (отдельная страница/секция)"""
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='steps')
+    image = models.ImageField('Изображение', upload_to='projects/steps/', null=True, blank=True)
+    title = models.CharField('Заголовок', max_length=200, blank=True)
+    description = models.TextField('Описание', blank=True)
+    order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        verbose_name = 'Шаг проекта'
+        verbose_name_plural = 'Шаги проекта'
+        ordering = ['order']
+
+    def __str__(self):
+        return f'{self.title or "Step"} — {self.project.title}'
+
+
+class ProjectLike(models.Model):
+    """Лайк проекта"""
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='project_likes')
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='likes')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Лайк проекта'
+        verbose_name_plural = 'Лайки проектов'
+        unique_together = ['user', 'project']
+
+    def __str__(self):
+        return f'{self.user} likes {self.project}'
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        self._update_counter()
+
+    def delete(self, *args, **kwargs):
+        super().delete(*args, **kwargs)
+        self._update_counter()
+
+    def _update_counter(self):
+        count = ProjectLike.objects.filter(project=self.project).count()
+        self.project.likes_count = count
+        self.project.save(update_fields=['likes_count'])
+
+
+class ProjectComment(models.Model):
+    """Комментарий к проектуу"""
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='project_comments')
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='comments')
+    parent = models.ForeignKey('self', null=True, blank=True, on_delete=models.CASCADE, related_name='replies')
+    content = models.TextField('Комментарий')
+    is_deleted = models.BooleanField(default=False)
+    likes_count = models.PositiveIntegerField(default=0)
+    is_edited = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = 'Комментарий к проекту'
+        verbose_name_plural = 'Комментарии к проектам'
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f'{self.user} — {self.project}'
+
+    def save(self, *args, **kwargs):
+        is_new = self.pk is None
+        super().save(*args, **kwargs)
+        if is_new:
+            self.project.comments_count += 1
+            self.project.save(update_fields=['comments_count'])
+
+    def delete(self, *args, **kwargs):
+        pid = self.project.pk
+        super().delete(*args, **kwargs)
+        Project.objects.filter(pk=pid).update(comments_count=models.F('comments_count') - 1)
+
+
+class ProjectCommentLike(models.Model):
+    """Лайк комментарияк проектуу"""
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='project_comment_likes')
+    comment = models.ForeignKey(ProjectComment, on_delete=models.CASCADE, related_name='likes')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Лайк комментария к проекту'
+        verbose_name_plural = 'Лайки комментариев к проектам'
+        unique_together = ['user', 'comment']
+
+    def __str__(self):
+        return f'{self.user} likes comment {self.comment.pk}'
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        self._update_counter()
+
+    def delete(self, *args, **kwargs):
+        super().delete(*args, **kwargs)
+        self._update_counter()
+
+    def _update_counter(self):
+        count = ProjectCommentLike.objects.filter(comment=self.comment).count()
+        self.comment.likes_count = count
+        self.comment.save(update_fields=['likes_count'])

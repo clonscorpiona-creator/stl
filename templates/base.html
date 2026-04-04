@@ -799,6 +799,16 @@
                                                 <p class="appearance-option-desc">Классический ч/б стиль</p>
                                             </div>
                                         </button>
+                                        <button class="appearance-option" onclick="switchTheme('craft', event)">
+                                            <div class="theme-swatch">
+                                                <div class="theme-swatch-color" style="background: #E8D5B7;"></div>
+                                                <div class="theme-swatch-color" style="background: #8B5E3C;"></div>
+                                            </div>
+                                            <div class="appearance-option-content">
+                                                <p class="appearance-option-name">Крафт</p>
+                                                <p class="appearance-option-desc">Тёплые крафтовые оттенки</p>
+                                            </div>
+                                        </button>
                                     </div>
 
                                     <!-- Цвет фона Герой секции -->
@@ -859,9 +869,6 @@
                     <a href="{% url 'core:work_create' %}" class="btn" style="display: flex; align-items: center; gap: 6px; background: var(--hero-bg-gradient); color: #ffd700 !important; padding: 6px 12px;">
                         <img src="/static/icons/{{ icon_set }}/upload.svg" alt="" class="nav-icon" style="filter: brightness(0) invert(1);">Создать
                     </a>
-                    <a href="{% url 'core:drafts' %}" class="nav-link" style="display: flex; align-items: center; gap: 6px; color: var(--primary-dark); font-weight: 600;">
-                        <img src="/static/icons/{{ icon_set }}/edit.svg" alt="" class="nav-icon">Черновики
-                    </a>
                     <a href="{% url 'interactions:notifications' %}" class="nav-link" style="display: flex; align-items: center; gap: 6px; position: relative;">
                         <img src="/static/icons/{{ icon_set }}/notification.svg" alt="" class="nav-icon">Уведомления
                         <span id="notificationsBadge" style="display: none; position: absolute; top: -8px; right: -12px; background: #ef4444; color: white; border-radius: 50%; min-width: 18px; height: 18px; font-size: 10px; font-weight: 700; text-align: center; line-height: 18px; padding: 0 4px; box-shadow: 0 2px 4px rgba(239, 68, 68, 0.4);">+0</span>
@@ -879,9 +886,6 @@
                 {% else %}
                     <a href="{% url 'accounts:login' %}" class="btn btn-secondary" style="display: flex; align-items: center; gap: 6px;">
                         <img src="/static/icons/{{ icon_set }}/login.svg" alt="" class="nav-icon" style="filter: brightness(0) invert(1);">Вход
-                    </a>
-                    <a href="{% url 'accounts:register' %}" class="btn btn-primary" style="display: flex; align-items: center; gap: 6px;">
-                        <img src="/static/icons/{{ icon_set }}/user.svg" alt="" class="nav-icon" style="filter: brightness(0) invert(1);">Регистрация
                     </a>
                 {% endif %}
             </nav>
@@ -1060,6 +1064,16 @@
                     accentLight: '#7A7A7A',
                     accentDark: '#2A2A2A',
                     gradient: 'linear-gradient(135deg, #F5F5F5 0%, #EBEBEB 50%, #E0E0E0 100%)'
+                },
+                'craft': {
+                    background: '#E8D5B7',
+                    foreground: '#F5EDE3',
+                    textPrimary: '#2D1B0E',
+                    textSecondary: '#6B5A4C',
+                    accent: '#8B5E3C',
+                    accentLight: '#B8865C',
+                    accentDark: '#5C3D24',
+                    gradient: 'linear-gradient(135deg, #E8D5B7 0%, #DCC8A8 50%, #D4B896 100%)'
                 }
             };
 

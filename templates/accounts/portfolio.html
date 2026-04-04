@@ -1,662 +1,311 @@
 {% extends 'base.html' %}
 
-{% block title %}Портфолио {{ profile.display_name|default:portfolio_user.username }} - STL{% endblock %}
+{% block title %}СТЛ.Работы — {{ profile.display_name|default:portfolio_user.username }}{% endblock %}
+
+{% block extra_css %}
+<style>
+.portfolio-page { max-width: 1100px; margin: 0 auto; }
+
+/* Header */
+.portfolio-header {
+    background: #F7EDE2; border: 2px solid #D4B896; border-radius: 16px;
+    padding: 30px; text-align: center; margin-bottom: 24px;
+    box-shadow: 0 4px 12px rgba(93, 64, 35, 0.1);
+    position: relative; overflow: hidden;
+}
+.portfolio-header::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0;
+    height: 4px; background: linear-gradient(90deg, #8B5E3C, #C49A6C, #8B5E3C);
+}
+.portfolio-avatar {
+    width: 100px; height: 100px; border-radius: 50%; margin: 0 auto 14px;
+    overflow: hidden; border: 3px solid #D4B896; background: #E8D5B7;
+}
+.portfolio-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.portfolio-avatar-initials {
+    width: 100%; height: 100%; display: flex; align-items: center;
+    justify-content: center; font-size: 36px; color: #8B5E3C; font-weight: 700;
+}
+.portfolio-name { font-size: 22px; font-weight: 700; color: #4A3728; margin: 0 0 4px 0; }
+.portfolio-bio { color: #8B7355; font-size: 14px; margin: 0 0 12px 0; }
+.portfolio-edit a { color: #8B5E3C; font-size: 13px; text-decoration: none; }
+.portfolio-edit a:hover { text-decoration: underline; }
+
+/* Tabs */
+.portfolio-tabs {
+    display: flex; gap: 0; margin-bottom: 24px;
+    border-bottom: 2px solid #D4B896;
+}
+.portfolio-tab {
+    padding: 10px 20px; font-size: 14px; font-weight: 600; color: #8B7355;
+    background: none; border: none; cursor: pointer;
+    border-bottom: 2px solid transparent; margin-bottom: -2px;
+    transition: all 0.2s;
+}
+.portfolio-tab:hover { color: #5C3D24; }
+.portfolio-tab.active {
+    color: #5C3D24; border-bottom-color: #8B5E3C;
+}
+
+/* Category Tile Cards */
+.category-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 14px;
+}
+.category-tile-card {
+    background: #FDF8F3; border: 1px solid #D4B896; border-radius: 12px;
+    overflow: hidden; cursor: pointer; transition: box-shadow 0.3s, transform 0.2s;
+    position: relative;
+}
+.category-tile-card:hover {
+    box-shadow: 0 6px 20px rgba(93, 64, 35, 0.18);
+    transform: translateY(-2px);
+}
+.category-tile-cover {
+    width: 100%; height: 180px; object-fit: cover; display: block;
+    background: #E8D5B7;
+}
+.category-tile-cover-placeholder {
+    width: 100%; height: 180px; display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, #E8D5B7, #D4B896);
+    font-size: 40px; color: #8B5E3C;
+}
+.category-tile-body {
+    padding: 12px 14px;
+}
+.category-tile-body h3 {
+    font-size: 15px; font-weight: 700; color: #4A3728; margin: 0 0 4px 0;
+}
+.category-tile-count {
+    font-size: 12px; color: #A08B72;
+}
+.category-tile-arrow {
+    position: absolute; top: 10px; right: 10px; width: 24px; height: 24px;
+    background: rgba(255,255,255,0.85); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; color: #8B5E3C; opacity: 0; transition: opacity 0.2s;
+}
+.category-tile-card:hover .category-tile-arrow { opacity: 1; }
+
+/* Category expanded works */
+.category-works-panel {
+    display: none; padding: 12px 0 0 0;
+}
+.category-works-panel.open { display: block; }
+.category-works-panel .works-row {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 10px;
+}
+.category-works-panel .works-row .work-thumb {
+    background: #FDF8F3; border: 1px solid #D4B896; border-radius: 8px;
+    overflow: hidden;
+}
+.category-works-panel .works-row .work-thumb img {
+    width: 100%; height: 120px; object-fit: cover; display: block;
+}
+.category-works-panel .works-row .work-thumb .wt {
+    padding: 8px; font-size: 12px; color: #4A3728; font-weight: 600;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.category-works-panel .works-row .work-thumb .ws {
+    padding: 0 8px 8px; font-size: 11px; color: #A08B72; display: flex; gap: 8px;
+}
+.category-close-btn {
+    display: inline-block; margin-bottom: 8px; font-size: 12px;
+    color: #8B5E3C; cursor: pointer; background: none; border: none;
+}
+.category-close-btn:hover { text-decoration: underline; }
+
+/* Works section */
+.works-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 14px;
+}
+.work-card {
+    background: #FDF8F3; border: 1px solid #D4B896; border-radius: 12px;
+    overflow: hidden; transition: box-shadow 0.3s;
+}
+.work-card:hover { box-shadow: 0 6px 20px rgba(93, 64, 35, 0.18); }
+.work-card img { width: 100%; height: 160px; object-fit: cover; background: #E8D5B7; }
+.work-card .work-info { padding: 10px 12px; }
+.work-card .work-info h4 { margin: 0 0 6px 0; font-size: 14px; color: #4A3728; }
+.work-card .work-info h4 a { color: inherit; text-decoration: none; }
+.work-card .work-stats { display: flex; gap: 10px; font-size: 12px; color: #A08B72; }
+.work-card .work-stats span { display: flex; align-items: center; gap: 3px; }
+.work-card .work-stats img { width: 12px; height: 12px; }
+
+/* Projects section */
+.projects-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 14px;
+}
+.project-card {
+    background: #FDF8F3; border: 1px solid #D4B896; border-radius: 12px;
+    overflow: hidden; transition: box-shadow 0.3s, transform 0.2s;
+}
+.project-card:hover {
+    box-shadow: 0 6px 20px rgba(93, 64, 35, 0.18);
+    transform: translateY(-2px);
+}
+.project-card img { width: 100%; height: 180px; object-fit: cover; background: #E8D5B7; }
+.project-card .proj-info { padding: 12px; }
+.project-card .proj-info h4 { margin: 0 0 6px 0; font-size: 15px; color: #4A3728; }
+.project-card .proj-info h4 a { color: inherit; text-decoration: none; }
+.project-card .proj-desc { font-size: 12px; color: #8B7355; margin: 0 0 8px 0;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.project-card .proj-stats { display: flex; gap: 10px; font-size: 12px; color: #A08B72; }
+.project-card .proj-stats span { display: flex; align-items: center; gap: 3px; }
+.project-card .proj-stats img { width: 12px; height: 12px; }
+.project-card .proj-status-badge {
+    display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 4px;
+    margin-bottom: 6px;
+}
+.badge-draft { background: #E8D5B7; color: #8B7355; }
+.badge-moderation { background: #FFF3CD; color: #856404; }
+
+/* Project category groups */
+.project-cat-group { margin-bottom: 28px; }
+.project-cat-group h3 {
+    font-size: 16px; color: #4A3728; margin-bottom: 12px;
+    padding-bottom: 6px; border-bottom: 1px solid #D4B896;
+    display: flex; align-items: center; gap: 8px;
+}
+.project-cat-group h3 span {
+    font-size: 12px; color: #A08B72; font-weight: 400;
+}
+</style>
+{% endblock %}
 
 {% block content %}
-<style>
-    /* Портфолио стили - Sci-Fi Theme */
-    .portfolio-container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 20px;
-    }
-
-    .portfolio-header {
-        text-align: center;
-        margin-bottom: 40px;
-    }
-
-    .portfolio-header h1 {
-        font-size: 32px;
-        margin-bottom: 10px;
-        background: linear-gradient(135deg, #00f5ff, #7b2ff7);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        text-shadow: 0 0 30px rgba(0, 245, 255, 0.3);
-    }
-
-    .portfolio-header p {
-        color: #8892b0;
-        font-size: 16px;
-    }
-
-    /* Центральная инфографика */
-    .infographic-container {
-        position: relative;
-        width: 700px;
-        height: 700px;
-        margin: 0 auto 60px;
-    }
-
-    /* Монохромное Sci-Fi центральное фото */
-    .center-photo {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 220px;
-        height: 220px;
-        border-radius: 50%;
-        overflow: hidden;
-        z-index: 10;
-        background: #000;
-        border: 4px solid #fff;
-        box-shadow:
-            0 0 0 8px #000,
-            0 0 0 10px #fff,
-            0 0 30px rgba(255, 255, 255, 0.3);
-        animation: pulse-ring 4s ease-in-out infinite;
-    }
-
-    @keyframes pulse-ring {
-        0%, 100% {
-            box-shadow: 0 0 0 8px #000, 0 0 0 10px #fff, 0 0 30px rgba(255, 255, 255, 0.3);
-        }
-        50% {
-            box-shadow: 0 0 0 8px #000, 0 0 0 10px #fff, 0 0 50px rgba(255, 255, 255, 0.5);
-        }
-    }
-
-    .center-photo img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        filter: grayscale(100%) contrast(1.2);
-    }
-
-    .center-photo .placeholder {
-        width: 100%;
-        height: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 72px;
-        font-weight: 700;
-        background: #000;
-        color: #fff;
-        border: 3px solid #fff;
-    }
-
-    /* Монохромные Sci-Fi шестиугольные модули */
-    .hex-module {
-        position: absolute;
-        width: 140px;
-        height: 160px;
-        clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        text-decoration: none;
-        color: #fff;
-        background: #000;
-        border: 3px solid #fff;
-    }
-
-    .hex-module::before {
-        content: '';
-        position: absolute;
-        top: 6px;
-        left: 6px;
-        right: 6px;
-        bottom: 6px;
-        background: #000;
-        clip-path: polygon(50% 3%, 100% 28%, 100% 72%, 50% 97%, 0% 72%, 0% 28%);
-        z-index: -1;
-    }
-
-    .hex-module::after {
-        content: '';
-        position: absolute;
-        top: 12px;
-        left: 12px;
-        right: 12px;
-        bottom: 12px;
-        background: transparent;
-        clip-path: polygon(50% 6%, 100% 31%, 100% 69%, 50% 94%, 0% 69%, 0% 31%);
-        border: 2px solid #fff;
-        z-index: -1;
-    }
-
-    .hex-module:hover {
-        transform: scale(1.05);
-        background: #fff;
-        box-shadow: 0 0 40px rgba(255, 255, 255, 0.5);
-    }
-
-    .hex-module:hover .icon {
-        fill: #000;
-    }
-
-    .hex-module:hover .label {
-        color: #000;
-    }
-
-    .hex-module .icon {
-        width: 48px;
-        height: 48px;
-        margin-bottom: 10px;
-        fill: #fff;
-        z-index: 1;
-    }
-
-    .hex-module .label {
-        font-size: 13px;
-        font-weight: 700;
-        text-align: center;
-        color: #fff;
-        letter-spacing: 1px;
-        text-transform: uppercase;
-        z-index: 1;
-    }
-
-    /* Позиции шестиугольников - плотно к центру */
-    .hex-1 { top: 8%; left: 50%; transform: translateX(-50%); }
-    .hex-2 { top: 22%; right: 8%; }
-    .hex-3 { bottom: 22%; right: 8%; }
-    .hex-4 { bottom: 8%; left: 50%; transform: translateX(-50%); }
-    .hex-5 { bottom: 22%; left: 8%; }
-    .hex-6 { top: 22%; left: 8%; }
-
-    /* Sci-Fi соединительные линии */
-    .connector {
-        position: absolute;
-        background: linear-gradient(90deg, rgba(0, 245, 255, 0.4), rgba(123, 47, 247, 0.4));
-        height: 2px;
-        transform-origin: left center;
-        z-index: 1;
-        box-shadow: 0 0 10px rgba(0, 245, 255, 0.5);
-    }
-
-    /* Sci-Fi модальное окно */
-    .modal-overlay {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(10, 25, 47, 0.9);
-        z-index: 1000;
-        align-items: center;
-        justify-content: center;
-        backdrop-filter: blur(5px);
-    }
-
-    .modal-overlay.active {
-        display: flex;
-    }
-
-    .modal-content {
-        background: linear-gradient(135deg, #0a192f, #112240);
-        border: 2px solid #00f5ff;
-        border-radius: 16px;
-        padding: 30px;
-        max-width: 500px;
-        width: 90%;
-        max-height: 80vh;
-        overflow-y: auto;
-        position: relative;
-        box-shadow:
-            0 0 30px rgba(0, 245, 255, 0.3),
-            inset 0 0 30px rgba(0, 245, 255, 0.1);
-        animation: modalSlideIn 0.3s ease;
-    }
-
-    @keyframes modalSlideIn {
-        from {
-            opacity: 0;
-            transform: translateY(-30px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    .modal-close {
-        position: absolute;
-        top: 15px;
-        right: 15px;
-        width: 32px;
-        height: 32px;
-        border: 1px solid #00f5ff;
-        background: transparent;
-        border-radius: 50%;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: all 0.2s;
-    }
-
-    .modal-close:hover {
-        background: rgba(0, 245, 255, 0.2);
-        box-shadow: 0 0 15px rgba(0, 245, 255, 0.5);
-    }
-
-    .modal-close svg {
-        stroke: #00f5ff;
-    }
-
-    .modal-header {
-        display: flex;
-        align-items: center;
-        gap: 15px;
-        margin-bottom: 20px;
-    }
-
-    .modal-icon {
-        width: 48px;
-        height: 48px;
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border: 2px solid #fff;
-        background: #000;
-    }
-
-    .modal-icon svg {
-        width: 28px;
-        height: 28px;
-        fill: #fff;
-    }
-
-    .modal-title {
-        font-size: 22px;
-        font-weight: 700;
-        color: #fff;
-    }
-
-    .modal-body {
-        color: #ccc;
-        line-height: 1.6;
-    }
-
-    .modal-body h4 {
-        color: #fff;
-        margin: 15px 0 8px;
-        font-size: 16px;
-    }
-
-    .modal-body ul {
-        margin-left: 20px;
-        color: #ccc;
-    }
-
-    .modal-body li {
-        margin-bottom: 5px;
-    }
-
-    /* Секция работ - Монохром */
-    .portfolio-works {
-        margin-top: 40px;
-    }
-
-    .portfolio-works h2 {
-        font-size: 24px;
-        margin-bottom: 20px;
-        color: #fff;
-    }
-
-    .works-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-        gap: 20px;
-    }
-
-    .work-card {
-        background: #000;
-        border: 2px solid #fff;
-        border-radius: 12px;
-        overflow: hidden;
-        transition: all 0.3s ease;
-    }
-
-    .work-card:hover {
-        background: #fff;
-        box-shadow: 0 0 30px rgba(255, 255, 255, 0.4);
-        transform: translateY(-3px);
-    }
-
-    .work-card:hover img {
-        filter: grayscale(100%);
-    }
-
-    .work-card img {
-        width: 100%;
-        height: 180px;
-        object-fit: cover;
-        filter: grayscale(80%);
-        transition: filter 0.3s ease;
-    }
-
-    .work-card-body {
-        padding: 15px;
-    }
-
-    .work-card-title {
-        font-size: 16px;
-        margin-bottom: 10px;
-        color: #fff;
-    }
-
-    .work-card:hover .work-card-title {
-        color: #000;
-    }
-
-    .work-stats {
-        display: flex;
-        gap: 15px;
-        color: #888;
-        font-size: 13px;
-    }
-
-    .work-card:hover .work-stats {
-        color: #333;
-    }
-
-    .work-stats span {
-        display: flex;
-        align-items: center;
-        gap: 4px;
-    }
-
-    .work-stats img {
-        filter: brightness(0) invert(1);
-    }
-
-    .work-card:hover .work-stats img {
-        filter: brightness(0);
-    }
-
-    /* Адаптивность */
-    @media (max-width: 768px) {
-        .infographic-container {
-            width: 400px;
-            height: 400px;
-        }
-
-        .center-photo {
-            width: 140px;
-            height: 140px;
-        }
-
-        .center-photo .placeholder {
-            font-size: 48px;
-        }
-
-        .hex-module {
-            width: 90px;
-            height: 105px;
-        }
-
-        .hex-module .icon {
-            width: 32px;
-            height: 32px;
-        }
-
-        .hex-module .label {
-            font-size: 10px;
-        }
-
-        .hex-1 { top: 5%; }
-        .hex-2 { top: 20%; right: 2%; }
-        .hex-3 { bottom: 20%; right: 2%; }
-        .hex-4 { bottom: 5%; }
-        .hex-5 { bottom: 20%; left: 2%; }
-        .hex-6 { top: 20%; left: 2%; }
-    }
-</style>
-
-<div class="portfolio-container">
-    <!-- Заголовок -->
+<div class="portfolio-page">
     <div class="portfolio-header">
-        <h1>Портфолио {{ profile.display_name|default:portfolio_user.username }}</h1>
-        <p>{{ profile.bio|default:"Фрилансер на STL" }}</p>
-        {% if is_owner %}
-            <p style="margin-top: 10px;">
-                <a href="{% url 'accounts:edit' %}" style="color: #667eea; text-decoration: none;">
-                    Редактировать профиль →
-                </a>
-            </p>
-        {% endif %}
-    </div>
-
-    <!-- Инфографика -->
-    <div class="infographic-container">
-        <!-- Центральное фото -->
-        <div class="center-photo">
+        <div class="portfolio-avatar">
             {% if portfolio_user.avatar %}
                 <img src="{{ portfolio_user.avatar.url }}" alt="{{ portfolio_user.username }}">
             {% else %}
-                <div class="placeholder">{{ portfolio_user.username|first|upper }}</div>
+                <div class="portfolio-avatar-initials">{{ portfolio_user.username|first|upper }}</div>
             {% endif %}
         </div>
-
-        <!-- Монохромные соединительные линии -->
-        <svg style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1;">
-            <line x1="50%" y1="50%" x2="50%" y2="22%" stroke="#fff" stroke-width="3" opacity="0.6"/>
-            <line x1="50%" y1="50%" x2="78%" y2="35%" stroke="#fff" stroke-width="3" opacity="0.6"/>
-            <line x1="50%" y1="50%" x2="78%" y2="65%" stroke="#fff" stroke-width="3" opacity="0.6"/>
-            <line x1="50%" y1="50%" x2="50%" y2="78%" stroke="#fff" stroke-width="3" opacity="0.6"/>
-            <line x1="50%" y1="50%" x2="22%" y2="65%" stroke="#fff" stroke-width="3" opacity="0.6"/>
-            <line x1="50%" y1="50%" x2="22%" y2="35%" stroke="#fff" stroke-width="3" opacity="0.6"/>
-        </svg>
-
-        <!-- Монохромные шестиугольные модули -->
-        <div class="hex-module hex-1" data-direction="design">
-            <svg class="icon" viewBox="0 0 24 24">
-                <path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9c.83 0 1.5-.67 1.5-1.5 0-.39-.15-.74-.39-1.01-.23-.26-.38-.61-.38-.99 0-.83.67-1.5 1.5-1.5H16c2.76 0 5-2.24 5-5 0-4.42-4.03-8-9-8zm-5.5 9c-.83 0-1.5-.67-1.5-1.5S5.67 9 6.5 9 8 9.67 8 10.5 7.33 12 6.5 12zm3-4C8.67 8 8 7.33 8 6.5S8.67 5 9.5 5s1.5.67 1.5 1.5S10.33 8 9.5 8zm5 0c-.83 0-1.5-.67-1.5-1.5S13.67 5 14.5 5s1.5.67 1.5 1.5S15.33 8 14.5 8zm3 4c-.83 0-1.5-.67-1.5-1.5S16.67 9 17.5 9s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/>
-            </svg>
-            <span class="label">{{ directions.0.name }}</span>
+        <p class="portfolio-name">{{ profile.display_name|default:portfolio_user.username }}</p>
+        <p class="portfolio-bio">{{ profile.bio|default:"СТЛ.Работы" }}</p>
+        {% if is_owner %}
+        <div class="portfolio-edit">
+            <a href="{% url 'accounts:edit' %}">Редактировать профиль →</a>
         </div>
-
-        <div class="hex-module hex-2" data-direction="programming">
-            <svg class="icon" viewBox="0 0 24 24">
-                <path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/>
-            </svg>
-            <span class="label">{{ directions.1.name }}</span>
-        </div>
-
-        <div class="hex-module hex-3" data-direction="marketing">
-            <svg class="icon" viewBox="0 0 24 24">
-                <path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/>
-            </svg>
-            <span class="label">{{ directions.2.name }}</span>
-        </div>
-
-        <div class="hex-module hex-4" data-direction="content">
-            <svg class="icon" viewBox="0 0 24 24">
-                <path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 4h5v8l-2.5-1.5L6 12V4z"/>
-            </svg>
-            <span class="label">{{ directions.3.name }}</span>
-        </div>
-
-        <div class="hex-module hex-5" data-direction="management">
-            <svg class="icon" viewBox="0 0 24 24">
-                <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11z"/>
-            </svg>
-            <span class="label">{{ directions.4.name }}</span>
-        </div>
-
-        <div class="hex-module hex-6" data-direction="legal">
-            <svg class="icon" viewBox="0 0 24 24">
-                <path d="M12 3L9.5 9.5 3 12l6.5 2.5L12 21l2.5-6.5L21 12l-6.5-2.5L12 3z"/>
-            </svg>
-            <span class="label">{{ directions.5.name }}</span>
-        </div>
+        {% endif %}
     </div>
 
-    <!-- Работы -->
-    {% if works %}
-    <div class="portfolio-works">
-        <h2>Последние работы</h2>
-        <div class="works-grid">
-            {% for work in works %}
-            <div class="work-card">
-                {% if work.cover %}
-                    <a href="{% url 'core:work_detail' work.author.username work.slug %}">
-                        <img src="{{ work.cover.url }}" alt="{{ work.title }}">
-                    </a>
+    {# Tab Bar #}
+    <div class="portfolio-tabs">
+        <button class="portfolio-tab active" onclick="switchPortfolioTab('works', this)">Работы</button>
+        <button class="portfolio-tab" onclick="switchPortfolioTab('projects', this)">Проекты</button>
+    </div>
+
+    {# ═══ Tab: Works (Category Tiles) ═══ #}
+    <div id="tab-works">
+        {% if category_cards %}
+        <div class="category-grid">
+            {% for card in category_cards %}
+            <div class="category-tile-card" onclick="toggleCategory(this, '{{ card.category.slug }}')">
+                {% if card.top_work.cover %}
+                    <img class="category-tile-cover" src="{{ card.top_work.cover.url }}" alt="{{ card.category.name }}">
+                {% else %}
+                    <div class="category-tile-cover-placeholder">📁</div>
                 {% endif %}
-                <div class="work-card-body">
-                    <h3 class="work-card-title">
-                        <a href="{% url 'core:work_detail' work.author.username work.slug %}" style="color: inherit; text-decoration: none;">
-                            {{ work.title }}
-                        </a>
-                    </h3>
-                    <div class="work-stats">
-                        <span style="display: flex; align-items: center; gap: 4px;">
-                            <img src="/static/icons/{{ icon_set }}/heart.svg" alt="" style="width: 14px; height: 14px;">
-                            {{ work.likes_count }}
-                        </span>
-                        <span style="display: flex; align-items: center; gap: 4px;">
-                            <img src="/static/icons/{{ icon_set }}/eye.svg" alt="" style="width: 14px; height: 14px;">
-                            {{ work.views_count }}
-                        </span>
+                <div class="category-tile-arrow">→</div>
+                <div class="category-tile-body">
+                    <h3>{{ card.category.name }}</h3>
+                    <span class="category-tile-count">{{ card.count }} работ</span>
+                </div>
+                {# Hidden works panel #}
+                <div class="category-works-panel" id="panel-{{ card.category.slug }}">
+                    <button class="category-close-btn" onclick="event.stopPropagation(); toggleCategory(this.closest('.category-tile-card'), '{{ card.category.slug }}')">← Назад к категориям</button>
+                    <div class="works-row">
+                        {% for work in card.top_work.author.works.all|dictsortreversed:"created_at" %}
+                            {% if work.category == card.category and work.status == 'published' %}
+                            <a href="{% url 'core:work_detail' work.author.username work.slug %}" class="work-thumb" style="text-decoration:none;">
+                                {% if work.cover %}
+                                    <img src="{{ work.cover.url }}" alt="{{ work.title }}">
+                                {% endif %}
+                                <div class="wt">{{ work.title }}</div>
+                                <div class="ws">
+                                    <span>♡ {{ work.likes_count }}</span>
+                                    <span>👁 {{ work.views_count }}</span>
+                                </div>
+                            </a>
+                            {% endif %}
+                        {% endfor %}
                     </div>
                 </div>
             </div>
             {% endfor %}
         </div>
-    </div>
-    {% endif %}
-</div>
-
-<!-- Модальное окно -->
-<div class="modal-overlay" id="directionModal">
-    <div class="modal-content">
-        <button class="modal-close" onclick="closeModal()">
-            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M18 6L6 18M6 6l12 12"/>
-            </svg>
-        </button>
-        <div class="modal-header">
-            <div class="modal-icon" id="modalIcon"></div>
-            <h3 class="modal-title" id="modalTitle"></h3>
+        {% else %}
+        <div style="text-align:center; padding:40px; color:#A08B72;">
+            Работ пока нет
         </div>
-        <div class="modal-body" id="modalBody"></div>
+        {% endif %}
+    </div>
+
+    {# ═══ Tab: Projects (Все проекты сайта по категориям) ═══ #}
+    <div id="tab-projects" style="display:none;">
+        <div style="margin-bottom:18px; display:flex; justify-content:space-between; align-items:center;">
+            <h3 style="margin:0; color:#4A3728; font-size:18px;">Проекты</h3>
+            {% if is_owner %}
+            <a href="{% url 'core:project_create' %}" style="background:#8B5E3C; color:#fff; padding:8px 16px; border-radius:8px; text-decoration:none; font-size:13px; font-weight:600;">+ Создать проект</a>
+            {% endif %}
+        </div>
+        {% if project_cat_cards %}
+            {% for pc in project_cat_cards %}
+            <div class="project-cat-group">
+                <h3>{{ pc.category.name }} <span>({{ pc.count }})</span></h3>
+                <div class="projects-grid">
+                    {% for proj in pc.projects %}
+                    <div class="project-card">
+                        {% if proj.cover %}
+                            <a href="{% url 'core:project_detail' proj.author.username proj.slug %}">
+                                <img src="{{ proj.cover.url }}" alt="{{ proj.title }}">
+                            </a>
+                        {% endif %}
+                        <div class="proj-info">
+                            <small style="color:#A08B72;font-size:11px;">{{ proj.author.username }}</small>
+                            <h4><a href="{% url 'core:project_detail' proj.author.username proj.slug %}">{{ proj.title }}</a></h4>
+                            <p class="proj-desc">{{ proj.description|truncatewords:20 }}</p>
+                            <div class="proj-stats">
+                                <span><img src="/static/icons/{{ icon_set }}/heart.svg" alt=""> {{ proj.likes_count }}</span>
+                                <span><img src="/static/icons/{{ icon_set }}/eye.svg" alt=""> {{ proj.views_count }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div style="text-align:center; padding:40px; color:#A08B72;">
+                Проектов пока нет
+            </div>
+        {% endif %}
     </div>
 </div>
 
 <script>
-    const directionData = {
-        'design': {
-            title: 'Дизайн',
-            color: '#e60023',
-            sciFiColor: '#00f5ff',
-            icon: '<path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9c.83 0 1.5-.67 1.5-1.5 0-.39-.15-.74-.39-1.01-.23-.26-.38-.61-.38-.99 0-.83.67-1.5 1.5-1.5H16c2.76 0 5-2.24 5-5 0-4.42-4.03-8-9-8z"/>',
-            description: 'Создание визуальных концепций, графический дизайн, веб-дизайн, UI/UX.',
-            skills: ['Figma', 'Adobe Photoshop', 'Adobe Illustrator', 'Веб-дизайн', 'Брендинг'],
-            works: 'Примеры работ в области дизайна'
-        },
-        'programming': {
-            title: 'Программирование',
-            color: '#667eea',
-            sciFiColor: '#7b2ff7',
-            icon: '<path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/>',
-            description: 'Разработка веб-сайтов, приложений, скриптов и автоматизация.',
-            skills: ['Python', 'Django', 'JavaScript', 'React', 'Node.js'],
-            works: 'Примеры кода и проектов'
-        },
-        'marketing': {
-            title: 'Маркетинг',
-            color: '#f093fb',
-            sciFiColor: '#00f5ff',
-            icon: '<path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/>',
-            description: 'Продвижение брендов, контекстная реклама, SMM, аналитика.',
-            skills: ['Google Ads', 'Facebook Ads', 'SEO', 'SMM', 'Аналитика'],
-            works: 'Кейсы по продвижению'
-        },
-        'content': {
-            title: 'Контент',
-            color: '#4facfe',
-            sciFiColor: '#7b2ff7',
-            icon: '<path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 4h5v8l-2.5-1.5L6 12V4z"/>',
-            description: 'Написание текстов, создание видео, подкасты, копирайтинг.',
-            skills: ['Копирайтинг', 'Видеомонтаж', 'Подкасты', 'Редактура', 'SEO-тексты'],
-            works: 'Примеры контента'
-        },
-        'management': {
-            title: 'Управление проектами',
-            color: '#43e97b',
-            sciFiColor: '#00f5ff',
-            icon: '<path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11z"/>',
-            description: 'Координация команд, планирование, контроль сроков и бюджета.',
-            skills: ['Agile', 'Scrum', 'Jira', 'Trello', 'Планирование'],
-            works: 'Успешные проекты'
-        },
-        'legal': {
-            title: 'Юридические услуги',
-            color: '#fa709a',
-            sciFiColor: '#7b2ff7',
-            icon: '<path d="M12 3L9.5 9.5 3 12l6.5 2.5L12 21l2.5-6.5L21 12l-6.5-2.5L12 3z"/>',
-            description: 'Консультации, договоры, защита интеллектуальной собственности.',
-            skills: ['Договорное право', 'ИС', 'Консультации', 'Претензии', 'Суды'],
-            works: 'Правовые кейсы'
-        }
-    };
+function switchPortfolioTab(tab, btn) {
+    document.getElementById('tab-works').style.display = tab === 'works' ? 'block' : 'none';
+    document.getElementById('tab-projects').style.display = tab === 'projects' ? 'block' : 'none';
+    document.querySelectorAll('.portfolio-tab').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+}
 
-    function openModal(direction) {
-        const data = directionData[direction];
-        if (!data) return;
-
-        document.getElementById('modalTitle').textContent = data.title;
-        document.getElementById('modalIcon').innerHTML = '<svg viewBox="0 0 24 24" style="width:28px;height:28px;fill:' + data.sciFiColor + ';filter:drop-shadow(0 0 8px ' + data.sciFiColor + ');"><path d="' + data.icon + '"/></svg>';
-        document.getElementById('modalIcon').style.background = 'linear-gradient(135deg, ' + data.color + ', ' + data.sciFiColor + ')';
-
-        document.getElementById('modalBody').innerHTML = `
-            <p>${data.description}</p>
-            <h4>Навыки:</h4>
-            <ul>
-                ${data.skills.map(skill => '<li>' + skill + '</li>').join('')}
-            </ul>
-            <h4>Работы:</h4>
-            <p>${data.works}</p>
-        `;
-
-        document.getElementById('directionModal').classList.add('active');
+function toggleCategory(tile, slug) {
+    const panel = document.getElementById('panel-' + slug);
+    if (!panel) return;
+    const isOpen = panel.classList.contains('open');
+    // Close all panels first
+    document.querySelectorAll('.category-works-panel').forEach(p => p.classList.remove('open'));
+    if (!isOpen) {
+        panel.classList.add('open');
     }
-
-    function closeModal() {
-        document.getElementById('directionModal').classList.remove('active');
-    }
-
-    // Закрытие по клику вне модального окна
-    document.getElementById('directionModal').addEventListener('click', function(e) {
-        if (e.target === this) {
-            closeModal();
-        }
-    });
-
-    // Закрытие по Escape
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') {
-            closeModal();
-        }
-    });
-
-    // Навешиваем обработчики на модули
-    document.querySelectorAll('.hex-module').forEach(function(module) {
-        module.addEventListener('click', function() {
-            const direction = this.getAttribute('data-direction');
-            openModal(direction);
-        });
-    });
+}
 </script>
 {% endblock %}

@@ -18,7 +18,11 @@ urlpatterns = [
     path('profile/<str:username>/', views.profile_view, name='profile'),
     path('edit/', views.edit_profile, name='edit'),
     path('favorite-categories/', views.favorite_categories, name='favorite_categories'),
+    path('users/', views.users_list, name='users_list'),
     path('favorite-categories/<int:category_id>/toggle/', views.toggle_favorite_category, name='toggle_favorite_category'),
+
+    # Проекты пользователя
+    path('profile/<str:username>/projects/', views.user_projects, name='user_projects'),
 
     # Предупреждения и баны
     path('warning/<int:user_id>/give/', views.give_warning, name='warning_give'),

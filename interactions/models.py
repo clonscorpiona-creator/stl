@@ -108,8 +108,12 @@ class Repost(models.Model):
             self._update_counts()
 
     def delete(self, *args, **kwargs):
+        # Сохраняем ссылку на работу перед удалением
+        work = self.work
         super().delete(*args, **kwargs)
-        self._update_counts()
+        # Обновляем счётчик после удаления
+        work.reposts_count = Repost.objects.filter(work=work).count()
+        work.save(update_fields=['reposts_count'])
 
     def _update_counts(self):
         self.work.reposts_count = Repost.objects.filter(work=self.work).count()
@@ -142,8 +146,12 @@ class SavedWork(models.Model):
             self._update_counts()
 
     def delete(self, *args, **kwargs):
+        # Сохраняем ссылку на работу перед удалением
+        work = self.work
         super().delete(*args, **kwargs)
-        self._update_counts()
+        # Обновляем счётчик после удаления
+        work.saves_count = SavedWork.objects.filter(work=work).count()
+        work.save(update_fields=['saves_count'])
 
     def _update_counts(self):
         self.work.saves_count = SavedWork.objects.filter(work=self.work).count()

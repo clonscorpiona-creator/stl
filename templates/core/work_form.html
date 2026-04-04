@@ -41,10 +41,17 @@
         background: #000;
     }
 
+    .audio-preview {
+        width: 120px;
+        height: 40px;
+        display: none;
+    }
+
+    /* Кнопка удаления - использует btn-icon btn-danger */
     .remove-btn {
         width: 32px;
         height: 32px;
-        border-radius: 6px;
+        border-radius: 8px;
         border: none;
         background: #dc3545;
         color: white;
@@ -53,32 +60,39 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        transition: background 0.2s;
+        transition: all 0.2s;
+        box-shadow: 0 2px 6px rgba(220, 53, 69, 0.3);
     }
 
     .remove-btn:hover {
         background: #c82333;
+        transform: scale(1.05);
+        box-shadow: 0 3px 10px rgba(220, 53, 69, 0.4);
     }
 
+    /* Кнопка добавления - использует btn-outline стиль */
     .add-btn {
         display: inline-flex;
         align-items: center;
-        gap: 6px;
-        padding: 8px 16px;
+        gap: 8px;
+        padding: 10px 16px;
         background: white;
         border: 2px dashed var(--primary);
-        border-radius: 8px;
+        border-radius: 10px;
         color: var(--primary);
         cursor: pointer;
         font-size: 14px;
         font-weight: 600;
-        transition: all 0.2s;
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         margin-top: 10px;
     }
 
     .add-btn:hover {
-        background: var(--primary);
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
         color: white;
+        border-style: solid;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(90, 63, 138, 0.25);
     }
 
     .watermark-option {
@@ -187,7 +201,8 @@
 <div style="max-width: 800px; margin: 0 auto;">
     <h1 style="margin-bottom: 30px;">{% if editing %}Редактировать работу{% else %}Новая работа{% endif %}</h1>
 
-    <form method="post" enctype="multipart/form-data" style="background: white; padding: 30px; border-radius: 12px;" id="workForm">
+    <form method="post" enctype="multipart/form-data" style="background: white; padding: 30px; border-radius: 12px;" id="workForm"
+        action="{% if editing and work %}{% url 'core:work_edit' work.author.username work.slug %}{% else %}{% url 'core:work_create' %}{% endif %}">
         {% csrf_token %}
 
         <div style="margin-bottom: 20px;">
@@ -220,11 +235,47 @@
         </div>
 
         <div style="margin-bottom: 20px;">
-            <label style="display: block; margin-bottom: 8px; font-weight: 600;">Изображения *</label>
-            <small style="color: #666; display: block; margin-bottom: 10px;">Загрузите изображения. Первое изображение будет обложкой, либо выберите другое изображение ниже.</small>
+            <label style="display: block; margin-bottom: 8px; font-weight: 600;">Изображения {% if not editing %}*{% endif %}</label>
+            <small style="color: #666; display: block; margin-bottom: 10px;">
+                {% if editing %}
+                    Текущие изображения показаны ниже. Загрузите новые, чтобы добавить или заменить.
+                {% else %}
+                    Загрузите изображения. Первое изображение будет обложкой, либо выберите другое изображение ниже.
+                {% endif %}
+            </small>
+
+            <!-- Существующие изображения при редактировании -->
+            {% if editing and work %}
+                {% if work.cover %}
+                    <div style="margin-bottom: 15px;">
+                        <strong>Текущая обложка:</strong>
+                        <div style="display: inline-block; position: relative; margin-top: 10px;">
+                            <img src="{{ work.cover.url }}" alt="Cover" style="width: 150px; height: 150px; object-fit: cover; border-radius: 8px;">
+                            <div style="position: absolute; top: 5px; left: 5px; background: rgba(0,0,0,0.7); color: white; padding: 2px 8px; border-radius: 4px; font-size: 12px;">Обложка</div>
+                        </div>
+                    </div>
+                {% endif %}
+                {% if work.images.all %}
+                    <div style="margin-bottom: 15px;">
+                        <strong>Другие изображения:</strong>
+                        <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px;">
+                            {% for work_image in work.images.all %}
+                                <div style="position: relative;">
+                                    <img src="{{ work_image.image.url }}" alt="Image" style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px;">
+                                    <label style="position: absolute; top: -5px; right: -5px; background: white; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">
+                                        <input type="checkbox" name="delete_images" value="{{ work_image.id }}" style="width: 16px; height: 16px;">
+                                    </label>
+                                    <div style="position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.7); color: white; font-size: 10px; padding: 2px; text-align: center; border-radius: 0 0 6px 6px;">Удалить</div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+            {% endif %}
+
             <div id="images-container">
                 <div class="upload-container" data-type="image">
-                    <input type="file" name="image_0" accept="image/*" class="upload-input image-input" data-index="0" required>
+                    <input type="file" name="image_0" accept="image/*" class="upload-input image-input" data-index="0" {% if not editing %}required{% endif %}>
                     <img class="upload-preview image-preview">
                     <button type="button" class="remove-btn" onclick="removeUpload(this, 'image')">×</button>
                 </div>
@@ -242,6 +293,27 @@
 
         <div style="margin-bottom: 20px;">
             <label style="display: block; margin-bottom: 8px; font-weight: 600;">Видео</label>
+
+            <!-- Существующие видео при редактировании -->
+            {% if editing and work %}
+                {% if work.videos.all %}
+                    <div style="margin-bottom: 15px;">
+                        <strong>Текущие видео:</strong>
+                        <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px;">
+                            {% for work_video in work.videos.all %}
+                                <div style="position: relative;">
+                                    <video src="{{ work_video.video.url }}" controls style="width: 160px; height: 120px; border-radius: 8px; background: #000;"></video>
+                                    <label style="position: absolute; top: 5px; right: 5px; background: white; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">
+                                        <input type="checkbox" name="delete_videos" value="{{ work_video.id }}" style="width: 18px; height: 18px;">
+                                    </label>
+                                    <div style="position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.7); color: white; font-size: 10px; padding: 2px; text-align: center; border-radius: 0 0 6px 6px;">Удалить</div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+            {% endif %}
+
             <div id="videos-container">
                 <div class="upload-container" data-type="video">
                     <input type="file" name="video_0" accept="video/*" class="upload-input video-input" data-index="0">
@@ -256,6 +328,42 @@
         </div>
 
         <div style="margin-bottom: 20px;">
+            <label style="display: block; margin-bottom: 8px; font-weight: 600;">Аудио</label>
+
+            <!-- Существующие аудио при редактировании -->
+            {% if editing and work %}
+                {% if work.audio_files.all %}
+                    <div style="margin-bottom: 15px;">
+                        <strong>Текущие аудио:</strong>
+                        <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 10px;">
+                            {% for work_audio in work.audio_files.all %}
+                                <div style="display: flex; align-items: center; gap: 10px; background: #f0f0f0; border-radius: 8px; padding: 8px 12px;">
+                                    <audio src="{{ work_audio.audio.url }}" controls style="flex: 1; height: 36px;"></audio>
+                                    <span style="font-size: 12px; color: #666; white-space: nowrap;">{{ work_audio.audio.name|cut:"works/audio/"|truncatechars:30 }}</span>
+                                    <label style="display: flex; align-items: center; gap: 4px; cursor: pointer; font-size: 13px;">
+                                        <input type="checkbox" name="delete_audios" value="{{ work_audio.id }}" style="width: 16px; height: 16px;"> Удалить
+                                    </label>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+            {% endif %}
+
+            <div id="audios-container">
+                <div class="upload-container" data-type="audio">
+                    <input type="file" name="audio_0" accept="audio/*" class="upload-input audio-input" data-index="0">
+                    <audio class="audio-preview" controls style="width: 120px; display: none;"></audio>
+                    <button type="button" class="remove-btn" onclick="removeUpload(this, 'audio')">×</button>
+                </div>
+            </div>
+            <button type="button" class="add-btn" onclick="addAudioUpload()">
+                <span>🎵</span> Добавить аудио
+            </button>
+            <small style="color: #666; display: block; margin-top: 8px;">Поддерживаемые форматы: MP3, WAV, OGG, FLAC</small>
+        </div>
+
+        <div style="margin-bottom: 20px;">
             <div class="watermark-option">
                 <input type="checkbox" name="apply_watermark" id="watermark-checkbox" checked>
                 <label for="watermark-checkbox">
@@ -265,17 +373,27 @@
             </div>
         </div>
 
-        <div style="display: flex; gap: 15px;">
-            <button type="submit" class="btn btn-primary">{% if editing %}Сохранить{% else %}Опубликовать{% endif %}</button>
-            {% if work %}
-                {% if work.author and work.slug %}
-                    <a href="{% url 'core:work_detail' work.author.username work.slug %}" class="btn btn-secondary">Отмена</a>
-                {% else %}
-                    <a href="{% url 'core:feed' %}" class="btn btn-secondary">Отмена</a>
-                {% endif %}
+        <!-- Скрытое поле для статуса -->
+        <input type="hidden" name="status" id="status-field" value="{% if editing and work %}{{ work.status }}{% else %}published{% endif %}">
+
+        <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
+            {% if not editing %}
+                <button type="button" class="btn btn-secondary" onclick="submitWork('draft')">
+                    <span>💾</span> В черновики
+                </button>
+                <button type="button" class="btn btn-primary" onclick="submitWork('published')">
+                    <span>✨</span> Разместить в портфолио
+                </button>
             {% else %}
-                <a href="{% url 'core:feed' %}" class="btn btn-secondary">Отмена</a>
+                <button type="button" class="btn btn-secondary" onclick="submitWork('draft')">
+                    <span>💾</span> В черновики
+                </button>
+                <button type="button" class="btn btn-primary" onclick="submitWork('published')">
+                    <span>✨</span> Опубликовать
+                </button>
+                <button type="submit" class="btn btn-ghost">Сохранить</button>
             {% endif %}
+            <button type="button" class="btn btn-ghost" onclick="cancelForm()">Отмена</button>
         </div>
     </form>
 </div>
@@ -285,6 +403,7 @@
 <script>
     let imageCounter = 1;
     let videoCounter = 1;
+    let audioCounter = 1;
     let selectedCoverIndex = 0;
 
     // Предпросмотр изображений
@@ -320,9 +439,25 @@
         });
     }
 
+    // Предпросмотр аудио
+    function setupAudioPreview(input) {
+        input.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            const container = input.closest('.upload-container');
+            const preview = container.querySelector('.audio-preview');
+
+            if (file) {
+                const url = URL.createObjectURL(file);
+                preview.src = url;
+                preview.style.display = 'block';
+            }
+        });
+    }
+
     // Инициализация предпросмотра для существующих полей
     document.querySelectorAll('.image-input').forEach(setupImagePreview);
     document.querySelectorAll('.video-input').forEach(setupVideoPreview);
+    document.querySelectorAll('.audio-input').forEach(setupAudioPreview);
 
     // Обновление селектора обложек
     function updateCoverSelector() {
@@ -397,6 +532,24 @@
         setupVideoPreview(div.querySelector('.video-input'));
     }
 
+    // Добавление аудио
+    function addAudioUpload() {
+        const container = document.getElementById('audios-container');
+        const newIndex = audioCounter++;
+
+        const div = document.createElement('div');
+        div.className = 'upload-container';
+        div.dataset.type = 'audio';
+        div.innerHTML = `
+            <input type="file" name="audio_${newIndex}" accept="audio/*" class="upload-input audio-input" data-index="${newIndex}">
+            <audio class="audio-preview" controls></audio>
+            <button type="button" class="remove-btn" onclick="removeUpload(this, 'audio')">×</button>
+        `;
+
+        container.appendChild(div);
+        setupAudioPreview(div.querySelector('.audio-input'));
+    }
+
     // Удаление поля загрузки
     function removeUpload(btn, type) {
         const container = btn.closest('.upload-container');
@@ -424,6 +577,55 @@
         }
     }
 
+    // Очистка всех полей загрузки
+    function clearAllUploads(type) {
+        const inputs = document.querySelectorAll(`.${type}-input`);
+        inputs.forEach(input => {
+            input.value = '';
+            const container = input.closest('.upload-container');
+            const preview = container.querySelector('.upload-preview, .video-preview');
+            if (preview) {
+                preview.src = '';
+                preview.style.display = 'none';
+            }
+        });
+        if (type === 'image') {
+            updateCoverSelector();
+        }
+    }
+
+    // Отмена формы
+    function cancelForm() {
+        window.history.back();
+    }
+
+    // Отправка формы с указанным статусом
+    function submitWork(status) {
+        const statusField = document.getElementById('status-field');
+        statusField.value = status;
+
+        // Обновляем текст кнопки для визуальной обратной связи
+        const submitBtn = event.target.closest('button');
+        const originalText = submitBtn.innerHTML;
+        submitBtn.innerHTML = '<span>⏳</span> Сохранение...';
+        submitBtn.disabled = true;
+
+        // При создании - AJAX отправка, при редактировании - стандартная отправка формы
+        if (!isEditing) {
+            // Запускаем валидацию и отправку формы
+            document.getElementById('workForm').dispatchEvent(new Event('submit'));
+
+            // Возвращаем текст кнопки через некоторое время в случае ошибки
+            setTimeout(() => {
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }, 3000);
+        } else {
+            // При редактировании просто отправляем форму стандартно
+            document.getElementById('workForm').submit();
+        }
+    }
+
     // Переиндексация полей после удаления
     function reindexUploads(parent, type) {
         const inputs = parent.querySelectorAll(`.${type}-input`);
@@ -439,85 +641,100 @@
         }
     }
 
+    // Проверка режима (создание или редактирование)
+    const isEditing = {{ editing|yesno:"true,false" }};
+
     // Валидация формы перед отправкой
     document.getElementById('workForm').addEventListener('submit', function(e) {
-        // Проверяем, есть ли хотя бы одно изображение с файлом
-        const imageInputs = document.querySelectorAll('.image-input');
-        const hasImages = Array.from(imageInputs).some(input => input.files && input.files[0]);
+        // При создании проверяем наличие изображений
+        if (!isEditing) {
+            const imageInputs = document.querySelectorAll('.image-input');
+            const hasImages = Array.from(imageInputs).some(input => input.files && input.files[0]);
 
-        if (!hasImages) {
-            e.preventDefault();
-            alert('Пожалуйста, загрузите хотя бы одно изображение');
-            return false;
-        }
+            if (!hasImages) {
+                e.preventDefault();
+                alert('Пожалуйста, загрузите хотя бы одно изображение');
+                return false;
+            }
 
-        // Собираем все изображения и видео в правильном формате
-        const formData = new FormData();
+            // Собираем все изображения и видео в правильном формате для AJAX
+            const formData = new FormData();
 
-        // Копируем все текстовые поля из формы
-        const form = this;
-        const textInputs = form.querySelectorAll('input:not([type=file]):not([type=submit]), textarea, select');
-        textInputs.forEach(input => {
-            if (input.type === 'checkbox') {
-                if (input.checked) {
-                    formData.append(input.name, input.value);
-                    console.log('Added checkbox:', input.name, '=', input.value);
+            // Копируем все текстовые поля из формы
+            const form = this;
+            const textInputs = form.querySelectorAll('input:not([type=file]):not([type=submit]), textarea, select');
+            textInputs.forEach(input => {
+                if (input.type === 'checkbox') {
+                    if (input.checked) {
+                        formData.append(input.name, input.value);
+                        console.log('Added checkbox:', input.name, '=', input.value);
+                    } else {
+                        console.log('Checkbox unchecked:', input.name);
+                    }
+                } else if (input.type === 'radio') {
+                    if (input.checked) {
+                        formData.append(input.name, input.value);
+                    }
                 } else {
-                    console.log('Checkbox unchecked:', input.name);
-                }
-            } else if (input.type === 'radio') {
-                if (input.checked) {
                     formData.append(input.name, input.value);
                 }
-            } else {
-                formData.append(input.name, input.value);
-            }
-        });
+            });
 
-        console.log('Form data collected:', Array.from(formData.entries()));
+            console.log('Form data collected:', Array.from(formData.entries()));
 
-        // Добавляем изображения с правильными именами
-        document.querySelectorAll('.image-input').forEach((input, index) => {
-            const file = input.files[0];
-            if (file) {
-                formData.append('images', file);
-                console.log('Added image:', file.name, 'size:', file.size);
-            }
-        });
+            // Добавляем изображения с правильными именами
+            document.querySelectorAll('.image-input').forEach((input, index) => {
+                const file = input.files[0];
+                if (file) {
+                    formData.append('images', file);
+                    console.log('Added image:', file.name, 'size:', file.size);
+                }
+            });
 
-        // Добавляем видео с правильными именами
-        document.querySelectorAll('.video-input').forEach((input, index) => {
-            const file = input.files[0];
-            if (file) {
-                formData.append('videos', file);
-                console.log('Added video:', file.name, 'size:', file.size);
-            }
-        });
+            // Добавляем видео с правильными именами
+            document.querySelectorAll('.video-input').forEach((input, index) => {
+                const file = input.files[0];
+                if (file) {
+                    formData.append('videos', file);
+                    console.log('Added video:', file.name, 'size:', file.size);
+                }
+            });
 
-        // Отправляем форму через AJAX
-        e.preventDefault();
+            // Добавляем аудио
+            document.querySelectorAll('.audio-input').forEach((input, index) => {
+                const file = input.files[0];
+                if (file) {
+                    formData.append('audios', file);
+                    console.log('Added audio:', file.name, 'size:', file.size);
+                }
+            });
 
-        fetch('{% url "core:work_create" %}', {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'X-CSRFToken': '{{ csrf_token }}',
-                'X-Requested-With': 'XMLHttpRequest'
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                // Успешно - перенаправляем на страницу работы
-                window.location.href = data.redirect_url;
-            } else {
-                alert('Ошибка при создании работы');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Ошибка при создании работы: ' + error.message);
-        });
+            // Отправляем форму через AJAX только при создании
+            e.preventDefault();
+
+            fetch('{% url "core:work_create" %}', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Успешно - перенаправляем на страницу работы
+                    window.location.href = data.redirect_url;
+                } else {
+                    alert('Ошибка при создании работы: ' + (data.error || 'Неизвестная ошибка'));
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Ошибка при создании работы: ' + error.message);
+            });
+        }
+        // При редактировании форма отправляется стандартно
     });
 </script>
 {% endblock %}

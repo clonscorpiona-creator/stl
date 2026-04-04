@@ -57,7 +57,47 @@ def icon_set_context(request):
     # Получаем активную цветовую тему из сессии
     color_theme = request.session.get('color_theme', 'olive-sage')
 
+    # Получаем фон Герой секции из сессии
+    hero_bg = request.session.get('hero_bg', 'classic')
+
     return {
         'icon_set': icon_set_slug,
         'color_theme': color_theme,
+        'hero_bg': hero_bg,
+    }
+
+
+def calendar_context(request):
+    """
+    Добавляет данные календаря для текущего месяца.
+    """
+    from datetime import datetime
+    import calendar
+
+    now = datetime.now()
+    current_year = now.year
+    current_month = now.month
+    current_day = now.day
+
+    # Получаем календарь на текущий месяц
+    cal = calendar.Calendar(firstweekday=0)  # Понедельник - первый день
+    month_days = cal.monthdayscalendar(current_year, current_month - 1)
+
+    # Формируем список дней для шаблона
+    calendar_days = []
+    month_name = now.strftime('%B %Y')
+
+    for week in month_days:
+        for day in week:
+            if day == 0:
+                continue  # Пропускаем нулевые дни
+            calendar_days.append({
+                'day': day,
+                'is_today': day == current_day,
+                'is_other_month': False,
+            })
+
+    return {
+        'calendar_days': calendar_days,
+        'calendar_month_year': month_name,
     }

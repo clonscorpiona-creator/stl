@@ -1,0 +1,181 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if editing %}Редактирование{% else %}Создание{% endif %} проекта — STL{% endblock %}
+
+{% block extra_css %}
+<style>
+.project-form-page { max-width: 720px; margin: 0 auto; }
+.project-form-page h2 { font-size: 22px; color: #4A3728; margin-bottom: 20px; }
+.project-form label { display: block; font-size: 14px; font-weight: 600; color: #5C3D24; margin-bottom: 4px; }
+.project-form input[type="text"],
+.project-form textarea,
+.project-form select,
+.project-form input[type="color"] {
+    font-size: 14px; background: #FDF8F3; margin-bottom: 16px;
+}
+.project-form input[type="text"],
+.project-form textarea,
+.project-form select {
+    width: 100%; padding: 10px 12px; border: 1px solid #D4B896; border-radius: 8px;
+}
+.project-form input[type="color"] {
+    width: 80px; height: 40px; padding: 2px; border: 1px solid #D4B896; border-radius: 8px; cursor: pointer;
+}
+.project-form textarea { min-height: 100px; resize: vertical; }
+
+.bg-options { display: flex; gap: 12px; align-items: center; margin-bottom: 16px; flex-wrap: wrap; }
+.bg-options label { margin-bottom: 0; }
+
+.steps-block {
+    background: #F7EDE2; border: 1px solid #D4B896; border-radius: 10px;
+    padding: 16px; margin-bottom: 16px;
+}
+.step-row {
+    display: grid; grid-template-columns: 32px 1fr 2fr 120px 30px; gap: 8px;
+    align-items: start; margin-bottom: 8px;
+}
+.step-row:last-child { margin-bottom: 0; }
+.step-num {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: #8B5E3C; color: #fff; display: flex; align-items: center;
+    justify-content: center; font-size: 12px; font-weight: 700; margin-top: 6px;
+}
+.step-row input[type="text"] {
+    padding: 8px; border: 1px solid #D4B896; border-radius: 6px;
+    font-size: 13px; background: #fff;
+}
+.step-row textarea {
+    padding: 8px; border: 1px solid #D4B896; border-radius: 6px;
+    font-size: 13px; background: #fff; min-height: 40px; resize: vertical; margin-bottom: 0;
+}
+.step-row input[type="file"] {
+    font-size: 12px; width: 120px;
+}
+.step-remove {
+    background: none; border: none; color: #DC2626; font-size: 18px;
+    cursor: pointer; padding: 4px 0; line-height: 1;
+}
+.step-remove:hover { opacity: 0.7; }
+
+.step-header-row {
+    display: grid; grid-template-columns: 32px 1fr 2fr 120px 30px; gap: 8px;
+    margin-bottom: 10px; font-size: 11px; font-weight: 600; color: #8B7355;
+    text-transform: uppercase; letter-spacing: 0.5px;
+}
+
+.btn { display: inline-block; padding: 10px 20px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; text-decoration: none; }
+.btn-primary { background: #8B5E3C; color: #fff; }
+.btn-primary:hover { background: #7A5030; }
+.btn-secondary { background: #E8D5B7; color: #5C3D24; }
+.btn-danger { background: #FEE2E2; color: #DC2626; font-size: 12px; padding: 6px 12px; }
+.form-actions { display: flex; gap: 10px; margin-top: 8px; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="project-form-page">
+    <h2>{% if editing %}Редактирование проекта{% else %}Новый проект{% endif %}</h2>
+
+    <form method="post" enctype="multipart/form-data" class="project-form">
+        {% csrf_token %}
+
+        <label>Название</label>
+        <input type="text" name="title" value="{{ project.title|default:'' }}" required>
+
+        <label>Описание</label>
+        <textarea name="description">{{ project.description|default:'' }}</textarea>
+
+        <label>Категория</label>
+        <select name="category">
+            <option value="">— Без категории —</option>
+            {% for cat in categories %}
+                <option value="{{ cat.id }}" {% if project.category_id == cat.id %}selected{% endif %}>{{ cat.name }}</option>
+            {% endfor %}
+        </select>
+
+        <label>Обложка</label>
+        <input type="file" name="cover" accept="image/*" {% if not editing %}required{% endif %}>
+
+        {# Настройки фона #}
+        <hr style="border:none;border-top:1px solid #D4B896;margin:24px 0;">
+        <label>Оформление фона</label>
+        <div class="bg-options">
+            <label>Цвет:
+                <input type="color" name="bg_color" value="{{ project.bg_color|default:'#FFFFFF' }}">
+            </label>
+            <span style="color:#A08B72;font-size:13px;">или фоновое изображение:</span>
+            <input type="file" name="bg_image" accept="image/*">
+            {% if editing and project.bg_image %}
+                <span style="font-size:12px;color:#8B7355;">{{ project.bg_image.url|truncatechars:40 }}</span>
+            {% endif %}
+        </div>
+
+        {# Шаги — единый блок #}
+        <hr style="border:none;border-top:1px solid #D4B896;margin:24px 0;">
+
+        <h3 style="font-size:16px;color:#4A3728;margin-bottom:12px;">Шаги проекта</h3>
+
+        <div class="steps-block">
+            {# Заголовки колонок #}
+            <div class="step-header-row">
+                <span>#</span>
+                <span>Заголовок</span>
+                <span>Описание</span>
+                <span>Картинка</span>
+                <span></span>
+            </div>
+
+            {# Существующие шаги #}
+            {% if editing and project %}
+                {% for step in project.steps.all %}
+                <div class="step-row">
+                    <div class="step-num">{{ forloop.counter }}</div>
+                    <input type="text" name="step_title_{{ step.id }}" value="{{ step.title }}" placeholder="Заголовок">
+                    <textarea name="step_desc_{{ step.id }}" placeholder="Описание">{{ step.description }}</textarea>
+                    {% if step.image %}
+                        <div><img src="{{ step.image.url }}" style="max-width:100%;border-radius:4px;margin-bottom:4px;"></div>
+                    {% endif %}
+                    <input type="file" name="step_image_{{ step.id }}" accept="image/*">
+                    <button type="button" class="step-remove" onclick="this.closest('.step-row').remove()">&times;</button>
+                </div>
+                {% endfor %}
+            {% endif %}
+
+            {# Новые шаги #}
+            <div id="new-steps-container"></div>
+        </div>
+
+        <button type="button" class="btn btn-secondary" onclick="addStep()" style="margin-bottom:16px;">+ Добавить шаг</button>
+
+        <div class="form-actions">
+            <button type="submit" name="status" value="draft" class="btn btn-secondary">Сохранить черновик</button>
+            <button type="submit" name="status" value="{% if editing %}{{ project.status }}{% else %}published{% endif %}" class="btn btn-primary">
+                {% if editing %}Сохранить{% else %}Разместить на сайте{% endif %}
+            </button>
+        </div>
+    </form>
+
+    {% if editing %}
+    <form method="post" action="{% url 'core:project_delete' project.author.username project.slug %}" style="margin-top:20px;" onsubmit="return confirm('Удалить проект?')">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Удалить проект</button>
+    </form>
+    {% endif %}
+</div>
+
+<script>
+let stepCounter = 0;
+function addStep() {
+    stepCounter++;
+    const html = `
+    <div class="step-row" id="new-step-${stepCounter}">
+        <div class="step-num">${stepCounter}</div>
+        <input type="text" name="new_step_title" placeholder="Заголовок">
+        <textarea name="new_step_desc" placeholder="Описание"></textarea>
+        <input type="file" name="new_step_image" accept="image/*">
+        <button type="button" class="step-remove" onclick="this.closest('.step-row').remove()">&times;</button>
+    </div>`;
+    document.getElementById('new-steps-container').insertAdjacentHTML('beforeend', html);
+}
+</script>
+{% endblock %}

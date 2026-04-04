@@ -1,190 +1,277 @@
 {% extends 'base.html' %}
 
-{% block title %}Работы - STL{% endblock %}
+{% block title %}Лента - STL{% endblock %}
 
 {% block content %}
-<div style="display: grid; grid-template-columns: 1fr 250px; gap: 30px;">
-    <!-- Работы -->
+<div style="display: grid; grid-template-columns: 1fr 200px; gap: 10px;">
+    <!-- Основная лента -->
     <div>
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <h1 style="font-size: 28px;">
-                {% if query %}Поиск: {{ query }}{% elif current_category %}Категория: {{ current_category }}{% else %}Все работы{% endif %}
-            </h1>
-            <select onchange="location.href=this.value" style="padding: 10px; border-radius: 8px; border: 2px solid #ddd;">
-                <option value="{% url 'core:work_list' %}?sort=-created_at&category={{ current_category }}&tag={{ current_tag }}&q={{ query }}" {% if current_sort == '-created_at' %}selected{% endif %}>Свежие</option>
-                <option value="{% url 'core:work_list' %}?sort=-likes_count&category={{ current_category }}&tag={{ current_tag }}&q={{ query }}" {% if current_sort == '-likes_count' %}selected{% endif %}>Популярные</option>
-                <option value="{% url 'core:work_list' %}?sort=-views_count&category={{ current_category }}&tag={{ current_tag }}&q={{ query }}" {% if current_sort == '-views_count' %}selected{% endif %}>Просмотры</option>
-            </select>
+            <h1 style="margin: 0;">Ваша лента</h1>
         </div>
 
-        <div class="works-grid">
-            {% for work in works %}
-                <div class="work-card {% if work.is_blocked %}work-card-blocked{% endif %}">
-                    {% if work.cover %}
-                        {% if work.author and work.slug and not work.is_blocked %}
-                            <a href="{% url 'core:work_detail' work.author.username work.slug %}" class="work-card-link">
-                                <img src="{{ work.cover.url }}" alt="{{ work.title }}">
-                            </a>
-                            {% if work.is_blocked %}
-                                <div class="work-lock-overlay">
-                                    <span style="font-size: 32px;">🔒</span>
-                                </div>
-                            {% endif %}
-                        {% else %}
-                            <img src="{{ work.cover.url }}" alt="{{ work.title }}">
-                            {% if work.is_blocked %}
-                                <div class="work-lock-overlay">
-                                    <span style="font-size: 32px;">🔒</span>
-                                </div>
-                            {% endif %}
-                        {% endif %}
-                    {% endif %}
-                    <div class="work-card-body">
-                        <h3 class="work-card-title">
-                            {% if work.author and work.slug and not work.is_blocked %}
-                                <a href="{% url 'core:work_detail' work.author.username work.slug %}" style="color: inherit; text-decoration: none;">
-                                    {{ work.title }}
+        {% if following_works %}
+            <h2 style="font-size: 18px; margin-bottom: 15px; color: #666;">От подписок</h2>
+            <div class="works-grid" style="grid-template-columns: 1fr 1fr;">
+                {% for work in following_works %}
+                    <div class="work-card">
+                        {% if work.cover %}
+                            {% if work.author and work.slug %}
+                                <a href="{% url 'core:work_detail' work.author.username work.slug %}" class="work-card-link">
+                                    <img src="{{ work.cover.url }}" alt="{{ work.title }}">
                                 </a>
                             {% else %}
-                                {{ work.title }}
-                                {% if work.is_blocked %}
-                                    <span style="font-size: 14px; color: #dc3545;">🔒 Заблокировано</span>
+                                <img src="{{ work.cover.url }}" alt="{{ work.title }}">
+                            {% endif %}
+                        {% endif %}
+                        <div class="work-card-body">
+                            <h3 class="work-card-title">
+                                {% if work.author and work.slug %}
+                                    <a href="{% url 'core:work_detail' work.author.username work.slug %}" style="color: inherit; text-decoration: none;">
+                                        {{ work.title }}
+                                    </a>
+                                {% else %}
+                                    {{ work.title }}
+                                {% endif %}
+                            </h3>
+                            <p class="work-card-author" style="display: flex; align-items: center; gap: 10px; justify-content: space-between;">
+                                <span style="display: flex; align-items: center; gap: 10px;">
+                                    {% if work.author %}
+                                        {% if work.author.avatar %}
+                                            <img src="{{ work.author.avatar.url }}" alt="{{ work.author.username }}"
+                                                style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover;">
+                                        {% else %}
+                                            <div style="width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 18px; font-weight: bold;">
+                                                {{ work.author.username|first|upper }}
+                                            </div>
+                                        {% endif %}
+                                        <a href="{% url 'accounts:profile' work.author.username %}">{{ work.author.username }}</a>
+                                    {% endif %}
+                                </span>
+                                {% if user.is_staff %}
+                                    <button type="button" class="toggle-recommend-btn btn btn-sm" data-work-id="{{ work.id }}" style="{% if work.is_admin_recommended %}background: var(--primary); color: white;{% else %}background: #eee; color: #333;{% endif %}; transform: scale(0.8); transform-origin: right center; white-space: nowrap;">
+                                        {% if work.is_admin_recommended %}★ Снять{% else %}☆ Рекомендовать{% endif %}
+                                    </button>
+                                {% endif %}
+                            </p>
+                            <div class="work-stats">
+                                <span style="display: flex; align-items: center; gap: 4px;">
+                                    <img src="/static/icons/{{ icon_set }}/heart.svg" alt="" style="width: 14px; height: 14px;">
+                                    {{ work.likes_count }}
+                                </span>
+                                <span style="display: flex; align-items: center; gap: 4px;">
+                                    <img src="/static/icons/{{ icon_set }}/eye.svg" alt="" style="width: 14px; height: 14px;">
+                                    {{ work.views_count }}
+                                </span>
+                                <span style="display: flex; align-items: center; gap: 4px;">
+                                    <img src="/static/icons/{{ icon_set }}/message.svg" alt="" style="width: 14px; height: 14px;">
+                                    {{ work.comments_count }}
+                                </span>
+                            </div>
+                            <div style="font-size: 11px; color: #999; margin-top: 8px;">
+                                {{ work.created_at|date:"d.m.Y" }}
+                            </div>
+                            {% if user.is_staff %}
+                                {% if work.tags.all %}
+                                    <div class="tags" style="margin-top: 8px;">
+                                        {% for tag in work.tags.all|slice:":5" %}
+                                            <a href="{% url 'core:tag_detail' tag.slug %}" class="tag">#{{ tag.name }}</a>
+                                        {% endfor %}
+                                    </div>
                                 {% endif %}
                             {% endif %}
-                        </h3>
-                        <p class="work-card-author">
-                            {% if work.author %}
-                                от <a href="{% url 'accounts:profile' work.author.username %}">{{ work.author.username }}</a>
+                            {% if user.is_staff or user.is_authenticated and work.author == user %}
+                                <div style="margin-top: 10px; display: flex; justify-content: space-between; align-items: flex-end; padding-bottom: 10px;">
+                                    {% if work.author == user or user.is_staff %}
+                                        <button type="button" class="delete-work-btn btn btn-sm btn-danger" data-work-id="{{ work.id }}" style="transform: scale(0.8); transform-origin: left center;">
+                                            ✕ Удалить
+                                        </button>
+                                    {% endif %}
+                                </div>
                             {% endif %}
-                        </p>
-                        <div class="work-stats">
-                            <span style="display: flex; align-items: center; gap: 4px;">
-                                <img src="/static/icons/{{ icon_set }}/heart.svg" alt="" style="width: 14px; height: 14px;">
-                                {{ work.likes_count }}
-                            </span>
-                            <span style="display: flex; align-items: center; gap: 4px;">
-                                <img src="/static/icons/{{ icon_set }}/eye.svg" alt="" style="width: 14px; height: 14px;">
-                                {{ work.views_count }}
-                            </span>
-                            <span style="display: flex; align-items: center; gap: 4px;">
-                                <img src="/static/icons/{{ icon_set }}/message.svg" alt="" style="width: 14px; height: 14px;">
-                                {{ work.comments_count }}
-                            </span>
                         </div>
-                        {% if user.is_staff %}
-                            <div style="margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap;">
-                                <button type="button" class="toggle-recommend-btn" data-work-id="{{ work.id }}" style="background: {% if work.is_admin_recommended %}var(--primary){% else %}#eee{% endif %}; color: {% if work.is_admin_recommended %}#fff{% else %}#333{% endif %}; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px;">
-                                    {% if work.is_admin_recommended %}★ Снять{% else %}☆ Рекомендовать{% endif %}
-                                </button>
-                                <button type="button" class="block-work-btn" data-work-id="{{ work.id }}" style="background: {% if work.is_blocked %}#28a745{% else %}#ffc107{% endif %}; color: {% if work.is_blocked %}#fff{% else %}#333{% endif %}; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px;">
-                                    {% if work.is_blocked %}✓ Разблокировать{% else %}⚠ Блокировать{% endif %}
-                                </button>
-                                <button type="button" class="delete-work-btn" data-work-id="{{ work.id }}" style="background: #dc3545; color: #fff; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px;">
-                                    ✕ Удалить
-                                </button>
-                            </div>
-                        {% endif %}
-                        {% if work.tags.all %}
-                            <div class="tags">
-                                {% for tag in work.tags.all|slice:":3" %}
-                                    <a href="{% url 'core:tag_detail' tag.slug %}" class="tag">{{ tag.name }}</a>
-                                {% endfor %}
-                            </div>
-                        {% endif %}
                     </div>
-                </div>
-            {% empty %}
-                <p style="grid-column: 1/-1; text-align: center; padding: 40px; color: #666;">
-                    Работ не найдено
+                {% endfor %}
+            </div>
+        {% else %}
+            <div style="background: white; padding: 40px; border-radius: 12px; text-align: center;">
+                <h2 style="margin-bottom: 15px;">Вы пока ни на кого не подписаны</h2>
+                <p style="color: #666; margin-bottom: 20px;">
+                    Подпишитесь на авторов, чтобы видеть их работы в ленте
                 </p>
-            {% endfor %}
-        </div>
+                <a href="{% url 'core:work_list' %}" class="btn btn-primary">Смотреть работы</a>
+            </div>
+        {% endif %}
 
-        <!-- Пагинация -->
-        {% if works.has_other_pages %}
-            <div style="display: flex; justify-content: center; gap: 10px; margin-top: 30px;">
-                {% if works.has_previous %}
-                    <a href="?page={{ works.previous_page_number }}" class="btn btn-secondary">Назад</a>
-                {% endif %}
-                <span style="padding: 10px 20px;">Стр. {{ works.number }} из {{ works.paginator.num_pages }}</span>
-                {% if works.has_next %}
-                    <a href="?page={{ works.next_page_number }}" class="btn btn-secondary">Вперёд</a>
-                {% endif %}
+        {% if recommended %}
+            <h2 style="font-size: 18px; margin: 40px 0 15px; color: #666;">Рекомендации для вас</h2>
+            <div class="works-grid">
+                {% for work in recommended %}
+                    <div class="work-card">
+                        {% if work.cover %}
+                            {% if work.author and work.slug %}
+                                <a href="{% url 'core:work_detail' work.author.username work.slug %}" class="work-card-link">
+                                    <img src="{{ work.cover.url }}" alt="{{ work.title }}">
+                                </a>
+                            {% else %}
+                                <img src="{{ work.cover.url }}" alt="{{ work.title }}">
+                            {% endif %}
+                        {% endif %}
+                        <div class="work-card-body">
+                            <h3 class="work-card-title">
+                                {% if work.author and work.slug %}
+                                    <a href="{% url 'core:work_detail' work.author.username work.slug %}" style="color: inherit; text-decoration: none;">
+                                        {{ work.title }}
+                                    </a>
+                                {% else %}
+                                    {{ work.title }}
+                                {% endif %}
+                            </h3>
+                            <p class="work-card-author" style="display: flex; align-items: center; gap: 10px;">
+                                {% if work.author %}
+                                    {% if work.author.avatar %}
+                                        <img src="{{ work.author.avatar.url }}" alt="{{ work.author.username }}"
+                                            style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover;">
+                                    {% else %}
+                                        <div style="width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 18px; font-weight: bold;">
+                                            {{ work.author.username|first|upper }}
+                                        </div>
+                                    {% endif %}
+                                    <a href="{% url 'accounts:profile' work.author.username %}">{{ work.author.username }}</a>
+                                {% endif %}
+                            </p>
+                            <div class="work-stats">
+                                <span style="display: flex; align-items: center; gap: 4px;">
+                                    <img src="/static/icons/{{ icon_set }}/heart.svg" alt="" style="width: 14px; height: 14px;">
+                                    {{ work.likes_count }}
+                                </span>
+                            </div>
+                            <div style="font-size: 11px; color: #999; margin-top: 8px;">
+                                {{ work.created_at|date:"d.m.Y" }}
+                            </div>
+                            {% if work.tags.all %}
+                                <div class="tags" style="margin-top: 8px;">
+                                    {% for tag in work.tags.all|slice:":5" %}
+                                        <a href="{% url 'core:tag_detail' tag.slug %}" class="tag">#{{ tag.name }}</a>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            {% if user.is_staff or user.is_authenticated and work.author == user %}
+                                <div style="margin-top: 10px; display: flex; justify-content: space-between; align-items: center;">
+                                    {% if work.author == user or user.is_staff %}
+                                        <button type="button" class="delete-work-btn btn btn-sm btn-danger" data-work-id="{{ work.id }}" style="transform: scale(0.8); transform-origin: left center;">
+                                            ✕ Удалить
+                                        </button>
+                                    {% endif %}
+                                    {% if user.is_staff %}
+                                        <button type="button" class="toggle-recommend-btn btn btn-sm" data-work-id="{{ work.id }}" style="{% if work.is_admin_recommended %}background: var(--primary); color: white;{% else %}background: #eee; color: #333;{% endif %}; transform: scale(0.8); transform-origin: right center;">
+                                            {% if work.is_admin_recommended %}★ Снять{% else %}☆ Рекомендовать{% endif %}
+                                        </button>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
             </div>
         {% endif %}
     </div>
 
     <!-- Сайдбар -->
-    <aside>
-        <!-- Категории -->
-        <div style="background: white; padding: 20px; border-radius: 12px; margin-bottom: 20px;">
-            <h3 style="margin-bottom: 15px;">Категории</h3>
-            <div style="display: flex; flex-direction: column; gap: 8px;">
-                <a href="{% url 'core:work_list' %}" style="color: {% if not current_category %}#e60023{% else %}#333{% endif %}; text-decoration: none; padding: 8px;">
-                    Все
-                </a>
-                {% for category in categories %}
-                    <a href="?category={{ category.slug }}&tag={{ current_tag }}"
-                        style="color: {% if current_category == category.slug %}#e60023{% else %}#333{% endif %}; text-decoration: none; padding: 8px;">
-                        {{ category.name }}
-                    </a>
-                {% endfor %}
+    <aside style="position: sticky; top: 20px; height: fit-content; display: flex; flex-direction: column; gap: 12px;">
+        <!-- Выпадающее меню: Сортировка -->
+        <div class="filter-dropdown" style="background: white; border-radius: 12px; overflow: hidden;">
+            <button class="filter-dropdown-btn" style="width: 100%; padding: 14px 16px; background: white; border: none; cursor: pointer; font-size: 15px; font-weight: 600; text-align: left; display: flex; justify-content: space-between; align-items: center;">
+                <span>Сортировка</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="transition: transform 0.3s;">
+                    <path d="M6 9l6 6 6-6"/>
+                </svg>
+            </button>
+            <div class="filter-dropdown-content" style="max-height: 0; overflow: hidden; transition: max-height 0.3s ease;">
+                <div style="padding: 12px; display: flex; flex-direction: column; gap: 6px;">
+                    <a href="?sort=-created_at" style="padding: 10px 12px; color: #333; text-decoration: none; border-radius: 6px; font-size: 14px;">Свежие</a>
+                    <a href="?sort=-likes_count" style="padding: 10px 12px; color: #333; text-decoration: none; border-radius: 6px; font-size: 14px;">Популярные</a>
+                    <a href="?sort=-views_count" style="padding: 10px 12px; color: #333; text-decoration: none; border-radius: 6px; font-size: 14px;">Просмотры</a>
+                </div>
             </div>
         </div>
 
-        <!-- Популярные теги -->
-        {% if popular_tags %}
-            <div style="background: white; padding: 20px; border-radius: 12px;">
-                <h3 style="margin-bottom: 15px;">Популярные теги</h3>
-                <div class="tags">
-                    {% for tag in popular_tags %}
-                        <a href="?tag={{ tag.slug }}&category={{ current_category }}" class="tag">
-                            {{ tag.name }} ({{ tag.count }})
+        <!-- Выпадающее меню: Категории -->
+        <div class="filter-dropdown" style="background: white; border-radius: 12px; overflow: hidden;">
+            <button class="filter-dropdown-btn" style="width: 100%; padding: 14px 16px; background: white; border: none; cursor: pointer; font-size: 15px; font-weight: 600; text-align: left; display: flex; justify-content: space-between; align-items: center;">
+                <span>Категории</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="transition: transform 0.3s;">
+                    <path d="M6 9l6 6 6-6"/>
+                </svg>
+            </button>
+            <div class="filter-dropdown-content" style="max-height: 0; overflow: hidden; transition: max-height 0.3s ease;">
+                <div style="padding: 12px; display: flex; flex-direction: column; gap: 6px;">
+                    <a href="{% url 'core:work_list' %}" style="padding: 10px 12px; color: #333; text-decoration: none; border-radius: 6px; font-size: 14px;">Все</a>
+                    {% for category in categories %}
+                        <a href="{% url 'core:work_list' %}?category={{ category.slug }}"
+                            style="padding: 10px 12px; color: #333; text-decoration: none; border-radius: 6px; font-size: 14px;">
+                            {{ category.name }}
                         </a>
                     {% endfor %}
                 </div>
             </div>
+        </div>
+
+        <!-- Выпадающее меню: Теги -->
+        {% if popular_tags %}
+        <div class="filter-dropdown" style="background: white; border-radius: 12px; overflow: hidden;">
+            <button class="filter-dropdown-btn" style="width: 100%; padding: 14px 16px; background: white; border: none; cursor: pointer; font-size: 15px; font-weight: 600; text-align: left; display: flex; justify-content: space-between; align-items: center;">
+                <span>Теги</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="transition: transform 0.3s;">
+                    <path d="M6 9l6 6 6-6"/>
+                </svg>
+            </button>
+            <div class="filter-dropdown-content" style="max-height: 0; overflow: hidden; transition: max-height 0.3s ease;">
+                <div style="padding: 12px; display: flex; flex-wrap: wrap; gap: 8px;">
+                    {% for tag in popular_tags %}
+                        <a href="?tag={{ tag.slug }}" class="tag" style="display: inline-block; padding: 6px 12px; background: #f5f5f5; border-radius: 16px; color: #333; text-decoration: none; font-size: 13px;">
+                            {{ tag.name }}
+                        </a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
         {% endif %}
     </aside>
 </div>
-{% endblock %}
 
-{% block extra_css %}
-<style>
-    /* Стили для заблокированных работ */
-    .work-card-blocked {
-        opacity: 0.7;
-        border: 2px solid #dc3545 !important;
-    }
+<script>
+    // Открытие/закрытие выпадающих меню
+    document.querySelectorAll('.filter-dropdown-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const dropdown = this.parentElement;
+            const content = dropdown.querySelector('.filter-dropdown-content');
+            const arrow = this.querySelector('svg');
 
-    .work-card-blocked .work-card-link {
-        pointer-events: none;
-    }
+            // Закрываем другие меню
+            document.querySelectorAll('.filter-dropdown').forEach(other => {
+                if (other !== dropdown) {
+                    other.querySelector('.filter-dropdown-content').style.maxHeight = '0';
+                    other.querySelector('svg').style.transform = 'rotate(0deg)';
+                }
+            });
 
-    .work-lock-overlay {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background: rgba(0, 0, 0, 0.7);
-        border-radius: 50%;
-        width: 80px;
-        height: 80px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 10;
-    }
-
-    .work-card {
-        position: relative;
-    }
-</style>
+            // Переключаем текущее меню
+            if (content.style.maxHeight === '0px' || content.style.maxHeight === '') {
+                content.style.maxHeight = content.scrollHeight + 'px';
+                arrow.style.transform = 'rotate(180deg)';
+            } else {
+                content.style.maxHeight = '0';
+                arrow.style.transform = 'rotate(0deg)';
+            }
+        });
+    });
+</script>
 {% endblock %}
 
 {% block extra_js %}
 <script>
-// Кнопка "Рекомендует администрация" в списке работ
+// Кнопка "Рекомендует администрация" в ленте
 document.querySelectorAll('.toggle-recommend-btn').forEach(btn => {
     btn.addEventListener('click', function() {
         const workId = this.dataset.workId;
@@ -200,10 +287,14 @@ document.querySelectorAll('.toggle-recommend-btn').forEach(btn => {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                // Переключаем состояние кнопки
                 const isRecommended = data.is_admin_recommended;
-                this.style.background = isRecommended ? 'var(--primary)' : '#eee';
-                this.style.color = isRecommended ? '#fff' : '#333';
+                if (isRecommended) {
+                    this.style.background = 'var(--primary)';
+                    this.style.color = 'white';
+                } else {
+                    this.style.background = '#eee';
+                    this.style.color = '#333';
+                }
                 this.innerHTML = isRecommended ? '★ Снять' : '☆ Рекомендовать';
             } else {
                 alert('Ошибка: ' + data.error);
@@ -212,49 +303,6 @@ document.querySelectorAll('.toggle-recommend-btn').forEach(btn => {
         .catch(error => {
             console.error('Error:', error);
             alert('Ошибка при переключении рекомендации');
-        });
-    });
-});
-
-// Кнопка блокировки/разблокировки работы
-document.querySelectorAll('.block-work-btn').forEach(btn => {
-    btn.addEventListener('click', function() {
-        const workId = this.dataset.workId;
-        const csrfToken = '{{ csrf_token }}';
-        const isBlocked = this.innerHTML.includes('Разблокировать');
-
-        if (isBlocked) {
-            // Разблокировка
-            if (!confirm('Разблокировать работу?')) return;
-        } else {
-            // Блокировка
-            const reason = prompt('Укажите причину блокировки:', 'Нарушение правил сайта');
-            if (!reason) return;
-        }
-
-        fetch(`/api/works/${workId}/block/`, {
-            method: 'POST',
-            headers: {
-                'X-CSRFToken': csrfToken,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                block: !isBlocked,
-                reason: reason || ''
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                // Перезагружаем страницу
-                location.reload();
-            } else {
-                alert('Ошибка: ' + data.error);
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Ошибка при блокировке/разблокировке');
         });
     });
 });
@@ -277,7 +325,6 @@ document.querySelectorAll('.delete-work-btn').forEach(btn => {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                // Перезагружаем страницу
                 location.reload();
             } else {
                 alert('Ошибка: ' + data.error);
