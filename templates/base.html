@@ -1121,7 +1121,9 @@
         // Загрузка количества непрочитанных сообщений в чатах (глобальная функция)
         window.loadUnreadCounts = async function() {
             try {
-                const response = await fetch('/chat/api/unread-counts/');
+                const response = await fetch('/chat/api/unread-counts/', {
+                    credentials: 'include'
+                });
                 const data = await response.json();
 
                 const badge = document.getElementById('chatNotificationBadge');
@@ -1146,7 +1148,9 @@
             }
 
             try {
-                const response = await fetch('/api/notifications-count/');
+                const response = await fetch('/api/notifications-count/', {
+                    credentials: 'include'
+                });
                 const data = await response.json();
 
                 // Обновляем бейдж уведомлений
