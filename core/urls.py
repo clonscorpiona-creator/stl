@@ -8,12 +8,16 @@ urlpatterns = [
     # Page views
     path('', views.home_view, name='home'),
     path('feed/', views.feed_view, name='feed'),
-    path('works/', views.work_list_view, name='work_list'),
+    path('buttons-test/', views.buttons_test_view, name='buttons_test'),
+    path('works/', views.works_all_view, name='work_list'),
+    path('drafts/', views.drafts_view, name='drafts'),
     path('new-works/', views.new_works_and_comments, name='new_works'),
     path('works/<str:username>/<str:slug>/', views.work_detail_view, name='work_detail'),
     path('works/create/', views.create_work, name='work_create'),
     path('works/<str:username>/<str:slug>/edit/', views.edit_work, name='work_edit'),
     path('works/<str:username>/<str:slug>/delete/', views.delete_work, name='work_delete'),
+    path('works/<str:username>/<str:slug>/publish/', views.publish_work, name='work_publish'),
+    path('works/<str:username>/<str:slug>/unpublish/', views.unpublish_work, name='work_unpublish'),
     path('tags/', views.tag_list_view, name='tag_list'),
     path('tags/<str:slug>/', views.tag_detail_view, name='tag_detail'),
     path('collections/', views.collection_list, name='collection_list'),
@@ -49,7 +53,6 @@ urlpatterns = [
     path('api/works/<int:work_id>/toggle-recommend/', api.toggle_admin_recommend_api, name='api_toggle_recommend'),
 
     # Admin work moderation API
-    path('api/works/<int:work_id>/block/', api.block_work_api, name='api_block_work'),
     path('api/works/<int:work_id>/delete/', api.delete_work_api, name='api_delete_work'),
 
     # Icon set switcher (staff only)
@@ -58,6 +61,9 @@ urlpatterns = [
     # Theme switcher API (staff only)
     path('api/theme/switch/', views.switch_theme, name='switch_theme'),
     path('api/theme/get/', views.get_theme, name='get_theme'),
+
+    # Hero bg switcher API (staff only)
+    path('api/set-hero-bg/', views.set_hero_bg, name='set_hero_bg'),
 
     # Admin theme page (staff only)
     path('admin/theme/', views.admin_theme_page, name='admin_theme'),

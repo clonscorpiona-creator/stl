@@ -58,7 +58,7 @@
 <style>
 .hero-section {
     position: relative;
-    background: linear-gradient(135deg, #3d2961 0%, #4a3861 50%, #6b5582 100%);
+    background: var(--hero-bg-gradient, linear-gradient(135deg, #3d2961 0%, #4a3861 50%, #6b5582 100%));
     border-radius: 20px;
     overflow: hidden;
     margin-bottom: 40px;
@@ -229,13 +229,13 @@
 
 <!-- Категории -->
 <div style="margin-bottom: 40px;">
-    <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
-        <h2 style="font-size: 24px; margin: 0;">Категории</h2>
-        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+    <div style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
+        <h2 style="font-size: 24px; margin: 0; min-width: 100px;">Категории</h2>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap; flex: 1;">
             {% for category in categories %}
-                <a href="{% url 'core:work_list' %}?category={{ category.slug }}"
+                <a href="{% url 'core:feed' %}?category={{ category.slug }}"
                     class="category-glass-btn"
-                    style="padding: 9px 18px; background: rgba(255, 255, 255, 0.25); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-radius: 18px; text-decoration: none; color: #333; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border: 1px solid rgba(255, 255, 255, 0.3); font-size: 13px; font-weight: 500; transition: all 0.3s ease; display: inline-block;">
+                    style="padding: 6px 12px; background: rgba(255, 255, 255, 0.25); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-radius: 14px; text-decoration: none; color: #333; box-shadow: 0 3px 9px rgba(0,0,0,0.12); border: 1px solid rgba(255, 255, 255, 0.3); font-size: 12px; font-weight: 500; transition: all 0.3s ease; display: inline-block;">
                     {{ category.name }}
                 </a>
             {% endfor %}
@@ -244,14 +244,13 @@
 </div>
 
 <style>
-    /* Кнопки категорий - белые с мягкими тенями */
     .category-glass-btn {
         background: #ffffff;
         border: 1px solid #e0e0e0;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-        padding: 9px 18px;
-        border-radius: 20px;
-        font-size: 13px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+        padding: 6px 12px;
+        border-radius: 14px;
+        font-size: 12px;
         font-weight: 500;
         color: #000000;
         text-decoration: none;
@@ -262,12 +261,12 @@
     .category-glass-btn:hover {
         background: #f5f5f5;
         transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
     }
 
     .category-glass-btn:active {
         transform: translateY(0);
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
     }
 </style>
 
@@ -277,65 +276,33 @@
         <h2 style="font-size: 24px;">Популярные работы</h2>
         <a href="{% url 'core:work_list' %}" style="color: #e60023; text-decoration: none;">Смотреть все →</a>
     </div>
-    <style>
-        /* Стили для заблокированных работ */
-        .work-card-blocked {
-            opacity: 0.7;
-            border: 2px solid #dc3545 !important;
-        }
-
-        .work-card-blocked .work-card-link {
-            pointer-events: none;
-        }
-
-        .work-lock-overlay {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(0, 0, 0, 0.7);
-            border-radius: 50%;
-            width: 80px;
-            height: 80px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 10;
-        }
-
-        .work-card {
-            position: relative;
-        }
-    </style>
-    <div class="works-grid">
+    <div class="works-grid" style="grid-template-columns: repeat(4, 1fr); max-width: 100%;">
         {% for work in works %}
             {% if work.slug and work.author %}
-            <div class="work-card {% if work.is_blocked %}work-card-blocked{% endif %}">
+            <div class="work-card">
                 {% if work.cover %}
-                    {% if not work.is_blocked %}
-                        <a href="{% url 'core:work_detail' work.author.username work.slug %}" class="work-card-link">
-                            <img src="{{ work.cover.url }}" alt="{{ work.title }}">
-                        </a>
-                    {% else %}
+                    <a href="{% url 'core:work_detail' work.author.username work.slug %}" class="work-card-link">
                         <img src="{{ work.cover.url }}" alt="{{ work.title }}">
-                        <div class="work-lock-overlay">
-                            <span style="font-size: 32px;">🔒</span>
-                        </div>
-                    {% endif %}
+                    </a>
                 {% endif %}
                 <div class="work-card-body">
                     <h3 class="work-card-title">
-                        {% if not work.is_blocked %}
-                            <a href="{% url 'core:work_detail' work.author.username work.slug %}" style="color: inherit; text-decoration: none;">
-                                {{ work.title }}
-                            </a>
-                        {% else %}
+                        <a href="{% url 'core:work_detail' work.author.username work.slug %}" style="color: inherit; text-decoration: none;">
                             {{ work.title }}
-                            <span style="font-size: 14px; color: #dc3545;">🔒 Заблокировано</span>
-                        {% endif %}
+                        </a>
                     </h3>
-                    <p class="work-card-author">
-                        от <a href="{% url 'accounts:profile' work.author.username %}">{{ work.author.username }}</a>
+                    <p class="work-card-author" style="display: flex; align-items: center; gap: 10px;">
+                        {% if work.author %}
+                            {% if work.author.avatar %}
+                                <img src="{{ work.author.avatar.url }}" alt="{{ work.author.username }}"
+                                    style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover;">
+                            {% else %}
+                                <div style="width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 18px; font-weight: bold;">
+                                    {{ work.author.username|first|upper }}
+                                </div>
+                            {% endif %}
+                            <a href="{% url 'accounts:profile' work.author.username %}">{{ work.author.username }}</a>
+                        {% endif %}
                     </p>
                     <div class="work-stats">
                         <span style="display: flex; align-items: center; gap: 4px;">
@@ -347,19 +314,9 @@
                             {{ work.views_count }}
                         </span>
                     </div>
-                    {% if user.is_staff %}
-                        <div style="margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap;">
-                            <button type="button" class="toggle-recommend-btn" data-work-id="{{ work.id }}" style="background: {% if work.is_admin_recommended %}var(--primary){% else %}#eee{% endif %}; color: {% if work.is_admin_recommended %}#fff{% else %}#333{% endif %}; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px;">
-                                {% if work.is_admin_recommended %}★ Снять{% else %}☆ Рекомендовать{% endif %}
-                            </button>
-                            <button type="button" class="block-work-btn" data-work-id="{{ work.id }}" style="background: {% if work.is_blocked %}#28a745{% else %}#ffc107{% endif %}; color: {% if work.is_blocked %}#fff{% else %}#333{% endif %}; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px;">
-                                {% if work.is_blocked %}✓ Разблокировать{% else %}⚠ Блокировать{% endif %}
-                            </button>
-                            <button type="button" class="delete-work-btn" data-work-id="{{ work.id }}" style="background: #dc3545; color: #fff; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px;">
-                                ✕ Удалить
-                            </button>
-                        </div>
-                    {% endif %}
+                    <div style="font-size: 11px; color: #999; margin-top: 8px;">
+                        {{ work.created_at|date:"d.m.Y" }}
+                    </div>
                 </div>
             </div>
             {% endif %}
@@ -367,113 +324,4 @@
     </div>
 </div>
 
-{% block extra_js %}
-<script>
-// Кнопка "Рекомендует администрация" на главной странице
-document.querySelectorAll('.toggle-recommend-btn').forEach(btn => {
-    btn.addEventListener('click', function() {
-        const workId = this.dataset.workId;
-        const csrfToken = '{{ csrf_token }}';
-
-        fetch(`/api/works/${workId}/toggle-recommend/`, {
-            method: 'POST',
-            headers: {
-                'X-CSRFToken': csrfToken,
-                'Content-Type': 'application/json'
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                // Переключаем состояние кнопки
-                const isRecommended = data.is_admin_recommended;
-                this.style.background = isRecommended ? 'var(--primary)' : '#eee';
-                this.style.color = isRecommended ? '#fff' : '#333';
-                this.innerHTML = isRecommended ? '★ Снять' : '☆ Рекомендовать';
-            } else {
-                alert('Ошибка: ' + data.error);
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Ошибка при переключении рекомендации');
-        });
-    });
-});
-
-// Кнопка блокировки/разблокировки работы
-document.querySelectorAll('.block-work-btn').forEach(btn => {
-    btn.addEventListener('click', function() {
-        const workId = this.dataset.workId;
-        const csrfToken = '{{ csrf_token }}';
-        const isBlocked = this.innerHTML.includes('Разблокировать');
-
-        if (isBlocked) {
-            // Разблокировка
-            if (!confirm('Разблокировать работу?')) return;
-        } else {
-            // Блокировка
-            const reason = prompt('Укажите причину блокировки:', 'Нарушение правил сайта');
-            if (!reason) return;
-        }
-
-        fetch(`/api/works/${workId}/block/`, {
-            method: 'POST',
-            headers: {
-                'X-CSRFToken': csrfToken,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                block: !isBlocked,
-                reason: reason || ''
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                // Перезагружаем страницу
-                location.reload();
-            } else {
-                alert('Ошибка: ' + data.error);
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Ошибка при блокировке/разблокировке');
-        });
-    });
-});
-
-// Кнопка удаления работы
-document.querySelectorAll('.delete-work-btn').forEach(btn => {
-    btn.addEventListener('click', function() {
-        const workId = this.dataset.workId;
-        const csrfToken = '{{ csrf_token }}';
-
-        if (!confirm('Вы уверены, что хотите удалить эту работу? Это действие необратимо.')) return;
-
-        fetch(`/api/works/${workId}/delete/`, {
-            method: 'POST',
-            headers: {
-                'X-CSRFToken': csrfToken,
-                'Content-Type': 'application/json'
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                // Перезагружаем страницу
-                location.reload();
-            } else {
-                alert('Ошибка: ' + data.error);
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Ошибка при удалении работы');
-        });
-    });
-});
-</script>
-{% endblock %}
 {% endblock %}

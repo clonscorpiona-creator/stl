@@ -61,7 +61,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 5px 20px;
+            padding: 10px 20px;
             width: 100%;
         }
 
@@ -76,6 +76,8 @@
             --bg-light: #f5f5f5;
             --white: #fff;
             --coffee-white: #f5f0eb;
+            /* Фон Герой секции по умолчанию */
+            --hero-bg-gradient: linear-gradient(135deg, #3d2961 0%, #4a3861 50%, #6b5582 100%);
         }
 
         .logo {
@@ -129,24 +131,69 @@
             max-width: 400px;
             margin: 0 20px;
             display: flex;
+            align-items: center;
         }
 
         .search-form input {
             flex: 1;
-            padding: 10px 15px;
+            padding: 6px 12px;
             border: 2px solid #ddd;
             border-radius: 8px 0 0 8px;
-            font-size: 14px;
+            font-size: 13px;
+            height: 32px;
         }
 
         .search-form button {
-            padding: 10px 20px;
+            padding: 6px 16px;
             background: var(--primary);
             color: white;
             border: none;
             border-radius: 0 8px 8px 0;
             cursor: pointer;
             transition: background 0.3s ease;
+            height: 32px;
+            font-size: 13px;
+        }
+
+        /* Выпадающий календарь */
+        .calendar-month {
+            text-align: center;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+        }
+
+        .calendar-day-name {
+            text-align: center;
+            font-size: 11px;
+            color: #999;
+            padding: 4px;
+            font-weight: 600;
+        }
+
+        .calendar-day {
+            text-align: center;
+            font-size: 12px;
+            padding: 6px 4px;
+            border-radius: 6px;
+            color: #333;
+        }
+
+        .calendar-day.today {
+            background: var(--primary);
+            color: white;
+            font-weight: 700;
+        }
+
+        .calendar-day.other-month {
+            color: #ccc;
         }
 
         .search-form button:hover {
@@ -183,45 +230,17 @@
             filter: drop-shadow(0 0 6px rgba(90, 63, 138, 0.4));
         }
 
-        /* Статистика и календарь в шапке */
-        .header-stats-calendar {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            gap: 6px;
-            margin-right: 15px;
-        }
-
+        /* Статистика пользователей в шапке */
         .user-stats {
             display: flex;
             gap: 12px;
             font-size: 13px;
             color: var(--text-light);
-            background: #f8f9fa;
-            padding: 6px 12px;
-            border-radius: 8px;
-            border: 1px solid #e0e0e0;
         }
 
         .user-stats strong {
             color: var(--primary);
             font-weight: 700;
-        }
-
-        .header-calendar {
-            font-size: 12px;
-            text-align: center;
-            padding: 4px 10px;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
-            color: white;
-            border-radius: 8px;
-            min-width: 140px;
-            box-shadow: 0 2px 8px rgba(90, 63, 138, 0.3);
-        }
-
-        #calendar-date {
-            font-weight: 600;
-            text-transform: capitalize;
         }
 
         @media (max-width: 768px) {
@@ -253,28 +272,193 @@
             color: var(--primary);
         }
 
+        /* ========== Унифицированные стили кнопок ========== */
         .btn {
             padding: 10px 20px;
-            border-radius: 8px;
+            border-radius: 10px;
             text-decoration: none;
-            font-weight: 500;
+            font-weight: 600;
+            font-size: 14px;
             cursor: pointer;
             border: none;
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: transparent;
+            color: inherit;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            white-space: nowrap;
         }
 
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Основная кнопка (primary) */
         .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            box-shadow: 0 2px 8px rgba(90, 63, 138, 0.3);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: linear-gradient(135deg, var(--primary-light) 0%, var(--accent) 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(90, 63, 138, 0.4);
+        }
+
+        .btn-primary:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        /* Вторичная кнопка (secondary) */
+        .btn-secondary {
+            background: var(--white);
+            color: var(--primary);
+            border: 2px solid var(--primary);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+        }
+
+        .btn-secondary:hover:not(:disabled) {
             background: var(--primary);
             color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(90, 63, 138, 0.25);
         }
 
-        .btn-primary:hover {
-            background: var(--primary-dark);
+        /* Ghost кнопка (прозрачная) */
+        .btn-ghost {
+            background: transparent;
+            color: var(--primary);
+            border: 1px solid transparent;
         }
 
-        .btn-secondary {
-            background: #eee;
+        .btn-ghost:hover:not(:disabled) {
+            background: rgba(90, 63, 138, 0.08);
+            border-color: rgba(90, 63, 138, 0.2);
+        }
+
+        /* Outline кнопка */
+        .btn-outline {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .btn-outline:hover:not(:disabled) {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        /* Danger кнопка */
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+            box-shadow: 0 2px 6px rgba(220, 53, 69, 0.3);
+        }
+
+        .btn-danger:hover:not(:disabled) {
+            background: #c82333;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4);
+        }
+
+        /* Success кнопка */
+        .btn-success {
+            background: #28a745;
+            color: white;
+            box-shadow: 0 2px 6px rgba(40, 167, 69, 0.3);
+        }
+
+        .btn-success:hover:not(:disabled) {
+            background: #218838;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
+        }
+
+        /* Warning кнопка */
+        .btn-warning {
+            background: #ffc107;
             color: #333;
+            box-shadow: 0 2px 6px rgba(255, 193, 7, 0.3);
+        }
+
+        .btn-warning:hover:not(:disabled) {
+            background: #e0a800;
+            transform: translateY(-2px);
+        }
+
+        /* Icon button - квадратная кнопка с иконкой */
+        .btn-icon {
+            width: 40px;
+            height: 40px;
+            padding: 0;
+            border-radius: 10px;
+            background: var(--white);
+            color: var(--primary);
+            border: 1px solid #eee;
+            font-size: 18px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .btn-icon:hover:not(:disabled) {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            transform: scale(1.05);
+        }
+
+        .btn-icon.btn-sm {
+            width: 32px;
+            height: 32px;
+            font-size: 16px;
+            border-radius: 8px;
+        }
+
+        .btn-icon.btn-lg {
+            width: 48px;
+            height: 48px;
+            font-size: 20px;
+            border-radius: 12px;
+        }
+
+        /* Кнопка с иконкой - маленькие размеры */
+        .btn.btn-sm {
+            padding: 6px 12px;
+            font-size: 13px;
+            gap: 6px;
+        }
+
+        .btn.btn-lg {
+            padding: 14px 28px;
+            font-size: 16px;
+            gap: 10px;
+        }
+
+        /* Кнопки с иконками внутри */
+        .btn svg,
+        .btn img {
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
+        }
+
+        .btn.btn-sm svg,
+        .btn.btn-sm img {
+            width: 16px;
+            height: 16px;
+        }
+
+        .btn.btn-lg svg,
+        .btn.btn-lg img {
+            width: 20px;
+            height: 20px;
         }
 
         .avatar {
@@ -293,7 +477,7 @@
         /* Grid for works */
         .works-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            grid-template-columns: repeat(4, 1fr);
             gap: 20px;
             margin-top: 20px;
         }
@@ -438,7 +622,7 @@
     </style>
     {% block extra_css %}{% endblock %}
 </head>
-<body>
+<body style="--hero-bg-gradient: {% if hero_bg == 'sage' %}linear-gradient(135deg, #8a9a98 0%, #abbcba 50%, #c5d1cf 100%){% elif hero_bg == 'coffee' %}linear-gradient(135deg, #2E1F1B 0%, #3D2A1F 50%, #4A3228 100%){% else %}linear-gradient(135deg, #3d2961 0%, #4a3861 50%, #6b5582 100%){% endif %};">
     <header class="header">
         <div class="header-content">
             <a href="{% url 'core:home' %}" class="logo" title="СТЛ Platform - Творческая платформа">
@@ -454,28 +638,23 @@
             </form>
 
             <nav class="nav-links">
-                <!-- Статистика и календарь в шапке -->
-                <div class="header-stats-calendar" style="display: flex; flex-direction: column; align-items: flex-end; gap: 4px; margin-right: 15px;">
-                    <!-- Статистика пользователей -->
-                    <div class="user-stats" style="display: flex; align-items: center; gap: 12px; font-size: 13px; color: var(--text-light);">
-                        <span class="total-users" title="Всего зарегистрировано" style="display: flex; align-items: center; gap: 6px;">
-                            <img src="/static/icons/{{ icon_set }}/user.svg" alt="" style="width: 16px; height: 16px;">
-                            <strong>{{ total_users|default:"0" }}</strong>
-                        </span>
-                        <span class="online-users" title="Онлайн (5 мин)" style="display: flex; align-items: center; gap: 6px;">
-                            <img src="/static/icons/{{ icon_set }}/follow.svg" alt="" style="width: 16px; height: 16px;">
-                            <strong>{{ online_users|default:"0" }}</strong>
-                        </span>
-                    </div>
-                    <!-- Календарь -->
-                    <div class="header-calendar" style="font-size: 12px; text-align: center; padding: 4px 8px; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); color: white; border-radius: 6px; min-width: 140px;">
-                        <div id="calendar-date" style="font-weight: 600;"></div>
-                    </div>
+                <!-- Статистика пользователей -->
+                <div class="user-stats" style="display: flex; flex-direction: column; align-items: flex-start; gap: 4px; font-size: 13px; color: var(--text-light); margin-right: 15px;">
+                    <span class="total-users" title="Всего зарегистрировано" style="display: flex; align-items: center; gap: 6px; white-space: nowrap;">
+                        <img src="/static/icons/{{ icon_set }}/user.svg" alt="" style="width: 16px; height: 16px;">
+                        <span>Нас уже:</span>
+                        <strong>{{ total_users|default:"0" }}</strong>
+                    </span>
+                    <span class="online-users" title="Онлайн (5 мин)" style="display: flex; align-items: center; gap: 6px; white-space: nowrap;">
+                        <img src="/static/icons/{{ icon_set }}/follow.svg" alt="" style="width: 16px; height: 16px;">
+                        <span>Онлайн:</span>
+                        <strong>{{ online_users|default:"0" }}</strong>
+                    </span>
                 </div>
 
                 {% if user.is_authenticated %}
                     <a href="{% url 'core:feed' %}" class="nav-link" style="display: flex; align-items: center; gap: 6px;">
-                        <img src="/static/icons/{{ icon_set }}/feed.svg" alt="" class="nav-icon">Лента
+                        <img src="/static/icons/{{ icon_set }}/feed.svg" alt="" class="nav-icon">Моя лента
                     </a>
                     <a href="{% url 'core:work_list' %}" class="nav-link" style="display: flex; align-items: center; gap: 6px;">
                         <img src="/static/icons/{{ icon_set }}/gallery.svg" alt="" class="nav-icon">Работы
@@ -492,7 +671,6 @@
                                     <path d="M12 15a3 3 0 100-6 3 3 0 000 6z"/>
                                     <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/>
                                 </svg>
-                                <span>Внешний вид</span>
                             </button>
                             <div class="appearance-menu" id="appearanceMenu">
                                 <div class="appearance-menu-header">
@@ -564,6 +742,22 @@
                                             </svg>
                                             {% endif %}
                                         </a>
+                                        <a href="{% url 'core:switch_icon_set' 'sci-fi' %}" class="appearance-option {% if icon_set == 'sci-fi' %}active{% endif %}">
+                                            <div class="appearance-option-icon">
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                                                </svg>
+                                            </div>
+                                            <div class="appearance-option-content">
+                                                <p class="appearance-option-name">Sci-Fi Glass</p>
+                                                <p class="appearance-option-desc">Гласморфизм с фиолетовым градиентом</p>
+                                            </div>
+                                            {% if icon_set == 'sci-fi' %}
+                                            <svg class="appearance-option-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                                <path d="M20 6L9 17L4 12"/>
+                                            </svg>
+                                            {% endif %}
+                                        </a>
                                     </div>
                                     <!-- Color Themes Section -->
                                     <div class="appearance-section">
@@ -606,7 +800,46 @@
                                             </div>
                                         </button>
                                     </div>
+
+                                    <!-- Цвет фона Герой секции -->
+                                    <div class="appearance-section">
+                                        <h5 class="appearance-section-title">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                                <rect x="3" y="3" width="18" height="18" rx="2"/>
+                                                <path d="M3 9h18"/>
+                                            </svg>
+                                            Цвет основных элементов
+                                        </h5>
+                                        <button class="appearance-option" onclick="setHeroBg('classic', event)">
+                                            <div class="theme-swatch">
+                                                <div class="theme-swatch-color" style="background: linear-gradient(135deg, #3d2961 0%, #4a3861 50%, #6b5582 100%);"></div>
+                                            </div>
+                                            <div class="appearance-option-content">
+                                                <p class="appearance-option-name">Классический</p>
+                                                <p class="appearance-option-desc">Фиолетовый градиент</p>
+                                            </div>
+                                        </button>
+                                        <button class="appearance-option" onclick="setHeroBg('sage', event)">
+                                            <div class="theme-swatch">
+                                                <div class="theme-swatch-color" style="background: #abbcba;"></div>
+                                            </div>
+                                            <div class="appearance-option-content">
+                                                <p class="appearance-option-name">Шалфей</p>
+                                                <p class="appearance-option-desc">Природный серо-зелёный</p>
+                                            </div>
+                                        </button>
+                                        <button class="appearance-option" onclick="setHeroBg('coffee', event)">
+                                            <div class="theme-swatch">
+                                                <div class="theme-swatch-color" style="background: #2E1F1B;"></div>
+                                            </div>
+                                            <div class="appearance-option-content">
+                                                <p class="appearance-option-name">Кофейный</p>
+                                                <p class="appearance-option-desc">Тёмный шоколад</p>
+                                            </div>
+                                        </button>
+                                    </div>
                                 </div>
+                                {% if user.is_staff %}
                                 <div class="appearance-footer">
                                     <a href="{% url 'core:admin_theme' %}" class="appearance-footer-link">
                                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -616,14 +849,18 @@
                                         Полные настройки
                                     </a>
                                 </div>
+                                {% endif %}
                             </div>
                         </div>
                         <a href="{% url 'admin:index' %}" class="nav-link" style="display: flex; align-items: center; gap: 6px; color: var(--primary-dark); font-weight: 600;">
                             <img src="/static/icons/{{ icon_set }}/admin.svg" alt="" class="nav-icon">Админ-панель
                         </a>
                     {% endif %}
-                    <a href="{% url 'core:work_create' %}" class="btn btn-primary" style="display: flex; align-items: center; gap: 6px; color: #ffd700 !important;">
+                    <a href="{% url 'core:work_create' %}" class="btn" style="display: flex; align-items: center; gap: 6px; background: var(--hero-bg-gradient); color: #ffd700 !important; padding: 6px 12px;">
                         <img src="/static/icons/{{ icon_set }}/upload.svg" alt="" class="nav-icon" style="filter: brightness(0) invert(1);">Создать
+                    </a>
+                    <a href="{% url 'core:drafts' %}" class="nav-link" style="display: flex; align-items: center; gap: 6px; color: var(--primary-dark); font-weight: 600;">
+                        <img src="/static/icons/{{ icon_set }}/edit.svg" alt="" class="nav-icon">Черновики
                     </a>
                     <a href="{% url 'interactions:notifications' %}" class="nav-link" style="display: flex; align-items: center; gap: 6px; position: relative;">
                         <img src="/static/icons/{{ icon_set }}/notification.svg" alt="" class="nav-icon">Уведомления
@@ -679,7 +916,7 @@
             <div class="footer-section">
                 <h4>Навигация</h4>
                 <a href="{% url 'core:home' %}">Главная</a>
-                <a href="{% url 'core:feed' %}">Лента</a>
+                <a href="{% url 'core:feed' %}">Моя лента</a>
                 <a href="{% url 'core:work_list' %}">Работы</a>
                 <a href="{% url 'core:tag_list' %}">Теги</a>
             </div>
@@ -702,17 +939,50 @@
     {% block extra_js %}{% endblock %}
 
     <script>
-        // Календарь в шапке - отображение текущей даты
-        document.addEventListener('DOMContentLoaded', function() {
-            const calendarDate = document.getElementById('calendar-date');
-            if (calendarDate) {
-                const now = new Date();
-                const options = { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' };
-                const dateStr = now.toLocaleDateString('ru-RU', options);
-                // Capitalize first letter
-                calendarDate.textContent = dateStr.charAt(0).toUpperCase() + dateStr.slice(1);
+        // Переключение фона Герой секции
+        function setHeroBg(bgType, event) {
+            if (event) event.stopPropagation();
+
+            const gradients = {
+                'classic': 'linear-gradient(135deg, #3d2961 0%, #4a3861 50%, #6b5582 100%)',
+                'sage': 'linear-gradient(135deg, #8a9a98 0%, #abbcba 50%, #c5d1cf 100%)',
+                'coffee': 'linear-gradient(135deg, #2E1F1B 0%, #3D2A1F 50%, #4A3228 100%)',
+            };
+
+            // Применяем тему визуально
+            document.documentElement.style.setProperty('--hero-bg-gradient', gradients[bgType]);
+
+            // Сохраняем в localStorage
+            localStorage.setItem('heroBg', bgType);
+
+            // Сохраняем на сервер в сессию
+            fetch('/api/set-hero-bg/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({ heroBg: bgType })
+            }).catch(err => console.error('Error saving hero bg:', err));
+        }
+
+        // Применяем сохранённый фон Герой секции при загрузке
+        function applyHeroBg() {
+            const savedBg = localStorage.getItem('heroBg');
+            if (savedBg) {
+                const gradients = {
+                    'classic': 'linear-gradient(135deg, #3d2961 0%, #4a3861 50%, #6b5582 100%)',
+                    'sage': 'linear-gradient(135deg, #8a9a98 0%, #abbcba 50%, #c5d1cf 100%)',
+                    'coffee': 'linear-gradient(135deg, #2E1F1B 0%, #3D2A1F 50%, #4A3228 100%)',
+                };
+                if (gradients[savedBg]) {
+                    document.documentElement.style.setProperty('--hero-bg-gradient', gradients[savedBg]);
+                }
             }
-        });
+        }
+
+        // Вызываем при загрузке страницы
+        applyHeroBg();
 
         // Appearance Dropdown Menu
         function toggleAppearanceMenu(event) {

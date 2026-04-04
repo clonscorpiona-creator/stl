@@ -6,6 +6,7 @@ from django.db.models import Q, Count, F
 from django.core.paginator import Paginator
 from django.utils import timezone
 from django.http import JsonResponse
+from django.views.decorators.http import require_POST
 from .models import Work, Category, Collection, IconSet
 from taggit.models import Tag
 
@@ -29,67 +30,144 @@ def spa_view(request):
 
 
 def home_view(request):
-    """Главная страница"""
-    # Обычные пользователи не видят заблокированные работы, администрация видит все
-    if request.user.is_staff:
-        works = Work.objects.filter(status='published').select_related('author', 'category')[:12]
-    else:
-        works = Work.objects.filter(status='published', is_blocked=False).select_related('author', 'category')[:12]
+    """Главная страница - 4x3, по 1 top-liked работе из каждой категории, макс 12"""
     categories = Category.objects.all()
+    works = []
+    for cat in categories:
+        top_work = Work.objects.filter(
+            status='published',
+            category=cat
+        ).select_related('author', 'category').order_by('-likes_count', '-created_at').first()
+        if top_work:
+            works.append(top_work)
+    # Сортируем по лайкам и берём макс 12
+    works.sort(key=lambda w: w.likes_count, reverse=True)
+    works = works[:12]
     return render(request, 'core/home.html', {'works': works, 'categories': categories})
+
+
+def buttons_test_view(request):
+    """Тестовая страница кнопок"""
+    return render(request, 'core/buttons_test.html')
 
 
 @login_required
 def feed_view(request):
-    """Лента новостей - работы подписок и рекомендации"""
-    # Работы авторов, на которых подписан пользователь
-    following_ids = request.user.following.values_list('following_id', flat=True)
-    # Обычные пользователи не видят заблокированные работы, администрация видит все
-    if request.user.is_staff:
-        following_works = Work.objects.filter(
-            status='published',
-            author_id__in=following_ids
-        ).select_related('author', 'category').order_by('-created_at')[:20]
-
-        # Рекомендации (популярные работы)
-        recommended = Work.objects.filter(
-            status='published'
-        ).exclude(author=request.user).annotate(
-            score=F('likes_count') + F('views_count') * 0.5
-        ).order_by('-score', '-created_at')[:10]
-    else:
-        following_works = Work.objects.filter(
-            status='published',
-            is_blocked=False,
-            author_id__in=following_ids
-        ).select_related('author', 'category').order_by('-created_at')[:20]
-
-        # Рекомендации (популярные работы)
-        recommended = Work.objects.filter(
-            status='published',
-            is_blocked=False
-        ).exclude(author=request.user).annotate(
-            score=F('likes_count') + F('views_count') * 0.5
-        ).order_by('-score', '-created_at')[:10]
-
-    # Категории для фильтра
+    """Моя лента — новые работы из подписок (5 в ряд)"""
     categories = Category.objects.all()
+    category_slug = request.GET.get('category')
+    current_category_slug = category_slug
+    current_category = None
+    following_works = []
+    category_filtered_works = []
+
+    following_ids = list(request.user.following.values_list('following_id', flat=True))
+
+    if category_slug:
+        # Показаны работы конкретной категории из подписок
+        cat_obj = categories.filter(slug=category_slug).first()
+        current_category = cat_obj.name if cat_obj else category_slug
+
+        if following_ids:
+            following_works = Work.objects.filter(
+                status='published',
+                author_id__in=following_ids,
+                category__slug=category_slug
+            ).select_related('author', 'category').order_by('-created_at')[:20]
+
+        category_filtered_works = Work.objects.filter(
+            status='published',
+            category__slug=category_slug
+        ).select_related('author', 'category').order_by('-likes_count', '-created_at')[:20]
+    elif following_ids:
+        # По 5 новых работ из каждой подписанной категории
+        followed_categories = Category.objects.filter(
+            works__author_id__in=following_ids,
+            works__status='published'
+        ).distinct()
+        for cat in followed_categories:
+            works = Work.objects.filter(
+                status='published',
+                category=cat,
+                author_id__in=following_ids
+            ).select_related('author', 'category').order_by('-created_at')[:5]
+            for w in works:
+                following_works.append(w)
+    else:
+        # Нет подписок - по 5 новых работ из каждой категории
+        for cat in categories:
+            works = Work.objects.filter(
+                status='published',
+                category=cat
+            ).select_related('author', 'category').order_by('-created_at')[:5]
+            for w in works:
+                following_works.append(w)
 
     context = {
         'following_works': following_works,
-        'recommended': recommended,
         'categories': categories,
+        'current_category': current_category,
+        'current_category_slug': current_category_slug,
+        'category_filtered_works': category_filtered_works,
+        'has_following': len(following_ids) > 0,
     }
     return render(request, 'core/feed.html', context)
 
 
+def works_all_view(request):
+    """Все работы — сетка категорий по столбцам, 3 ряда"""
+    import random
+    categories = Category.objects.all()
+    category_slug = request.GET.get('category')
+    current_category_slug = category_slug
+    current_category = None
+    columns = []  # [{'category': cat, 'new': work1, 'popular': work2, 'random': work3}, ...]
+    category_filtered_works = []
+
+    if category_slug:
+        cat_obj = categories.filter(slug=category_slug).first()
+        current_category = cat_obj.name if cat_obj else category_slug
+        category_filtered_works = Work.objects.filter(
+            status='published',
+            category__slug=category_slug
+        ).select_related('author', 'category').order_by('-likes_count', '-created_at')[:20]
+    else:
+        for cat in categories:
+            works_sorted = list(
+                Work.objects.filter(status='published', category=cat)
+                    .select_related('author', 'category')
+                    .order_by('-created_at', '-likes_count')[:10]
+            )
+            if works_sorted:
+                new_work = works_sorted[0]
+                popular_work = max(works_sorted, key=lambda w: w.likes_count)
+                # Третья — случайная, не первая и не популярная
+                rest = [w for w in works_sorted if w.pk != new_work.pk and w.pk != popular_work.pk]
+                random_work = random.choice(rest) if rest else None
+
+                columns.append({
+                    'category': cat,
+                    'new': new_work,
+                    'popular': popular_work,
+                    'random': random_work,
+                })
+
+    context = {
+        'categories': categories,
+        'current_category': current_category,
+        'current_category_slug': current_category_slug,
+        'columns': columns,
+        'category_filtered_works': category_filtered_works,
+    }
+    return render(request, 'core/works_all.html', context)
+
+
 def work_list_view(request):
     """Список всех работ с фильтрами"""
-    # Обычные пользователи не видят заблокированные работы, администрация видит все
-    if request.user.is_staff:
-        works = Work.objects.filter(status='published').select_related('author', 'category')
-    else:
-        works = Work.objects.filter(status='published', is_blocked=False).select_related('author', 'category')
+    works = Work.objects.filter(status='published').select_related('author', 'category')
+
+    # Add avatar to select_related for displaying author info
+    works = works.select_related('author')
 
     # Фильтры
     category_slug = request.GET.get('category')
@@ -129,6 +207,16 @@ def work_list_view(request):
 
     categories = Category.objects.all()
 
+    # Работы авторов, на которых подписан пользователь (для авторизованных)
+    following_works = []
+    if request.user.is_authenticated:
+        following_ids = list(request.user.following.values_list('following_id', flat=True))
+        if following_ids:
+            following_works = Work.objects.filter(
+                status='published',
+                author_id__in=following_ids
+            ).select_related('author', 'category').order_by('-created_at')[:6]
+
     context = {
         'works': works,
         'categories': categories,
@@ -137,48 +225,91 @@ def work_list_view(request):
         'current_tag': tag_slug,
         'current_sort': sort,
         'query': query,
+        'following_works': following_works,
     }
     return render(request, 'core/work_list.html', context)
+
+
+@login_required
+def drafts_view(request):
+    """Черновики пользователя"""
+    drafts = Work.objects.filter(
+        author=request.user,
+        status='draft'
+    ).select_related('author', 'category').order_by('-created_at')
+
+    context = {
+        'drafts': drafts,
+        'page_title': 'Мои черновики',
+    }
+    return render(request, 'core/drafts.html', context)
+
+
+@login_required
+@require_POST
+def publish_work(request, username, slug):
+    """Опубликовать работу из черновиков"""
+    work = get_object_or_404(Work, slug=slug, author__username=username)
+
+    if work.author != request.user and not request.user.is_staff:
+        return JsonResponse({'error': 'Нет прав'}, status=403)
+
+    work.status = 'published'
+    work.published_at = timezone.now()
+    work.save(update_fields=['status', 'published_at'])
+
+    return JsonResponse({
+        'success': True,
+        'status': 'published',
+        'slug': work.slug,
+        'redirect_url': f'/works/{work.author.username}/{work.slug}/'
+    })
+
+
+@login_required
+@require_POST
+def unpublish_work(request, username, slug):
+    """Вернуть работу в черновики"""
+    work = get_object_or_404(Work, slug=slug, author__username=username)
+
+    if work.author != request.user and not request.user.is_staff:
+        return JsonResponse({'error': 'Нет прав'}, status=403)
+
+    work.status = 'draft'
+    work.save(update_fields=['status'])
+
+    return JsonResponse({'success': True, 'status': 'draft'})
 
 
 def work_detail_view(request, username, slug):
     """Страница работы"""
     work = get_object_or_404(
-        Work.objects.select_related('author', 'category').prefetch_related('tags', 'images'),
+        Work.objects.select_related('author', 'category').prefetch_related('tags', 'images', 'audio_files'),
         slug=slug,
         author__username=username
     )
-
-    # Проверка доступа: заблокированные работы видны только администрации и автору
-    if work.is_blocked and not request.user.is_staff and request.user != work.author:
-        return redirect('core:feed')
 
     # Увеличиваем счётчик просмотров
     work.views_count += 1
     work.save(update_fields=['views_count'])
 
-    # Похожие работы (не показываем заблокированные)
-    if request.user.is_staff:
-        similar_works = Work.objects.filter(
-            status='published',
-            category=work.category
-        ).exclude(pk=work.pk).select_related('author')[:6]
-    else:
-        similar_works = Work.objects.filter(
-            status='published',
-            is_blocked=False,
-            category=work.category
-        ).exclude(pk=work.pk).select_related('author')[:6]
+    # Похожие работы
+    similar_works = Work.objects.filter(
+        status='published',
+        category=work.category
+    ).exclude(pk=work.pk).select_related('author')[:6]
 
     # Комментарии
     comments = work.comments.filter(parent=None).select_related('user')
 
-    # Проверка лайка
+    # Проверка лайка, сохранения и репоста
     is_liked = False
     is_saved = False
+    is_reposted = False
     if request.user.is_authenticated:
         is_liked = work.likes.filter(user=request.user).exists()
         is_saved = work.saved_by.filter(user=request.user).exists()
+        is_reposted = work.reposts.filter(user=request.user).exists()
 
     context = {
         'work': work,
@@ -186,6 +317,7 @@ def work_detail_view(request, username, slug):
         'comments': comments,
         'is_liked': is_liked,
         'is_saved': is_saved,
+        'is_reposted': is_reposted,
     }
     return render(request, 'core/work_detail.html', context)
 
@@ -202,7 +334,12 @@ def create_work(request):
         category_id = request.POST.get('category')
         tags = request.POST.get('tags', '')
         apply_watermark = request.POST.get('apply_watermark') == 'on'
+        status = request.POST.get('status', 'published')  # Статус работы
         cover_index = request.POST.get('cover_index', '0')  # Индекс изображения для обложки
+
+        # Валидация статуса
+        if status not in ['draft', 'published', 'moderation']:
+            status = 'moderation'  # По умолчанию на модерацию
 
         # Отладка: проверяем параметр водяного знака
         print(f"DEBUG: apply_watermark = {apply_watermark}, POST value = {request.POST.get('apply_watermark')}")
@@ -225,7 +362,7 @@ def create_work(request):
             description=description,
             category_id=category_id,
             slug=slug,
-            status='published'  # Сразу публикуем работу
+            status=status
         )
 
         # Теги
@@ -273,6 +410,11 @@ def create_work(request):
         for i, video in enumerate(videos):
             work.videos.create(video=video, order=i)
 
+        # Аудио
+        audios = request.FILES.getlist('audios')
+        for i, audio in enumerate(audios):
+            work.audio_files.create(audio=audio, order=i)
+
         # Проверяем, это AJAX запрос
         is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
         is_json = 'application/json' in request.headers.get('Accept', '')
@@ -296,7 +438,7 @@ def edit_work(request, username, slug):
     from .image_utils import apply_watermark_to_image
 
     work = get_object_or_404(
-        Work.objects.select_related('author'),
+        Work.objects.select_related('author').prefetch_related('images', 'videos'),
         slug=slug,
         author__username=username
     )
@@ -307,10 +449,22 @@ def edit_work(request, username, slug):
 
     if request.method == 'POST':
         apply_watermark = request.POST.get('apply_watermark') == 'on'
+        status = request.POST.get('status')
         cover_index = request.POST.get('cover_index', '0')
 
         work.title = request.POST.get('title', work.title)
         work.description = request.POST.get('description', work.description)
+
+        # Обновление статуса работы (если передан)
+        if status:
+            if status not in ['draft', 'published', 'moderation', 'rejected']:
+                status = 'moderation'
+            # Запрет на публикацию в обход модерации для обычных пользователей
+            if status == 'published' and not request.user.is_staff:
+                # Если работа была на модерации или отклонена, оставляем на модерации
+                if work.status in ['moderation', 'rejected']:
+                    status = 'moderation'
+            work.status = status
 
         # Обработка категории (может быть пустой)
         category_id = request.POST.get('category')
@@ -322,11 +476,30 @@ def edit_work(request, username, slug):
         if tags:
             work.tags.add(*[t.strip() for t in tags.split(',')])
 
-        # Получаем все изображения
+        # Удаление выбранных изображений
+        delete_image_ids = request.POST.getlist('delete_images')
+        if delete_image_ids:
+            # Проверяем, не является ли удаляемое изображение обложкой
+            for img_id in delete_image_ids:
+                try:
+                    img_to_delete = work.images.get(id=img_id)
+                    if work.cover and work.cover.name == img_to_delete.image.name:
+                        # Если удаляемое изображение - обложка, снимаем обложку
+                        work.cover = None
+                except:
+                    pass
+            work.images.filter(id__in=delete_image_ids).delete()
+
+        # Удаление выбранных видео
+        delete_video_ids = request.POST.getlist('delete_videos')
+        if delete_video_ids:
+            work.videos.filter(id__in=delete_video_ids).delete()
+
+        # Получаем новые изображения
         images = request.FILES.getlist('images')
 
         if images:
-            # Обрабатываем все изображения
+            # Обрабатываем все новые изображения
             processed_images = []
             for i, img in enumerate(images):
                 if apply_watermark:
@@ -335,39 +508,32 @@ def edit_work(request, username, slug):
                     img = apply_watermark_to_image(img, request.user.username, apply_watermark_flag=False)
                 processed_images.append(img)
 
-            # Устанавливаем обложку из выбранного изображения
-            try:
-                cover_idx = int(cover_index)
-                if 0 <= cover_idx < len(processed_images):
-                    work.cover = processed_images[cover_idx]
-                    work.save()
-                    # Сохраняем остальные изображения
-                    for i, img in enumerate(processed_images):
-                        if i != cover_idx:
-                            work.images.create(image=img, order=i if i < cover_idx else i-1)
-                else:
-                    # Если индекс вне диапазона, оставляем текущую обложку или берём первую
-                    if not work.cover:
-                        work.cover = processed_images[0]
-                        work.save()
-                    for i, img in enumerate(processed_images[1:], 1):
-                        work.images.create(image=img, order=i-1)
-            except (ValueError, IndexError):
-                if not work.cover:
-                    work.cover = processed_images[0]
-                    work.save()
+            # Если нет обложки, устанавливаем из новых изображений
+            if not work.cover and processed_images:
+                work.cover = processed_images[0]
+                work.save()
+                # Сохраняем остальные новые изображения
                 for i, img in enumerate(processed_images[1:], 1):
-                    work.images.create(image=img, order=i-1)
+                    work.images.create(image=img, order=i)
+            elif processed_images:
+                # Если обложка есть, добавляем новые изображения как дополнительные
+                for i, img in enumerate(processed_images):
+                    work.images.create(image=img, order=work.images.count())
 
-        # Видео
+        # Новые видео
         videos = request.FILES.getlist('videos')
-        for i, video in enumerate(videos):
+        for video in videos:
             work.videos.create(video=video, order=work.videos.count())
 
-        # Удаление видео
-        delete_video_ids = request.POST.getlist('delete_videos')
-        if delete_video_ids:
-            work.videos.filter(id__in=delete_video_ids).delete()
+        # Новые аудио
+        audios = request.FILES.getlist('audios')
+        for audio in audios:
+            work.audio_files.create(audio=audio, order=work.audio_files.count())
+
+        # Удаление выбранных аудио
+        delete_audio_ids = request.POST.getlist('delete_audios')
+        if delete_audio_ids:
+            work.audio_files.filter(id__in=delete_audio_ids).delete()
 
         # Принудительная генерация slug если он некорректный
         if not work.slug or work.slug == '-1':
@@ -668,6 +834,35 @@ def get_theme(request):
 
     current_theme = request.session.get('color_theme', 'olive-sage')
     return JsonResponse({'theme': current_theme})
+
+
+@staff_member_required
+def set_hero_bg(request):
+    """
+    API для установки фона Герой секции.
+    Доступно только для персонала (staff).
+    """
+    from django.http import JsonResponse
+
+    if request.method == 'POST':
+        import json
+        try:
+            data = json.loads(request.body)
+            hero_bg = data.get('heroBg')
+
+            # Проверка допустимых значений
+            valid_bg = ['classic', 'sage', 'coffee']
+            if hero_bg not in valid_bg:
+                return JsonResponse({'error': 'Invalid bg'}, status=400)
+
+            # Сохраняем в сессию
+            request.session['hero_bg'] = hero_bg
+
+            return JsonResponse({'success': True, 'heroBg': hero_bg})
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON'}, status=400)
+
+    return JsonResponse({'error': 'Method not allowed'}, status=405)
 
 
 @login_required

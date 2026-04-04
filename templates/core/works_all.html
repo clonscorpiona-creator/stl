@@ -1,0 +1,202 @@
+{% extends 'base.html' %}
+
+{% block title %}Все работы - STL{% endblock %}
+
+{% block content %}
+
+<!-- Конкретная категория -->
+{% if current_category %}
+<div>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h1 style="font-size: 28px;">Категория: {{ current_category }}</h1>
+        <a href="{% url 'core:work_list' %}" style="color: #e60023; text-decoration: none;">Все работы →</a>
+    </div>
+    {% if category_filtered_works %}
+    <div class="works-grid" style="grid-template-columns: repeat(4, 1fr);">
+        {% for work in category_filtered_works %}
+            <div class="work-card">
+                {% if work.cover %}
+                    <a href="{% url 'core:work_detail' work.author.username work.slug %}" class="work-card-link">
+                        <img src="{{ work.cover.url }}" alt="{{ work.title }}">
+                    </a>
+                {% endif %}
+                <div class="work-card-body">
+                    <h3 class="work-card-title">
+                        <a href="{% url 'core:work_detail' work.author.username work.slug %}" style="color: inherit; text-decoration: none;">{{ work.title }}</a>
+                    </h3>
+                    <p class="work-card-author" style="display: flex; align-items: center; gap: 10px;">
+                        {% if work.author %}
+                            {% if work.author.avatar %}
+                                <img src="{{ work.author.avatar.url }}" alt="{{ work.author.username }}" style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover;">
+                            {% else %}
+                                <div style="width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 14px; font-weight: bold;">
+                                    {{ work.author.username|first|upper }}
+                                </div>
+                            {% endif %}
+                            <a href="{% url 'accounts:profile' work.author.username %}">{{ work.author.username }}</a>
+                        {% endif %}
+                    </p>
+                    <div class="work-stats">
+                        <span><img src="/static/icons/{{ icon_set }}/heart.svg" alt="" style="width: 14px; height: 14px;"> {{ work.likes_count }}</span>
+                        <span><img src="/static/icons/{{ icon_set }}/eye.svg" alt="" style="width: 14px; height: 14px;"> {{ work.views_count }}</span>
+                        <span><img src="/static/icons/{{ icon_set }}/message.svg" alt="" style="width: 14px; height: 14px;"> {{ work.comments_count }}</span>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div style="text-align: center; padding: 60px 20px; color: #666;">
+        <p style="font-size: 18px; margin-bottom: 8px;">В данной категории работ пока нет.</p>
+        <p style="font-size: 15px; margin-bottom: 20px; color: #888;">Хотите создать работу в этой категории?</p>
+        <a href="{% url 'core:work_create' %}" class="btn btn-primary" style="display: inline-block; padding: 12px 32px; border-radius: 8px; text-decoration: none; font-size: 16px;">Создать работу</a>
+    </div>
+    {% endif %}
+</div>
+{% else %}
+<!-- Все категории — столбцы по категориям, горизонтальный скролл -->
+<div>
+    <h1 style="font-size: 28px; margin-bottom: 25px;">Все работы</h1>
+
+    <div class="categories-scroll-wrapper" style="overflow-x: auto; padding-bottom: 16px;">
+        <div class="categories-grid" style="display: flex; gap: 16px; min-width: max-content;">
+            {% for col in columns %}
+            <div class="category-column" style="flex-shrink: 0; width: 280px; display: flex; flex-direction: column; gap: 14px;">
+                <!-- Подпись категории -->
+                <div class="category-label" style="text-align: center; font-size: 15px; font-weight: 700; color: var(--primary, #e60023); padding: 8px; background: #fff; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+                    <a href="?category={{ col.category.slug }}" style="color: var(--primary, #e60023); text-decoration: none;">
+                        {{ col.category.name }}
+                    </a>
+                </div>
+
+                <!-- Ряд 1: Новая работа -->
+                <div class="work-card mini">
+                    <div style="font-size: 11px; color: #999; text-align: center; padding: 4px 0; background: #f9f9f9; border-radius: 8px; margin-bottom: 8px; font-weight: 600;">Новая</div>
+                    {% if col.new %}
+                        {% if col.new.cover %}
+                            <a href="{% url 'core:work_detail' col.new.author.username col.new.slug %}" class="work-card-link">
+                                <img src="{{ col.new.cover.url }}" alt="{{ col.new.title }}" style="width: 100%; height: 160px; object-fit: cover;">
+                            </a>
+                        {% endif %}
+                        <div class="work-card-body" style="padding: 10px;">
+                            <h3 class="work-card-title" style="font-size: 14px;">
+                                <a href="{% url 'core:work_detail' col.new.author.username col.new.slug %}" style="color: inherit; text-decoration: none;">{{ col.new.title|truncatechars:35 }}</a>
+                            </h3>
+                            <p class="work-card-author" style="display: flex; align-items: center; gap: 8px; font-size: 12px;">
+                                {% if col.new.author %}
+                                    {% if col.new.author.avatar %}
+                                        <img src="{{ col.new.author.avatar.url }}" alt="" style="width: 28px; height: 28px; border-radius: 50%; object-fit: cover;">
+                                    {% else %}
+                                        <div style="width: 28px; height: 28px; min-width: 28px; border-radius: 50%; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 11px; font-weight: bold;">
+                                            {{ col.new.author.username|first|upper }}
+                                        </div>
+                                    {% endif %}
+                                    <a href="{% url 'accounts:profile' col.new.author.username %}">{{ col.new.author.username }}</a>
+                                {% endif %}
+                            </p>
+                            <div class="work-stats" style="font-size: 12px; gap: 10px;">
+                                <span style="display: flex; align-items: center; gap: 3px;">
+                                    <img src="/static/icons/{{ icon_set }}/heart.svg" alt="" style="width: 12px; height: 12px;"> {{ col.new.likes_count }}
+                                </span>
+                                <span style="display: flex; align-items: center; gap: 3px;">
+                                    <img src="/static/icons/{{ icon_set }}/eye.svg" alt="" style="width: 12px; height: 12px;"> {{ col.new.views_count }}
+                                </span>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div style="text-align: center; padding: 30px 10px; color: #bbb; font-size: 13px;">Нет работ</div>
+                    {% endif %}
+                </div>
+
+                <!-- Ряд 2: Популярная работа -->
+                <div class="work-card mini">
+                    <div style="font-size: 11px; color: #999; text-align: center; padding: 4px 0; background: #f9f9f9; border-radius: 8px; margin-bottom: 8px; font-weight: 600;">Популярная</div>
+                    {% if col.popular %}
+                        {% if col.popular.cover %}
+                            <a href="{% url 'core:work_detail' col.popular.author.username col.popular.slug %}" class="work-card-link">
+                                <img src="{{ col.popular.cover.url }}" alt="{{ col.popular.title }}" style="width: 100%; height: 160px; object-fit: cover;">
+                            </a>
+                        {% endif %}
+                        <div class="work-card-body" style="padding: 10px;">
+                            <h3 class="work-card-title" style="font-size: 14px;">
+                                <a href="{% url 'core:work_detail' col.popular.author.username col.popular.slug %}" style="color: inherit; text-decoration: none;">{{ col.popular.title|truncatechars:35 }}</a>
+                            </h3>
+                            <p class="work-card-author" style="display: flex; align-items: center; gap: 8px; font-size: 12px;">
+                                {% if col.popular.author %}
+                                    {% if col.popular.author.avatar %}
+                                        <img src="{{ col.popular.author.avatar.url }}" alt="" style="width: 28px; height: 28px; border-radius: 50%; object-fit: cover;">
+                                    {% else %}
+                                        <div style="width: 28px; height: 28px; min-width: 28px; border-radius: 50%; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 11px; font-weight: bold;">
+                                            {{ col.popular.author.username|first|upper }}
+                                        </div>
+                                    {% endif %}
+                                    <a href="{% url 'accounts:profile' col.popular.author.username %}">{{ col.popular.author.username }}</a>
+                                {% endif %}
+                            </p>
+                            <div class="work-stats" style="font-size: 12px; gap: 10px;">
+                                <span style="display: flex; align-items: center; gap: 3px;">
+                                    <img src="/static/icons/{{ icon_set }}/heart.svg" alt="" style="width: 12px; height: 12px;"> {{ col.popular.likes_count }}
+                                </span>
+                                <span style="display: flex; align-items: center; gap: 3px;">
+                                    <img src="/static/icons/{{ icon_set }}/eye.svg" alt="" style="width: 12px; height: 12px;"> {{ col.popular.views_count }}
+                                </span>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div style="text-align: center; padding: 30px 10px; color: #bbb; font-size: 13px;">Нет работ</div>
+                    {% endif %}
+                </div>
+
+                <!-- Ряд 3: Случайная работа -->
+                <div class="work-card mini">
+                    <div style="font-size: 11px; color: #999; text-align: center; padding: 4px 0; background: #f9f9f9; border-radius: 8px; margin-bottom: 8px; font-weight: 600;">Интересное</div>
+                    {% if col.random %}
+                        {% if col.random.cover %}
+                            <a href="{% url 'core:work_detail' col.random.author.username col.random.slug %}" class="work-card-link">
+                                <img src="{{ col.random.cover.url }}" alt="{{ col.random.title }}" style="width: 100%; height: 160px; object-fit: cover;">
+                            </a>
+                        {% endif %}
+                        <div class="work-card-body" style="padding: 10px;">
+                            <h3 class="work-card-title" style="font-size: 14px;">
+                                <a href="{% url 'core:work_detail' col.random.author.username col.random.slug %}" style="color: inherit; text-decoration: none;">{{ col.random.title|truncatechars:35 }}</a>
+                            </h3>
+                            <p class="work-card-author" style="display: flex; align-items: center; gap: 8px; font-size: 12px;">
+                                {% if col.random.author %}
+                                    {% if col.random.author.avatar %}
+                                        <img src="{{ col.random.author.avatar.url }}" alt="" style="width: 28px; height: 28px; border-radius: 50%; object-fit: cover;">
+                                    {% else %}
+                                        <div style="width: 28px; height: 28px; min-width: 28px; border-radius: 50%; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 11px; font-weight: bold;">
+                                            {{ col.random.author.username|first|upper }}
+                                        </div>
+                                    {% endif %}
+                                    <a href="{% url 'accounts:profile' col.random.author.username %}">{{ col.random.author.username }}</a>
+                                {% endif %}
+                            </p>
+                            <div class="work-stats" style="font-size: 12px; gap: 10px;">
+                                <span style="display: flex; align-items: center; gap: 3px;">
+                                    <img src="/static/icons/{{ icon_set }}/heart.svg" alt="" style="width: 12px; height: 12px;"> {{ col.random.likes_count }}
+                                </span>
+                                <span style="display: flex; align-items: center; gap: 3px;">
+                                    <img src="/static/icons/{{ icon_set }}/eye.svg" alt="" style="width: 12px; height: 12px;"> {{ col.random.views_count }}
+                                </span>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div style="text-align: center; padding: 30px 10px; color: #bbb; font-size: 13px;">Нет работ</div>
+                    {% endif %}
+                </div>
+            </div>
+            {% empty %}
+                <div style="text-align: center; padding: 60px 20px; color: #666; width: 100%;">
+                    <p style="font-size: 18px; margin-bottom: 16px;">Работ пока нет.</p>
+                    <a href="{% url 'core:work_create' %}" class="btn btn-primary" style="display: inline-block; padding: 12px 32px; border-radius: 8px; text-decoration: none; font-size: 16px;">
+                        Создать работу
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% endblock %}
