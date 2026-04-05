@@ -5,14 +5,14 @@
 {% block content %}
 <div style="max-width: 1200px; margin: 0 auto;">
     <h1 style="font-size: 28px; margin-bottom: 10px;">Новые работы и комментарии</h1>
-    <p style="color: #666; margin-bottom: 30px;">
+    <p style="color: var(--text-light); margin-bottom: 30px;">
         Работы из любимых категорий и комментарии к вашим работам
     </p>
 
     {% if no_favorites %}
-    <div style="background: white; padding: 40px; border-radius: 12px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-        <h2 style="font-size: 22px; margin-bottom: 15px; color: #333;">У вас нет любимых категорий</h2>
-        <p style="color: #666; margin-bottom: 25px; max-width: 500px; margin-left: auto; margin-right: auto;">
+    <div style="background: color-mix(in srgb, var(--background) 10%, var(--foreground)); padding: 40px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border: 1px solid color-mix(in srgb, var(--background) 80%, var(--text));">
+        <h2 style="font-size: 22px; margin-bottom: 15px; text-align: center; color: var(--text);">У вас нет любимых категорий</h2>
+        <p style="color: var(--text-light); margin-bottom: 25px; max-width: 500px; margin-left: auto; margin-right: auto;">
             Чтобы получать уведомления о новых работах, выберите любимые категории в настройках профиля.
             Без выбранных категорий уведомления не отправляются.
         </p>
@@ -72,11 +72,11 @@
                                         {{ work.comments_count }}
                                     </span>
                                 </div>
-                                <div style="font-size: 11px; color: #999; margin-top: 8px;">
+                                <div style="font-size: 11px; color: var(--text-light); margin-top: 8px;">
                                     {{ work.created_at|date:"d.m.Y" }}
                                 </div>
                                 {% if work.category %}
-                                    <div style="margin-top: 8px; font-size: 12px; color: #666;">
+                                    <div style="margin-top: 8px; font-size: 12px; color: var(--text-light);">
                                         Категория: {{ work.category.name }}
                                     </div>
                                 {% endif %}
@@ -92,7 +92,7 @@
                     {% endfor %}
                 </div>
             {% else %}
-                <div style="background: white; padding: 40px; border-radius: 12px; text-align: center; color: #666;">
+                <div style="background: color-mix(in srgb, var(--background) 10%, var(--foreground)); padding: 40px; border-radius: 12px; text-align: center; color: var(--text-light); border: 1px solid color-mix(in srgb, var(--background) 80%, var(--text));">
                     <p>Нет новых работ в просмотренных категориях</p>
                 </div>
             {% endif %}
@@ -100,7 +100,7 @@
 
         <!-- Новые комментарии -->
         <aside>
-            <div style="background: white; padding: 20px; border-radius: 12px; position: sticky; top: 100px;">
+            <div style="background: color-mix(in srgb, var(--background) 10%, var(--foreground)); padding: 20px; border-radius: 12px; position: sticky; top: 100px; border: 1px solid color-mix(in srgb, var(--background) 80%, var(--text));">
                 <h2 style="font-size: 18px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
                     <span>Комментарии к вашим работам</span>
                     {% if total_new_comments %}
@@ -122,20 +122,20 @@
                                     {% endif %}
                                     <span style="font-weight: 600; font-size: 14px;">{{ comment.user.username }}</span>
                                 </div>
-                                <p style="font-size: 14px; color: #333; margin-bottom: 8px; line-height: 1.4;">
+                                <p style="font-size: 14px; color: var(--text); margin-bottom: 8px; line-height: 1.4;">
                                     {{ comment.content|truncatechars:100 }}
                                 </p>
                                 <a href="{% url 'core:work_detail' comment.work.author.username comment.work.slug %}#comment-{{ comment.id }}" style="font-size: 12px; color: var(--primary); text-decoration: none;">
                                     К работе: {{ comment.work.title }}
                                 </a>
-                                <div style="font-size: 11px; color: #999; margin-top: 8px;">
+                                <div style="font-size: 11px; color: var(--text-light); margin-top: 8px;">
                                     {{ comment.created_at|date:"d.m.Y H:i" }}
                                 </div>
                             </div>
                         {% endfor %}
                     </div>
                 {% else %}
-                    <p style="color: #666; text-align: center; padding: 20px 0;">
+                    <p style="color: var(--text-light); text-align: center; padding: 20px 0;">
                         Нет новых комментариев
                     </p>
                 {% endif %}

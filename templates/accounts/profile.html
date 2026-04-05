@@ -8,17 +8,18 @@
 .profile-page { max-width: 960px; margin: 0 auto; }
 
 .craft-card {
-    background: #F7EDE2; border: 2px solid #D4B896; border-radius: 16px;
-    padding: 24px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(93,64,35,0.1);
+    background: var(--coffee-white); border: 2px solid color-mix(in srgb, var(--coffee-white) 80%, var(--text)); border-radius: 16px;
+    padding: 24px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(61,42,95,0.1);
     position: relative; overflow: hidden;
 }
 .craft-card::before {
     content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
-    background: linear-gradient(90deg, #8B5E3C, #C49A6C, #8B5E3C);
+    background: color-mix(in srgb, var(--coffee-white) 80%, var(--text));
+    filter: blur(1px);
 }
 .card-title {
     font-size: 14px; font-weight: 700; text-transform: uppercase;
-    letter-spacing: 1.5px; color: #8B5E3C; margin-bottom: 16px;
+    letter-spacing: 1.5px; color: var(--primary); margin-bottom: 16px;
     display: flex; align-items: center; gap: 8px;
 }
 .card-title svg { width: 20px; height: 20px; flex-shrink: 0; }
@@ -27,27 +28,27 @@
 .profile-header { display: flex; gap: 24px; align-items: center; }
 .profile-avatar {
     width: 120px; height: 120px; border-radius: 50%; overflow: hidden;
-    flex-shrink: 0; border: 3px solid #D4B896; background: #E8D5B7;
+    flex-shrink: 0; border: 3px solid var(--accent); background: color-mix(in srgb, var(--accent) 15%, var(--bg-light));
 }
 .profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
 .avatar-placeholder {
     width: 100%; height: 100%; display: flex; align-items: center;
-    justify-content: center; font-size: 40px; color: #8B5E3C; font-weight: 700;
+    justify-content: center; font-size: 40px; color: var(--primary); font-weight: 700;
 }
 .profile-main { flex: 1; min-width: 0; }
-.profile-name { font-size: 26px; font-weight: 700; color: #4A3728; margin: 0 0 4px 0; }
-.profile-uname { color: #8B7355; margin: 0 0 8px 0; font-size: 14px; }
+.profile-name { font-size: 26px; font-weight: 700; color: var(--text); margin: 0 0 4px 0; }
+.profile-uname { color: var(--text-light); margin: 0 0 8px 0; font-size: 14px; }
 .profile-meta { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 8px; }
 .profile-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
 
 /* Badges */
 .badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
-.badge-staff { background: #8B5E3C; color: white; }
-.badge-joined { background: #D4B896; color: #5C3D24; }
-.badge-location { background: #E8D5B7; color: #5C3D24; border: 1px solid #C49A6C; }
+.badge-staff { background: var(--primary); color: white; }
+.badge-joined { background: var(--accent); color: white; }
+.badge-location { background: color-mix(in srgb, var(--accent) 15%, var(--bg-light)); color: var(--primary-dark); border: 1px solid var(--primary-light); }
 .badge-verified { background: #A8B89F; color: #2A2A1A; }
 .badge-warning-badge { background: #FFF3CD; color: #856404; border: 1px solid #FFC107; gap: 3px; }
-.badge-pro { background: #C49A6C; color: white; }
+.badge-pro { background: var(--primary-light); color: white; }
 .warning-dots span { display: inline-block; width: 6px; height: 6px; background: #FFC107; border-radius: 50%; }
 
 /* Alert */
@@ -64,39 +65,39 @@
 /* Stats */
 .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
 .stat-box {
-    background: #FDF8F3; border: 1px solid #D4B896; border-radius: 12px;
+    background: var(--bg-light); border: 1px solid color-mix(in srgb, var(--bg-light) 80%, var(--text)); border-radius: 12px;
     padding: 16px 12px; text-align: center; text-decoration: none; transition: box-shadow 0.2s;
 }
-.stat-box:hover { box-shadow: 0 2px 8px rgba(93,64,35,0.15); text-decoration: none; }
-.stat-value { font-size: 28px; font-weight: 800; color: #5C3D24; line-height: 1; }
-.stat-label { font-size: 12px; color: #8B7355; margin-top: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+.stat-box:hover { box-shadow: 0 2px 8px rgba(61,42,95,0.15); text-decoration: none; }
+.stat-value { font-size: 28px; font-weight: 800; color: var(--primary-dark); line-height: 1; }
+.stat-label { font-size: 12px; color: var(--text-light); margin-top: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
 
 /* Info */
 .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.info-item { background: #FDF8F3; border: 1px solid #DDD0C0; border-radius: 10px; padding: 14px 16px; }
-.info-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: #A08B72; margin-bottom: 4px; font-weight: 600; }
-.info-value { color: #4A3728; font-size: 15px; }
-.info-value a { color: #8B5E3C; text-decoration: none; }
+.info-item { background: var(--bg-light); border: 1px solid color-mix(in srgb, var(--bg-light) 80%, var(--text)); border-radius: 10px; padding: 14px 16px; }
+.info-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-light); margin-bottom: 4px; font-weight: 600; }
+.info-value { color: var(--text); font-size: 15px; }
+.info-value a { color: var(--primary); text-decoration: none; }
 .info-value a:hover { text-decoration: underline; }
-.bio-text { color: #5C4A38; font-size: 14px; line-height: 1.6; }
+.bio-text { color: var(--text); font-size: 14px; line-height: 1.6; }
 
 /* Tools */
 .tools-list { display: flex; flex-wrap: wrap; gap: 8px; }
 .tool-tag {
-    background: #FDF8F3; border: 1px solid #D4B896; border-radius: 20px;
-    padding: 6px 14px; font-size: 13px; color: #5C3D24; font-weight: 500;
+    background: var(--bg-light); border: 1px solid color-mix(in srgb, var(--bg-light) 80%, var(--text)); border-radius: 20px;
+    padding: 6px 14px; font-size: 13px; color: var(--primary-dark); font-weight: 500;
     display: inline-flex; align-items: center; gap: 6px;
 }
-.tool-tag svg { width: 14px; height: 14px; stroke: #C49A6C; }
+.tool-tag svg { width: 14px; height: 14px; stroke: var(--primary-light); }
 
 /* Tabs */
-.tabs-bar { display: flex; gap: 8px; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 2px solid #E8D5B7; align-items: center; flex-wrap: wrap; }
+.tabs-bar { display: flex; gap: 8px; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 2px solid color-mix(in srgb, var(--accent) 15%, var(--bg-light)); align-items: center; flex-wrap: wrap; }
 .tab-btn {
-    padding: 8px 18px; background: transparent; border: 1px solid #D4B896;
-    border-radius: 8px; color: #8B7355; font-size: 14px; font-weight: 500;
+    padding: 8px 18px; background: transparent; border: 1px solid color-mix(in srgb, var(--bg-light) 80%, var(--text));
+    border-radius: 8px; color: var(--text-light); font-size: 14px; font-weight: 500;
     cursor: pointer; transition: all 0.2s; text-decoration: none;
 }
-.tab-btn:hover, .tab-btn.active { background: #8B5E3C; color: white; border-color: #8B5E3C; }
+.tab-btn:hover, .tab-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
 .tabs-right { margin-left: auto; display: flex; gap: 8px; }
 
 /* Buttons */
@@ -105,31 +106,31 @@
     cursor: pointer; transition: all 0.2s; text-decoration: none;
     display: inline-flex; align-items: center; border: none;
 }
-.btn-craft-primary { background: #8B5E3C; color: white; }
-.btn-craft-primary:hover { background: #5C3D24; color: white; }
-.btn-craft-secondary { background: #D4B896; color: #4A3728; border: 1px solid #C49A6C; }
-.btn-craft-secondary:hover { background: #C49A6C; }
+.btn-craft-primary { background: var(--primary); color: white; }
+.btn-craft-primary:hover { background: var(--primary-dark); color: white; }
+.btn-craft-secondary { background: var(--accent); color: white; border: 1px solid var(--primary-light); }
+.btn-craft-secondary:hover { background: var(--primary-light); }
 .btn-craft-danger { background: #DC3545; color: white; }
 .btn-craft-danger:hover { background: #A71D2A; color: white; }
 
 /* Works grid */
 .works-craft-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px; }
 .craft-work-card {
-    background: #FDF8F3; border: 1px solid #D4B896; border-radius: 12px;
+    background: var(--bg-light); border: 1px solid color-mix(in srgb, var(--bg-light) 80%, var(--text)); border-radius: 12px;
     overflow: hidden; position: relative; transition: box-shadow 0.3s;
 }
-.craft-work-card:hover { box-shadow: 0 6px 20px rgba(93,64,35,0.18); }
-.craft-work-card img.cover { width: 100%; height: 180px; object-fit: cover; display: block; background: #E8D5B7; }
-.craft-work-card .no-cover { width: 100%; height: 180px; display: flex; align-items: center; justify-content: center; background: #E8D5B7; }
+.craft-work-card:hover { box-shadow: 0 6px 20px rgba(61,42,95,0.18); }
+.craft-work-card img.cover { width: 100%; height: 180px; object-fit: cover; display: block; background: color-mix(in srgb, var(--accent) 15%, var(--bg-light)); }
+.craft-work-card .no-cover { width: 100%; height: 180px; display: flex; align-items: center; justify-content: center; background: color-mix(in srgb, var(--accent) 15%, var(--bg-light)); }
 .craft-work-body { padding: 12px 14px; }
 .craft-work-body h3 {
-    font-size: 15px; margin: 0 0 6px 0; color: #4A3728;
+    font-size: 15px; margin: 0 0 6px 0; color: var(--text);
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .craft-work-body h3 a { color: inherit; text-decoration: none; }
 .craft-work-body h3 a:hover { text-decoration: underline; }
-.cat-badge { display: inline-block; background: #D4B896; color: #5C3D24; padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 600; margin-bottom: 8px; }
-.craft-mini-stats { display: flex; gap: 10px; font-size: 12px; color: #8B7355; }
+.cat-badge { display: inline-block; background: var(--accent); color: white; padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 600; margin-bottom: 8px; }
+.craft-mini-stats { display: flex; gap: 10px; font-size: 12px; color: var(--text-light); }
 .craft-mini-stats span { display: flex; align-items: center; gap: 3px; }
 .craft-mini-stats img { width: 12px; height: 12px; }
 
@@ -137,13 +138,13 @@
 .draft-list { display: flex; flex-direction: column; gap: 8px; }
 .draft-item {
     display: flex; align-items: center; justify-content: space-between;
-    padding: 10px 14px; background: #FDF8F3; border: 1px dashed #D4B896;
+    padding: 10px 14px; background: var(--bg-light); border: 1px dashed color-mix(in srgb, var(--bg-light) 80%, var(--text));
     border-radius: 10px; gap: 10px;
 }
-.draft-name { font-size: 14px; color: #4A3728; }
+.draft-name { font-size: 14px; color: var(--text); }
 .draft-name a { color: inherit; text-decoration: none; }
 .draft-name a:hover { text-decoration: underline; }
-.draft-date { font-size: 12px; color: #A08B72; }
+.draft-date { font-size: 12px; color: var(--text-light); }
 .draft-status { font-size: 11px; background: #FFF3CD; color: #856404; padding: 3px 8px; border-radius: 10px; font-weight: 600; }
 
 /* Warnings */
@@ -156,31 +157,31 @@
 
 /* Top work */
 .top-work-card {
-    background: #FDF8F3; border: 1px solid #D4B896; border-radius: 12px;
+    background: var(--bg-light); border: 1px solid color-mix(in srgb, var(--bg-light) 80%, var(--text)); border-radius: 12px;
     overflow: hidden; display: flex; gap: 16px; transition: box-shadow 0.3s;
 }
-.top-work-card:hover { box-shadow: 0 4px 16px rgba(93,64,35,0.15); }
-.top-work-cover { width: 180px; height: 120px; flex-shrink: 0; overflow: hidden; background: #E8D5B7; }
+.top-work-card:hover { box-shadow: 0 4px 16px rgba(61,42,95,0.15); }
+.top-work-cover { width: 180px; height: 120px; flex-shrink: 0; overflow: hidden; background: color-mix(in srgb, var(--accent) 15%, var(--bg-light)); }
 .top-work-cover img { width: 100%; height: 100%; object-fit: cover; }
 .top-work-info { flex: 1; padding: 14px 14px 14px 0; display: flex; flex-direction: column; justify-content: center; }
-.top-work-title { font-size: 16px; font-weight: 600; color: #4A3728; margin: 0 0 4px 0; }
+.top-work-title { font-size: 16px; font-weight: 600; color: var(--text); margin: 0 0 4px 0; }
 .top-work-title a { color: inherit; text-decoration: none; }
-.top-work-stats { display: flex; gap: 12px; color: #8B7355; font-size: 13px; }
-.top-badge { display: inline-block; background: #C49A6C; color: white; padding: 2px 8px; border-radius: 12px; font-size: 10px; font-weight: 700; text-transform: uppercase; margin-bottom: 8px; }
+.top-work-stats { display: flex; gap: 12px; color: var(--text-light); font-size: 13px; }
+.top-badge { display: inline-block; background: var(--primary-light); color: white; padding: 2px 8px; border-radius: 12px; font-size: 10px; font-weight: 700; text-transform: uppercase; margin-bottom: 8px; }
 
-.empty-state { text-align: center; padding: 40px 20px; color: #A08B72; }
+.empty-state { text-align: center; padding: 40px 20px; color: var(--text-light); }
 
 textarea.craft-input {
-    width: 100%; padding: 10px 14px; background: #FDF8F3;
-    border: 1px solid #D4B896; border-radius: 8px; font-size: 14px;
-    color: #4A3728; outline: none; transition: border-color 0.2s; box-sizing: border-box; resize: vertical;
+    width: 100%; padding: 10px 14px; background: var(--bg-light);
+    border: 1px solid color-mix(in srgb, var(--bg-light) 80%, var(--text)); border-radius: 8px; font-size: 14px;
+    color: var(--text); outline: none; transition: border-color 0.2s; box-sizing: border-box; resize: vertical;
 }
-textarea.craft-input:focus { border-color: #8B5E3C; }
+textarea.craft-input:focus { border-color: var(--primary); }
 
-.craft-label { display: block; font-size: 11px; font-weight: 600; color: #8B7355; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+.craft-label { display: block; font-size: 11px; font-weight: 600; color: var(--text-light); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
 .craft-checkbox { display: flex; align-items: center; gap: 8px; cursor: pointer; }
 .craft-checkbox input { width: 18px; height: 18px; }
-.craft-checkbox label { font-size: 14px; color: #5C4A38; }
+.craft-checkbox label { font-size: 14px; color: var(--text); }
 
 /* Warning form */
 .warning-form { display: none; }
@@ -280,7 +281,7 @@ textarea.craft-input:focus { border-color: #8B5E3C; }
                 <textarea name="reason" rows="3" required class="craft-input"></textarea>
             </div>
             <div style="margin-bottom:14px;">
-                <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:14px;color:#5C4A38;">
+                <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:14px;color:var(--text);">
                     <input type="checkbox" name="is_yellow" checked style="width:18px;height:18px;">
                     Жёлтое предупреждение (красное = бан)
                 </label>
@@ -308,7 +309,7 @@ textarea.craft-input:focus { border-color: #8B5E3C; }
     {% if profile.bio or profile_user.bio or profile_user.website or profile_user.first_name or profile_user.last_name %}
     <div class="craft-card">
         <div class="card-title">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#8B5E3C" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
             О себе
         </div>
         {% if profile.bio %}
@@ -349,7 +350,7 @@ textarea.craft-input:focus { border-color: #8B5E3C; }
     {% if profile.tools %}
     <div class="craft-card">
         <div class="card-title">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#8B5E3C" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
             Программы
         </div>
         <div class="tools-list">
@@ -368,7 +369,7 @@ textarea.craft-input:focus { border-color: #8B5E3C; }
     <!-- Статистика -->
     <div class="craft-card">
         <div class="card-title">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#8B5E3C" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
             Статистика
         </div>
         <div class="stats-row">
@@ -395,7 +396,7 @@ textarea.craft-input:focus { border-color: #8B5E3C; }
     {% if top_work %}
     <div class="craft-card">
         <div class="card-title">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#8B5E3C" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
             Лучшая работа
         </div>
         <div class="top-work-card">
@@ -403,7 +404,7 @@ textarea.craft-input:focus { border-color: #8B5E3C; }
                 {% if top_work.cover %}
                     <img src="{{ top_work.cover.url }}" alt="{{ top_work.title }}">
                 {% else %}
-                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#C49A6C" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--primary-light)" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
                 {% endif %}
             </div>
             <div class="top-work-info">
@@ -425,7 +426,7 @@ textarea.craft-input:focus { border-color: #8B5E3C; }
     {% if drafts %}
     <div class="craft-card">
         <div class="card-title">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#8B5E3C" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
             Черновики ({{ drafts|length }})
         </div>
         <div class="draft-list">
@@ -450,7 +451,7 @@ textarea.craft-input:focus { border-color: #8B5E3C; }
     {% if user.is_staff and profile_user.warnings.all %}
     <div class="craft-card">
         <div class="card-title">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#8B5E3C" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
             История предупреждений
         </div>
         <div style="display:flex;flex-direction:column;gap:10px;">
@@ -458,9 +459,9 @@ textarea.craft-input:focus { border-color: #8B5E3C; }
             <div class="warning-item {% if warning.is_yellow %}yellow{% else %}red{% endif %}">
                 <div class="warning-bar {% if warning.is_yellow %}yellow{% else %}red{% endif %}"></div>
                 <div style="flex:1;">
-                    <strong style="color:#4A3728;font-size:14px;">{{ warning.moderator.username }}</strong>
-                    <span style="color:#8B7355;font-size:13px;"> выдал {{ warning.created_at|date:"d.m.Y H:i" }}</span>
-                    <div style="color:#5C4A38;font-size:13px;margin-top:2px;">{{ warning.reason }}</div>
+                    <strong style="color:var(--text);font-size:14px;">{{ warning.moderator.username }}</strong>
+                    <span style="color:var(--text-light);font-size:13px;"> выдал {{ warning.created_at|date:"d.m.Y H:i" }}</span>
+                    <div style="color:var(--text);font-size:13px;margin-top:2px;">{{ warning.reason }}</div>
                 </div>
                 <form action="{% url 'accounts:warning_remove' warning.id %}" method="post" style="display:inline;">{% csrf_token %}
                     <button type="submit" class="btn-craft btn-craft-secondary" style="padding:4px 8px;font-size:11px;">Снять</button>
@@ -482,7 +483,7 @@ textarea.craft-input:focus { border-color: #8B5E3C; }
             <a href="{% url 'accounts:favorite_categories' %}" class="tab-btn">Категории</a>
             <a href="{% url 'core:drafts' %}" class="tab-btn">Черновики</a>
             <a href="{% url 'accounts:edit' %}" class="tab-btn">Редактировать</a>
-            <a href="{% url 'accounts:profile_test' %}" class="tab-btn" style="background:#C49A6C;color:white;border-color:#C49A6C;">Тест</a>
+            <a href="{% url 'accounts:profile_test' %}" class="tab-btn" style="background:var(--primary-light);color:white;border-color:var(--primary-light);">Тест</a>
         </div>
         {% endif %}
     </div>
@@ -497,7 +498,7 @@ textarea.craft-input:focus { border-color: #8B5E3C; }
                 </a>
             {% else %}
                 <div class="no-cover">
-                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#C49A6C" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--primary-light)" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
                 </div>
             {% endif %}
             <div class="craft-work-body">
@@ -515,8 +516,8 @@ textarea.craft-input:focus { border-color: #8B5E3C; }
     {% else %}
     <div class="craft-card">
         <div class="empty-state">
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#C49A6C" stroke-width="1.5" style="margin-bottom:12px;"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
-            <p style="font-size:16px;margin-bottom:8px;color:#8B7355;">Опубликованных работ пока нет.</p>
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--primary-light)" stroke-width="1.5" style="margin-bottom:12px;"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+            <p style="font-size:16px;margin-bottom:8px;color:var(--text-light);">Опубликованных работ пока нет.</p>
             {% if user == profile_user %}
             <a href="{% url 'core:work_create' %}" class="btn-craft btn-craft-primary" style="display:inline-block;margin-top:8px;">Создать работу</a>
             {% endif %}

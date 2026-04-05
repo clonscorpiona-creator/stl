@@ -76,7 +76,7 @@
         align-items: center;
         gap: 8px;
         padding: 10px 16px;
-        background: white;
+        background: var(--background);
         border: 2px dashed var(--primary);
         border-radius: 10px;
         color: var(--primary);
@@ -201,7 +201,7 @@
 <div style="max-width: 800px; margin: 0 auto;">
     <h1 style="margin-bottom: 30px;">{% if editing %}Редактировать работу{% else %}Новая работа{% endif %}</h1>
 
-    <form method="post" enctype="multipart/form-data" style="background: white; padding: 30px; border-radius: 12px;" id="workForm"
+    <form method="post" enctype="multipart/form-data" style="background: color-mix(in srgb, var(--background) 10%, var(--foreground)); padding: 30px; border-radius: 12px; border: 1px solid color-mix(in srgb, var(--background) 80%, var(--text));" id="workForm"
         action="{% if editing and work %}{% url 'core:work_edit' work.author.username work.slug %}{% else %}{% url 'core:work_create' %}{% endif %}">
         {% csrf_token %}
 

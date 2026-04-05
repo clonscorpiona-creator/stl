@@ -6,7 +6,7 @@
 {% block content %}
 <div style="max-width: 800px; margin: 0 auto;">
     <h1 style="font-size: 28px; margin-bottom: 10px;">Любимые категории</h1>
-    <p style="color: #666; margin-bottom: 30px;">
+    <p style="color: var(--text-light); margin-bottom: 30px;">
         Выберите категории, на которые вы хотите подписаться для получения уведомлений о новых работах и комментариях.
     </p>
 
@@ -18,7 +18,7 @@
         {% endfor %}
     {% endif %}
 
-    <form method="post" style="background: white; padding: 30px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+    <form method="post" style="background: color-mix(in srgb, var(--background) 10%, var(--foreground)); padding: 30px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border: 1px solid color-mix(in srgb, var(--background) 80%, var(--text));">
         {% csrf_token %}
 
         <div style="margin-bottom: 20px;">

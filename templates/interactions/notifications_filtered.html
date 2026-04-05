@@ -10,11 +10,12 @@
     }
 
     .filter-header {
-        background: white;
+        background: color-mix(in srgb, var(--background) 10%, var(--foreground));
         border-radius: 16px;
         padding: 24px 30px;
         margin-bottom: 24px;
         box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+        border: 1px solid color-mix(in srgb, var(--background) 80%, var(--text));
         display: flex;
         align-items: center;
         gap: 16px;
@@ -30,7 +31,7 @@
 
     .filter-category {
         font-size: 14px;
-        color: #666;
+        color: var(--text-light);
         margin-bottom: 4px;
     }
 
@@ -42,7 +43,7 @@
     .filter-title {
         font-size: 22px;
         font-weight: 700;
-        color: #333;
+        color: var(--text);
     }
 
     .filter-count {
@@ -58,25 +59,26 @@
         display: inline-flex;
         align-items: center;
         gap: 8px;
-        color: #666;
+        color: var(--text-light);
         text-decoration: none;
         padding: 10px 16px;
-        background: #f8f9fa;
+        background: var(--background);
         border-radius: 8px;
         margin-bottom: 20px;
         transition: all 0.2s;
     }
 
     .back-button:hover {
-        background: #e9ecef;
-        color: #333;
+        background: color-mix(in srgb, var(--background) 85%, var(--text));
+        color: var(--text);
     }
 
     .notification-list {
-        background: white;
+        background: color-mix(in srgb, var(--background) 10%, var(--foreground));
         border-radius: 16px;
         overflow: hidden;
         box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+        border: 1px solid color-mix(in srgb, var(--background) 80%, var(--text));
     }
 
     .notification-item {
@@ -93,14 +95,14 @@
     }
 
     .notification-item:hover {
-        background: #f8f9fa;
+        background: color-mix(in srgb, var(--background) 5%, var(--foreground));
     }
 
     .notification-icon {
         width: 48px;
         height: 48px;
         border-radius: 50%;
-        background: #f0f0f0;
+        background: color-mix(in srgb, var(--background) 20%, var(--foreground));
         display: flex;
         align-items: center;
         justify-content: center;
@@ -122,17 +124,17 @@
 
     .notification-actor {
         font-weight: 600;
-        color: #333;
+        color: var(--text);
     }
 
     .notification-time {
         font-size: 13px;
-        color: #999;
+        color: var(--text-light);
         margin-left: auto;
     }
 
     .notification-text {
-        color: #666;
+        color: var(--text-light);
         line-height: 1.6;
     }
 
@@ -148,7 +150,7 @@
     .work-preview {
         margin-top: 12px;
         padding: 12px;
-        background: #f8f9fa;
+        background: color-mix(in srgb, var(--background) 15%, var(--foreground));
         border-radius: 8px;
         display: flex;
         gap: 12px;
@@ -167,7 +169,7 @@
 
     .work-preview-title {
         font-weight: 600;
-        color: #333;
+        color: var(--text);
         margin-bottom: 4px;
     }
 
@@ -182,13 +184,13 @@
 
     .work-preview-meta {
         font-size: 13px;
-        color: #666;
+        color: var(--text-light);
     }
 
     .empty-list {
         padding: 60px 20px;
         text-align: center;
-        color: #666;
+        color: var(--text-light);
     }
 
     .works-grid {
@@ -199,7 +201,7 @@
     }
 
     .work-card-small {
-        background: #f8f9fa;
+        background: color-mix(in srgb, var(--background) 15%, var(--foreground));
         border-radius: 12px;
         overflow: hidden;
         transition: transform 0.2s;
@@ -222,7 +224,7 @@
     .work-card-small-title {
         font-size: 14px;
         font-weight: 600;
-        color: #333;
+        color: var(--text);
         margin-bottom: 6px;
         white-space: nowrap;
         overflow: hidden;
@@ -240,7 +242,7 @@
 
     .work-card-small-author {
         font-size: 12px;
-        color: #666;
+        color: var(--text-light);
     }
 </style>
 {% endblock %}

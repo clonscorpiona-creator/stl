@@ -8,9 +8,9 @@
 <div style="display: flex; flex-wrap: wrap; gap: 15px;">
     {% for tag in tags %}
         <a href="{% url 'core:tag_detail' tag.slug %}"
-            style="padding: 15px 25px; background: white; border-radius: 24px; text-decoration: none; color: #333; box-shadow: 0 2px 8px rgba(0,0,0,0.1); display: inline-block;">
+            style="padding: 15px 25px; background: color-mix(in srgb, var(--background) 10%, var(--foreground)); border-radius: 24px; text-decoration: none; color: var(--text); box-shadow: 0 2px 8px rgba(0,0,0,0.1); border: 1px solid color-mix(in srgb, var(--background) 80%, var(--text)); display: inline-block;">
             <strong>{{ tag.name }}</strong>
-            <span style="color: #999; margin-left: 8px;">{{ tag.count }}</span>
+            <span style="color: var(--text-light); margin-left: 8px;">{{ tag.count }}</span>
         </a>
     {% empty %}
         <p style="color: #666;">Тегов пока нет</p>

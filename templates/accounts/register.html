@@ -3,8 +3,8 @@
 {% block title %}Регистрация - STL{% endblock %}
 
 {% block content %}
-<div style="max-width: 400px; margin: 50px auto; background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-    <h1 style="text-align: center; margin-bottom: 30px; color: #333;">Регистрация</h1>
+<div style="max-width: 400px; margin: 50px auto; background: color-mix(in srgb, var(--background) 10%, var(--foreground)); padding: 40px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); border: 1px solid color-mix(in srgb, var(--background) 80%, var(--text));">
+    <h1 style="text-align: center; margin-bottom: 30px; color: var(--text);">Регистрация</h1>
 
     {% if error %}
         <div style="background: #f8d7da; color: #721c24; padding: 12px; border-radius: 8px; margin-bottom: 20px;">
@@ -32,7 +32,7 @@
         <button type="submit" class="btn btn-primary" style="width: 100%; margin-bottom: 20px;">Создать аккаунт</button>
     </form>
 
-    <p style="text-align: center; color: #666;">
+    <p style="text-align: center; color: var(--text-light);">
         Уже есть аккаунт? <a href="{% url 'accounts:login' %}" style="color: #e60023;">Войти</a>
     </p>
 </div>
