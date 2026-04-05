@@ -310,19 +310,6 @@
                 Наборы иконок
             </h3>
             <div style="display: flex; flex-direction: column; gap: 12px;">
-                <a href="{% url 'core:switch_icon_set' 'default' %}"
-                   class="theme-property"
-                   style="text-decoration: none; background: {% if icon_set == 'default' %}rgba(90, 63, 138, 0.1){% else %}transparent{% endif %}; border-radius: 8px; padding: 12px;">
-                    <span class="theme-property-label">
-                        <strong style="color: var(--primary);">Cyberpunk</strong>
-                        <span style="display: block; font-size: 12px; color: #666; margin-top: 4px;">Яркие неоновые иконки</span>
-                    </span>
-                    {% if icon_set == 'default' %}
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2.5">
-                        <path d="M20 6L9 17L4 12"/>
-                    </svg>
-                    {% endif %}
-                </a>
                 <a href="{% url 'core:switch_icon_set' 'business' %}"
                    class="theme-property"
                    style="text-decoration: none; background: {% if icon_set == 'business' %}rgba(90, 63, 138, 0.1){% else %}transparent{% endif %}; border-radius: 8px; padding: 12px;">

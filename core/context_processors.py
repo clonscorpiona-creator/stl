@@ -52,7 +52,7 @@ def icon_set_context(request):
     Добавляет активный набор иконок и цветовую тему в контекст всех шаблонов.
     """
     active_set = IconSet.get_active_set()
-    icon_set_slug = active_set.slug if active_set else 'default'
+    icon_set_slug = active_set.slug if active_set else 'business'
 
     # Получаем активную цветовую тему из сессии
     color_theme = request.session.get('color_theme', 'olive-sage')
