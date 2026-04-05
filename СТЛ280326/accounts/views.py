@@ -102,8 +102,11 @@ def profile_view(request, username):
 
 
 @login_required
+@require_POST
 def follow_toggle(request, username):
     """Подписка/отписка от пользователя"""
+    from django.db.models import F
+
     # Декодируем URL-кодированные символы (например, %20 -> пробел)
     username = unquote(username)
     user = get_object_or_404(User, username=username)
@@ -119,16 +122,18 @@ def follow_toggle(request, username):
     if not created:
         follow.delete()
         # Уменьшаем счетчики
-        user.profile.followers_count = max(0, user.profile.followers_count - 1)
+        user.profile.followers_count = F('followers_count') - 1
         user.profile.save(update_fields=['followers_count'])
-        request.user.profile.following_count = max(0, request.user.profile.following_count - 1)
+        request.user.profile.following_count = F('following_count') - 1
         request.user.profile.save(update_fields=['following_count'])
     else:
         # Увеличиваем счетчики
-        user.profile.followers_count += 1
+        user.profile.followers_count = F('followers_count') + 1
         user.profile.save(update_fields=['followers_count'])
-        request.user.profile.following_count += 1
+        request.user.profile.following_count = F('following_count') + 1
         request.user.profile.save(update_fields=['following_count'])
+
+    return redirect('accounts:profile', username=username)
 
 
 def followers_list(request, username):

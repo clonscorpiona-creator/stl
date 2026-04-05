@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
 from django.contrib.auth import get_user_model
 from django.db.models import Q, Count, F
 from django.core.paginator import Paginator
@@ -189,21 +190,20 @@ def work_detail_view(request, username, slug):
 
 
 @login_required
+@require_POST
 def create_work(request):
     """Создание работы"""
+    from django.db import transaction
     from .image_utils import apply_watermark_to_image
     from django.utils.text import slugify
 
-    if request.method == 'POST':
+    with transaction.atomic():
         title = request.POST.get('title')
         description = request.POST.get('description')
         category_id = request.POST.get('category')
         tags = request.POST.get('tags', '')
         apply_watermark = request.POST.get('apply_watermark') == 'on'
         cover_index = request.POST.get('cover_index', '0')  # Индекс изображения для обложки
-
-        # Отладка: проверяем параметр водяного знака
-        print(f"DEBUG: apply_watermark = {apply_watermark}, POST value = {request.POST.get('apply_watermark')}")
 
         # Генерируем slug из заголовка
         base_slug = slugify(title)
@@ -241,7 +241,8 @@ def create_work(request):
                     img = apply_watermark_to_image(img, request.user.username, apply_watermark_flag=True)
                 else:
                     img = apply_watermark_to_image(img, request.user.username, apply_watermark_flag=False)
-                processed_images.append(img)
+                if img:  # Проверяем, что изображение успешно обработано
+                    processed_images.append(img)
 
             # Устанавливаем обложку из выбранного изображения
             try:
@@ -284,13 +285,12 @@ def create_work(request):
 
         return redirect('core:work_detail', username=request.user.username, slug=work.slug)
 
-    categories = Category.objects.all()
-    return render(request, 'core/work_form.html', {'categories': categories, 'editing': False, 'work': None})
-
 
 @login_required
+@require_POST
 def edit_work(request, username, slug):
     """Редактирование работы (доступно автору и администрации)"""
+    from django.db import transaction
     from .image_utils import apply_watermark_to_image
 
     work = get_object_or_404(
@@ -303,7 +303,7 @@ def edit_work(request, username, slug):
     if work.author != request.user and not request.user.is_staff:
         return redirect('core:work_detail', username=username, slug=slug)
 
-    if request.method == 'POST':
+    with transaction.atomic():
         apply_watermark = request.POST.get('apply_watermark') == 'on'
         cover_index = request.POST.get('cover_index', '0')
 
@@ -331,7 +331,8 @@ def edit_work(request, username, slug):
                     img = apply_watermark_to_image(img, request.user.username, apply_watermark_flag=True)
                 else:
                     img = apply_watermark_to_image(img, request.user.username, apply_watermark_flag=False)
-                processed_images.append(img)
+                if img:  # Проверяем, что изображение успешно обработано
+                    processed_images.append(img)
 
             # Устанавливаем обложку из выбранного изображения
             try:
@@ -379,14 +380,19 @@ def edit_work(request, username, slug):
             work.slug = slug
 
         work.save()
-        return redirect('core:work_detail', username=username, slug=work.slug)
 
-    categories = Category.objects.all()
-    return render(request, 'core/work_form.html', {
-        'work': work,
-        'categories': categories,
-        'editing': True
-    })
+    # Обработка AJAX запросов
+    is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
+    is_json = 'application/json' in request.headers.get('Accept', '')
+
+    if is_ajax or is_json:
+        from django.http import JsonResponse
+        return JsonResponse({
+            'success': True,
+            'redirect_url': work.get_absolute_url()
+        })
+
+    return redirect('core:work_detail', username=username, slug=work.slug)
 
 
 @login_required
