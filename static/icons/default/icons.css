@@ -1,0 +1,86 @@
+/* Default (Cyberpunk) Icons - Styles for STL Platform */
+/* High-tech neon icons with glow effects */
+
+.icon {
+  width: 20px;
+  height: 20px;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.icon-sm {
+  width: 16px;
+  height: 16px;
+}
+
+.icon-lg {
+  width: 24px;
+  height: 24px;
+}
+
+.icon-xl {
+  width: 32px;
+  height: 32px;
+}
+
+/* Icon button styles */
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  background: linear-gradient(135deg, rgba(90, 63, 138, 0.1) 0%, rgba(122, 92, 153, 0.1) 100%);
+  border: 1px solid rgba(90, 63, 138, 0.3);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.icon-btn:hover {
+  background: linear-gradient(135deg, rgba(90, 63, 138, 0.2) 0%, rgba(122, 92, 153, 0.2) 100%);
+  border-color: rgba(90, 63, 138, 0.6);
+  box-shadow: 0 0 15px rgba(90, 63, 138, 0.4);
+  transform: translateY(-2px);
+}
+
+.icon-btn:active {
+  transform: translateY(0);
+}
+
+/* Neon glow animation */
+@keyframes cyberPulse {
+  0%, 100% {
+    filter: drop-shadow(0 0 2px currentColor);
+  }
+  50% {
+    filter: drop-shadow(0 0 8px currentColor);
+  }
+}
+
+.icon-glow {
+  animation: cyberPulse 2s ease-in-out infinite;
+}
+
+/* Header navigation icon styles */
+.nav-icon {
+  width: 20px;
+  height: 20px;
+  margin-right: 6px;
+  transition: all 0.3s ease;
+}
+
+.nav-link:hover .nav-icon {
+  transform: scale(1.1);
+  filter: drop-shadow(0 0 6px currentColor);
+}
+
+/* Mobile menu icons */
+.mobile-icon {
+  width: 24px;
+  height: 24px;
+}
+
+/* Inverted icons for buttons */
+.icon-inverted {
+  filter: brightness(0) invert(1);
+}

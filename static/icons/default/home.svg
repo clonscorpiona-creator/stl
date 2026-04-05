@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+  <defs>
+    <linearGradient id="cyberHomeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00f5ff"/>
+      <stop offset="50%" style="stop-color:#ff00ff"/>
+      <stop offset="100%" style="stop-color:#00f5ff"/>
+    </linearGradient>
+    <filter id="cyberGlow">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="1" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <path d="M3 10.5L12 3l9 7.5v9a1.5 1.5 0 01-1.5 1.5H15v-6H9v6H4.5A1.5 1.5 0 013 19.5v-9z"
+        stroke="url(#cyberHomeGrad)"
+        filter="url(#cyberGlow)"
+        stroke-linecap="round"
+        stroke-linejoin="round"/>
+  <path d="M12 3v9" stroke="url(#cyberHomeGrad)" stroke-width="1" opacity="0.5"/>
+  <circle cx="12" cy="8" r="1.5" fill="#00f5ff" filter="url(#cyberGlow)"/>
+</svg>

@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+  <defs>
+    <linearGradient id="upload-base-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#7AC9B8"/>
+      <stop offset="50%" style="stop-color:#5A9A7A"/>
+      <stop offset="100%" style="stop-color:#3A7A5A"/>
+    </linearGradient>
+    <linearGradient id="upload-arrow-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#9ADBC8"/>
+      <stop offset="100%" style="stop-color:#5A9A7A"/>
+    </linearGradient>
+    <filter id="upload-shadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="0" dy="1" stdDeviation="1" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+
+  <!-- База/коробка с объемом -->
+  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"
+        fill="url(#upload-base-grad)"
+        stroke="#9ADBC8"
+        stroke-width="1.5"
+        filter="url(#upload-shadow)"/>
+
+  <!-- Блик на базе -->
+  <rect x="3" y="15" width="18" height="3"
+        fill="rgba(255,255,255,0.15)"/>
+
+  <!-- Стрелка загрузки с объемом -->
+  <polyline points="17 8 12 3 7 8"
+            fill="none"
+            stroke="url(#upload-arrow-grad)"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"/>
+
+  <!-- Линия стрелки -->
+  <line x1="12" y1="3" x2="12" y2="15"
+        stroke="url(#upload-arrow-grad)"
+        stroke-width="2.5"
+        stroke-linecap="round"/>
+
+  <!-- Блик на стрелке -->
+  <line x1="12" y1="5" x2="12" y2="13"
+        stroke="rgba(255,255,255,0.3)"
+        stroke-width="1"
+        stroke-linecap="round"/>
+
+  <!-- Декоративные элементы -->
+  <path d="M7 17h10" stroke="rgba(255,255,255,0.2)" stroke-width="1" stroke-linecap="round"/>
+</svg>

@@ -1,0 +1,69 @@
+/* Minimal Icons - Styles for STL Platform */
+/* Clean, minimalistic icons in site color palette */
+
+.icon {
+  width: 20px;
+  height: 20px;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.icon-sm {
+  width: 16px;
+  height: 16px;
+}
+
+.icon-lg {
+  width: 24px;
+  height: 24px;
+}
+
+.icon-xl {
+  width: 32px;
+  height: 32px;
+}
+
+/* Icon button styles */
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  background: transparent;
+  border: 1px solid rgba(90, 63, 138, 0.2);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.icon-btn:hover {
+  background: rgba(90, 63, 138, 0.05);
+  border-color: rgba(90, 63, 138, 0.4);
+}
+
+.icon-btn:active {
+  transform: scale(0.98);
+}
+
+/* Header navigation icon styles */
+.nav-icon {
+  width: 20px;
+  height: 20px;
+  margin-right: 6px;
+  transition: all 0.2s ease;
+}
+
+.nav-link:hover .nav-icon {
+  opacity: 0.8;
+}
+
+/* Mobile menu icons */
+.mobile-icon {
+  width: 24px;
+  height: 24px;
+}
+
+/* Inverted icons for buttons */
+.icon-inverted {
+  filter: brightness(0) invert(1);
+}

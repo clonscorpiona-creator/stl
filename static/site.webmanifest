@@ -1,0 +1,26 @@
+{
+  "name": "СТЛ Platform",
+  "short_name": "СТЛ",
+  "description": "Платформа для творческих людей. Делитесь работами, находите вдохновение, создавайте сообщества.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f5f5f5",
+  "theme_color": "#7d5fb8",
+  "icons": [
+    {
+      "src": "/static/favicon-16x16.png",
+      "sizes": "16x16",
+      "type": "image/png"
+    },
+    {
+      "src": "/static/favicon-32x32.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "/static/apple-touch-icon.png",
+      "sizes": "66x66",
+      "type": "image/png"
+    }
+  ]
+}

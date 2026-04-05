@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#5a3f8a" stroke-width="2">
+  <defs>
+    <linearGradient id="min-online-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4ADE80"/>
+      <stop offset="100%" style="stop-color:#22C55E"/>
+    </linearGradient>
+  </defs>
+  <circle cx="12" cy="7" r="4" stroke-linecap="round"/>
+  <path d="M5.5 21a6.5 6.5 0 0113 0" stroke-linecap="round"/>
+  <path d="M5 21v-2a7 7 0 0114 0v2" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Зеленый индикатор онлайн -->
+  <circle cx="17.5" cy="15.5" r="2.5" fill="url(#min-online-grad)" stroke="#86EFAC" stroke-width="0.8"/>
+  <circle cx="18" cy="15" r="0.8" fill="rgba(255,255,255,0.5)"/>
+</svg>

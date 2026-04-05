@@ -1,0 +1,305 @@
+/* Appearance Dropdown Menu Styles */
+
+.appearance-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.appearance-trigger {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    background: rgba(90, 63, 138, 0.08);
+    border: 1px solid rgba(90, 63, 138, 0.15);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--primary-dark);
+}
+
+.appearance-trigger:hover {
+    background: rgba(90, 63, 138, 0.12);
+    border-color: var(--primary);
+}
+
+.appearance-trigger-icon {
+    width: 18px;
+    height: 18px;
+    transition: transform 0.3s ease;
+}
+
+.appearance-trigger:hover .appearance-trigger-icon {
+    transform: rotate(30deg);
+}
+
+.appearance-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    min-width: 280px;
+    background: #ffffff;
+    border: 1px solid rgba(90, 63, 138, 0.15);
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.2s ease;
+}
+
+.appearance-menu.open {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.appearance-menu-header {
+    padding: 12px 16px;
+    border-bottom: 1px solid rgba(90, 63, 138, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.appearance-menu-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--primary-dark);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 0;
+}
+
+.appearance-menu-close {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: background 0.2s ease;
+}
+
+.appearance-menu-close:hover {
+    background: rgba(90, 63, 138, 0.08);
+}
+
+.appearance-menu-close svg {
+    width: 16px;
+    height: 16px;
+    color: var(--primary-dark);
+}
+
+.appearance-menu-content {
+    padding: 12px 0;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.appearance-section {
+    padding: 8px 0;
+}
+
+.appearance-section:not(:last-child) {
+    border-bottom: 1px solid rgba(90, 63, 138, 0.08);
+}
+
+.appearance-section-title {
+    padding: 8px 16px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--primary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.appearance-section-title svg {
+    width: 14px;
+    height: 14px;
+}
+
+.appearance-option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px;
+    width: 100%;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    color: inherit;
+}
+
+.appearance-option:hover {
+    background: rgba(90, 63, 138, 0.06);
+}
+
+.appearance-option.active {
+    background: rgba(90, 63, 138, 0.1);
+}
+
+.appearance-option-icon {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(90, 63, 138, 0.08);
+    border-radius: 8px;
+    flex-shrink: 0;
+}
+
+.appearance-option-icon svg,
+.appearance-option-icon img {
+    width: 20px;
+    height: 20px;
+}
+
+.appearance-option-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.appearance-option-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--primary-dark);
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.appearance-option-desc {
+    font-size: 11px;
+    color: var(--text-light);
+    margin: 2px 0 0 0;
+}
+
+.appearance-option-check {
+    width: 18px;
+    height: 18px;
+    color: var(--primary);
+    flex-shrink: 0;
+}
+
+/* Color Theme Swatches */
+.theme-swatch {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    border: 2px solid rgba(90, 63, 138, 0.15);
+    flex-shrink: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.theme-swatch-color {
+    flex: 1;
+    width: 100%;
+}
+
+.theme-swatch-color:first-child {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* Full Settings Link */
+.appearance-footer {
+    padding: 12px 16px;
+    border-top: 1px solid rgba(90, 63, 138, 0.1);
+    background: rgba(90, 63, 138, 0.04);
+    border-radius: 0 0 12px 12px;
+}
+
+.appearance-footer-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: rgba(90, 63, 138, 0.08);
+    border-radius: 8px;
+    text-decoration: none;
+    color: var(--primary-dark);
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.appearance-footer-link:hover {
+    background: rgba(90, 63, 138, 0.15);
+}
+
+.appearance-footer-link svg {
+    width: 16px;
+    height: 16px;
+}
+
+/* Icon Preview Grid */
+.icon-preview-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 4px;
+    padding: 4px;
+    background: rgba(90, 63, 138, 0.04);
+    border-radius: 6px;
+}
+
+.icon-preview-item {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(90, 63, 138, 0.08);
+    border-radius: 4px;
+}
+
+.icon-preview-item svg {
+    width: 14px;
+    height: 14px;
+    color: var(--primary);
+}
+
+/* Scrollbar Styling */
+.appearance-menu-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.appearance-menu-content::-webkit-scrollbar-track {
+    background: rgba(90, 63, 138, 0.04);
+    border-radius: 3px;
+}
+
+.appearance-menu-content::-webkit-scrollbar-thumb {
+    background: rgba(90, 63, 138, 0.2);
+    border-radius: 3px;
+}
+
+.appearance-menu-content::-webkit-scrollbar-thumb:hover {
+    background: rgba(90, 63, 138, 0.3);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .appearance-menu {
+        right: -16px;
+        min-width: 260px;
+    }
+
+    .appearance-trigger span {
+        display: none;
+    }
+}

@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+  <defs>
+    <linearGradient id="vid-body-grad" x1="30%" y1="20%" x2="70%" y2="100%">
+      <stop offset="0%" style="stop-color:#FF8A7A"/>
+      <stop offset="50%" style="stop-color:#E06A5A"/>
+      <stop offset="100%" style="stop-color:#C04A3A"/>
+    </linearGradient>
+    <linearGradient id="vid-play-grad" x1="30%" y1="20%" x2="70%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFB8A8"/>
+      <stop offset="100%" style="stop-color:#FF8A7A"/>
+    </linearGradient>
+    <linearGradient id="vid-gloss-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:rgba(255,255,255,0.35)"/>
+      <stop offset="100%" style="stop-color:rgba(255,255,255,0.05)"/>
+    </linearGradient>
+    <filter id="vid-shadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="0" dy="1" stdDeviation="1" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+
+  <!-- Основной экран с объемом -->
+  <rect x="1" y="5" width="15" height="14" rx="2"
+        fill="url(#vid-body-grad)"
+        stroke="#FFA898"
+        stroke-width="1.5"
+        filter="url(#vid-shadow)"/>
+
+  <!-- Глянцевый блик на экране -->
+  <rect x="1" y="5" width="15" height="7" rx="2"
+        fill="url(#vid-gloss-grad)"/>
+
+  <!-- Кнопка Play с объемом -->
+  <polygon points="23 7 16 12 23 17 23 7"
+           fill="url(#vid-play-grad)"
+           stroke="#FFC8B8"
+           stroke-width="1"/>
+
+  <!-- Блик на Play кнопке -->
+  <polygon points="22 9 18 12 22 15 22 9"
+           fill="rgba(255,255,255,0.3)"/>
+
+  <!-- Внутренний круг на экране -->
+  <circle cx="6" cy="12" r="2.5"
+          fill="#3D2F5A"
+          stroke="#5A4A6A"
+          stroke-width="0.8"/>
+
+  <!-- Блик на круге -->
+  <circle cx="5.3" cy="11.3" r="1"
+          fill="rgba(255,255,255,0.3)"/>
+
+  <!-- Декоративные линии -->
+  <path d="M3 17h6" stroke="rgba(255,255,255,0.15)" stroke-width="1" stroke-linecap="round"/>
+</svg>

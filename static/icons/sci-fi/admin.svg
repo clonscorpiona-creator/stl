@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+  <defs>
+    <linearGradient id="admin-head-grad" x1="30%" y1="20%" x2="70%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFD88A"/>
+      <stop offset="50%" style="stop-color:#FFB85A"/>
+      <stop offset="100%" style="stop-color:#E09A3A"/>
+    </linearGradient>
+    <linearGradient id="admin-body-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#9A8BC9"/>
+      <stop offset="50%" style="stop-color:#7A6B9A"/>
+      <stop offset="100%" style="stop-color:#5A4A7A"/>
+    </linearGradient>
+    <linearGradient id="admin-crown-grad" x1="30%" y1="20%" x2="70%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFD86A"/>
+      <stop offset="100%" style="stop-color:#FFA84A"/>
+    </linearGradient>
+    <filter id="admin-shadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="0" dy="1" stdDeviation="1" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+
+  <!-- Тело с объемом -->
+  <path d="M6 21v-2a6 6 0 0 1 6-6h0a6 6 0 0 1 6 6v2"
+        fill="url(#admin-body-grad)"
+        stroke="#B8A8E0"
+        stroke-width="1.5"
+        filter="url(#admin-shadow)"/>
+
+  <!-- Голова с объемом -->
+  <circle cx="12" cy="8" r="4"
+          fill="url(#admin-head-grad)"
+          stroke="#FFC87A"
+          stroke-width="1.2"/>
+
+  <!-- Корона с объемом -->
+  <path d="M12 2l-2 3-2-1v3h8V4l-2 1z"
+        fill="url(#admin-crown-grad)"
+        stroke="#FFC85A"
+        stroke-width="1"/>
+
+  <!-- Блик на короне -->
+  <path d="M12 3l-1 1.5M12 3l1 1.5"
+        stroke="rgba(255,255,255,0.5)"
+        stroke-width="0.8"/>
+
+  <!-- Блик на голове -->
+  <ellipse cx="10.5" cy="7" rx="1.5" ry="1"
+           fill="rgba(255,255,255,0.4)"/>
+
+  <!-- Декоративные элементы -->
+  <circle cx="12" cy="8" r="0.5" fill="#FFA84A"/>
+</svg>

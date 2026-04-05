@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+  <defs>
+    <linearGradient id="follow-head-grad" x1="30%" y1="20%" x2="70%" y2="100%">
+      <stop offset="0%" style="stop-color:#B8A8E0"/>
+      <stop offset="50%" style="stop-color:#8B7AB8"/>
+      <stop offset="100%" style="stop-color:#6B5A8A"/>
+    </linearGradient>
+    <linearGradient id="follow-body-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#9A8BC9"/>
+      <stop offset="50%" style="stop-color:#7A6B9A"/>
+      <stop offset="100%" style="stop-color:#5A4A7A"/>
+    </linearGradient>
+    <filter id="follow-shadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="0" dy="1" stdDeviation="1" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+
+  <!-- Голова с объемом -->
+  <circle cx="12" cy="7" r="4"
+          fill="url(#follow-head-grad)"
+          stroke="#C8B8E8"
+          stroke-width="1.2"
+          filter="url(#follow-shadow)"/>
+
+  <!-- Блик на голове -->
+  <ellipse cx="10.5" cy="6" rx="1.5" ry="1"
+           fill="rgba(255,255,255,0.35)"/>
+
+  <!-- Тело с объемом -->
+  <path d="M5.5 21v-2a6.5 6.5 0 0 1 13 0v2"
+        fill="url(#follow-body-grad)"
+        stroke="#B8A8E0"
+        stroke-width="1.5"/>
+
+  <!-- Блик на теле -->
+  <path d="M12 13c-2.5 0-4.5 1.8-4.5 4v2h9v-2c0-2.2-2-4-4.5-4z"
+        fill="rgba(255,255,255,0.1)"/>
+
+  <!-- Декоративные линии -->
+  <path d="M7 21v-1.5C7 17 9.2 15 12 15s5 2 5 4.5V21"
+        stroke="rgba(255,255,255,0.15)"
+        stroke-width="0.8"/>
+</svg>

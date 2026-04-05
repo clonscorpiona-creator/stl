@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+  <defs>
+    <linearGradient id="login-door-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#8B7AB8"/>
+      <stop offset="50%" style="stop-color:#6B5A8A"/>
+      <stop offset="100%" style="stop-color:#4A3861"/>
+    </linearGradient>
+    <linearGradient id="login-arrow-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#C8B8E8"/>
+      <stop offset="100%" style="stop-color:#8B7AB8"/>
+    </linearGradient>
+    <filter id="login-shadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="0" dy="1" stdDeviation="1" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+
+  <!-- Дверь/вход с объемом -->
+  <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"
+        fill="url(#login-door-grad)"
+        stroke="#A898D0"
+        stroke-width="1.5"
+        filter="url(#login-shadow)"/>
+
+  <!-- Блик на двери -->
+  <rect x="15" y="3" width="4" height="8"
+        fill="rgba(255,255,255,0.1)"/>
+
+  <!-- Стрелка входа с объемом -->
+  <polyline points="10 17 15 12 10 7"
+            fill="none"
+            stroke="url(#login-arrow-grad)"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"/>
+
+  <!-- Линия стрелки -->
+  <line x1="15" y1="12" x2="3" y2="12"
+        stroke="url(#login-arrow-grad)"
+        stroke-width="2.5"
+        stroke-linecap="round"/>
+
+  <!-- Блик на стрелке -->
+  <line x1="5" y1="12" x2="14" y2="12"
+        stroke="rgba(255,255,255,0.3)"
+        stroke-width="1"
+        stroke-linecap="round"/>
+
+  <!-- Декоративные элементы двери -->
+  <circle cx="17.5" cy="14" r="0.8" fill="#B8A8E0"/>
+</svg>

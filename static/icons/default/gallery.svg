@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+  <defs>
+    <linearGradient id="cyberGalleryGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00f5ff"/>
+      <stop offset="50%" style="stop-color:#ff00ff"/>
+      <stop offset="100%" style="stop-color:#00f5ff"/>
+    </linearGradient>
+    <filter id="cyberGlowGallery">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="1" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <rect x="3" y="3" width="7" height="7" rx="1"
+        stroke="url(#cyberGalleryGrad)"
+        filter="url(#cyberGlowGallery)"
+        stroke-linecap="round"
+        stroke-linejoin="round"/>
+  <rect x="14" y="3" width="7" height="7" rx="1"
+        stroke="url(#cyberGalleryGrad)"
+        filter="url(#cyberGlowGallery)"
+        stroke-linecap="round"
+        stroke-linejoin="round"/>
+  <rect x="3" y="14" width="7" height="7" rx="1"
+        stroke="url(#cyberGalleryGrad)"
+        filter="url(#cyberGlowGallery)"
+        stroke-linecap="round"
+        stroke-linejoin="round"/>
+  <rect x="14" y="14" width="7" height="7" rx="1"
+        stroke="url(#cyberGalleryGrad)"
+        filter="url(#cyberGlowGallery)"
+        stroke-linecap="round"
+        stroke-linejoin="round"/>
+  <circle cx="6.5" cy="6.5" r="1" fill="#00f5ff" filter="url(#cyberGlowGallery)"/>
+  <circle cx="17.5" cy="6.5" r="1" fill="#ff00ff" filter="url(#cyberGlowGallery)"/>
+  <circle cx="6.5" cy="17.5" r="1" fill="#ff00ff" filter="url(#cyberGlowGallery)"/>
+  <circle cx="17.5" cy="17.5" r="1" fill="#00f5ff" filter="url(#cyberGlowGallery)"/>
+  <path d="M10 6.5h4M10 17.5h4M6.5 10v4M17.5 10v4" stroke="url(#cyberGalleryGrad)" stroke-width="0.5" opacity="0.3"/>
+</svg>

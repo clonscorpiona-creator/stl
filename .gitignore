@@ -83,7 +83,7 @@ local_settings.py
 db.sqlite3
 /media/
 /staticfiles/
-/static/
+!# /static/ (tracked now)
 
 # IDE
 .vscode/

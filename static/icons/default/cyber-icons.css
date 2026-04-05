@@ -1,0 +1,110 @@
+/* Cyberpunk Icons - Styles for STL Platform */
+/* High-tech neon icons with glow effects */
+
+.cyber-icon {
+  width: 24px;
+  height: 24px;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.cyber-icon-sm {
+  width: 18px;
+  height: 18px;
+}
+
+.cyber-icon-lg {
+  width: 32px;
+  height: 32px;
+}
+
+.cyber-icon-xl {
+  width: 48px;
+  height: 48px;
+}
+
+/* Icon button styles */
+.cyber-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  background: linear-gradient(135deg, rgba(90, 63, 138, 0.1) 0%, rgba(122, 92, 153, 0.1) 100%);
+  border: 1px solid rgba(90, 63, 138, 0.3);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.cyber-icon-btn:hover {
+  background: linear-gradient(135deg, rgba(90, 63, 138, 0.2) 0%, rgba(122, 92, 153, 0.2) 100%);
+  border-color: rgba(90, 63, 138, 0.6);
+  box-shadow: 0 0 15px rgba(90, 63, 138, 0.4);
+  transform: translateY(-2px);
+}
+
+.cyber-icon-btn:active {
+  transform: translateY(0);
+}
+
+/* Neon glow animation */
+@keyframes cyberPulse {
+  0%, 100% {
+    filter: drop-shadow(0 0 2px currentColor);
+  }
+  50% {
+    filter: drop-shadow(0 0 8px currentColor);
+  }
+}
+
+.cyber-icon-glow {
+  animation: cyberPulse 2s ease-in-out infinite;
+}
+
+/* Icon colors */
+.cyber-cyan {
+  color: #00f5ff;
+}
+
+.cyber-magenta {
+  color: #ff00ff;
+}
+
+.cyber-green {
+  color: #00ff88;
+}
+
+.cyber-orange {
+  color: #ff6600;
+}
+
+.cyber-yellow {
+  color: #ffff00;
+}
+
+.cyber-pink {
+  color: #ff0066;
+}
+
+.cyber-gold {
+  color: #ffd700;
+}
+
+/* Header navigation icon styles */
+.nav-cyber-icon {
+  width: 20px;
+  height: 20px;
+  margin-right: 6px;
+  transition: all 0.3s ease;
+}
+
+.nav-link:hover .nav-cyber-icon {
+  transform: scale(1.1);
+  filter: drop-shadow(0 0 6px currentColor);
+}
+
+/* Mobile menu icons */
+.mobile-cyber-icon {
+  width: 24px;
+  height: 24px;
+}

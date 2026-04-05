@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+  <defs>
+    <linearGradient id="like-grad" x1="30%" y1="20%" x2="70%" y2="100%">
+      <stop offset="0%" style="stop-color:#FF8FA8"/>
+      <stop offset="40%" style="stop-color:#FF6B8A"/>
+      <stop offset="100%" style="stop-color:#E04A6A"/>
+    </linearGradient>
+    <linearGradient id="like-gloss-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:rgba(255,255,255,0.5)"/>
+      <stop offset="100%" style="stop-color:rgba(255,255,255,0.1)"/>
+    </linearGradient>
+    <filter id="like-shadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="0" dy="1" stdDeviation="1" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+
+  <!-- Основная форма сердца с 3D объемом -->
+  <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+        fill="url(#like-grad)"
+        stroke="#FF9FB8"
+        stroke-width="1.5"
+        filter="url(#like-shadow)"/>
+
+  <!-- Глянцевый блик -->
+  <path d="M12 19.5l-1-.9C6.5 14.5 3.5 11.8 3.5 8.5c0-2.5 2-4.5 4.5-4.5 1.5 0 3 .8 4 2 1-1.2 2.5-2 4-2 2.5 0 4.5 2 4.5 4.5 0 3.3-3 6-7.5 10.1l-1 .9z"
+        fill="url(#like-gloss-grad)"/>
+
+  <!-- Дополнительный блик сверху слева -->
+  <ellipse cx="8" cy="7" rx="2" ry="1.5"
+           fill="rgba(255,255,255,0.35)"/>
+
+  <!-- Контур для объема -->
+  <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+        fill="none"
+        stroke="rgba(255,255,255,0.3)"
+        stroke-width="0.8"/>
+</svg>
