@@ -20,9 +20,10 @@
                 <img src="{{ u.profile.avatar.url }}" alt="{{ u.username }}"
                      style="width: 56px; height: 56px; border-radius: 50%; object-fit: cover; flex-shrink: 0;">
             {% else %}
-                <div style="width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 20px; font-weight: bold; flex-shrink: 0;">
-                    {{ u.username|first|upper }}
-                </div>
+                <svg viewBox="0 0 200 200" width="56" height="56" style="border-radius: 50%; background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 50%, var(--accent-dark) 100%); padding: 4px;">
+                    <circle cx="100" cy="62" r="32" fill="var(--block-bg)"/>
+                    <path d="M100 105c-35 0-63 18-63 42v18c0 3 14 5 63 5s63-2 63-5v-18c0-24-28-42-63-42z" fill="var(--block-bg)"/>
+                </svg>
             {% endif %}
             <div style="overflow: hidden;">
                 <a href="{% url 'accounts:profile' u.username %}" style="color: inherit; font-weight: 600; font-size: 15px;">

@@ -78,7 +78,10 @@
                 {% if portfolio_user.avatar %}
                     <img src="{{ portfolio_user.avatar.url }}" alt="{{ portfolio_user.username }}">
                 {% else %}
-                    {{ portfolio_user.username|first|upper }}
+                    <svg viewBox="0 0 200 200" width="80" height="80" style="border-radius: 50%; background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 50%, var(--accent-dark) 100%); padding: 6px;">
+                        <circle cx="100" cy="62" r="32" fill="var(--block-bg)"/>
+                        <path d="M100 105c-35 0-63 18-63 42v18c0 3 14 5 63 5s63-2 63-5v-18c0-24-28-42-63-42z" fill="var(--block-bg)"/>
+                    </svg>
                 {% endif %}
             </div>
             <div class="page-header-info">

@@ -29,9 +29,10 @@
                             {% if work.author.avatar %}
                                 <img src="{{ work.author.avatar.url }}" alt="{{ work.author.username }}" style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover;">
                             {% else %}
-                                <div style="width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 14px; font-weight: bold;">
-                                    {{ work.author.username|first|upper }}
-                                </div>
+                                <svg viewBox="0 0 200 200" width="36" height="36" style="border-radius: 50%; background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 50%, var(--accent-dark) 100%); padding: 4px;">
+                                    <circle cx="100" cy="62" r="32" fill="var(--block-bg)"/>
+                                    <path d="M100 105c-35 0-63 18-63 42v18c0 3 14 5 63 5s63-2 63-5v-18c0-24-28-42-63-42z" fill="var(--block-bg)"/>
+                                </svg>
                             {% endif %}
                             <a href="{% url 'accounts:profile' work.author.username %}">{{ work.author.username }}</a>
                         {% endif %}
@@ -87,9 +88,10 @@
                                     {% if col.new.author.avatar %}
                                         <img src="{{ col.new.author.avatar.url }}" alt="" style="width: 28px; height: 28px; border-radius: 50%; object-fit: cover;">
                                     {% else %}
-                                        <div style="width: 28px; height: 28px; min-width: 28px; border-radius: 50%; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 11px; font-weight: bold;">
-                                            {{ col.new.author.username|first|upper }}
-                                        </div>
+                                        <svg viewBox="0 0 200 200" width="28" height="28" style="border-radius: 50%; background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 50%, var(--accent-dark) 100%); padding: 3px;">
+                                            <circle cx="100" cy="62" r="32" fill="var(--block-bg)"/>
+                                            <path d="M100 105c-35 0-63 18-63 42v18c0 3 14 5 63 5s63-2 63-5v-18c0-24-28-42-63-42z" fill="var(--block-bg)"/>
+                                        </svg>
                                     {% endif %}
                                     <a href="{% url 'accounts:profile' col.new.author.username %}">{{ col.new.author.username }}</a>
                                 {% endif %}
@@ -126,9 +128,10 @@
                                     {% if col.popular.author.avatar %}
                                         <img src="{{ col.popular.author.avatar.url }}" alt="" style="width: 28px; height: 28px; border-radius: 50%; object-fit: cover;">
                                     {% else %}
-                                        <div style="width: 28px; height: 28px; min-width: 28px; border-radius: 50%; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 11px; font-weight: bold;">
-                                            {{ col.popular.author.username|first|upper }}
-                                        </div>
+                                        <svg viewBox="0 0 200 200" width="28" height="28" style="border-radius: 50%; background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 50%, var(--accent-dark) 100%); padding: 3px;">
+                                            <circle cx="100" cy="62" r="32" fill="var(--block-bg)"/>
+                                            <path d="M100 105c-35 0-63 18-63 42v18c0 3 14 5 63 5s63-2 63-5v-18c0-24-28-42-63-42z" fill="var(--block-bg)"/>
+                                        </svg>
                                     {% endif %}
                                     <a href="{% url 'accounts:profile' col.popular.author.username %}">{{ col.popular.author.username }}</a>
                                 {% endif %}
@@ -165,9 +168,10 @@
                                     {% if col.random.author.avatar %}
                                         <img src="{{ col.random.author.avatar.url }}" alt="" style="width: 28px; height: 28px; border-radius: 50%; object-fit: cover;">
                                     {% else %}
-                                        <div style="width: 28px; height: 28px; min-width: 28px; border-radius: 50%; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 11px; font-weight: bold;">
-                                            {{ col.random.author.username|first|upper }}
-                                        </div>
+                                        <svg viewBox="0 0 200 200" width="28" height="28" style="border-radius: 50%; background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 50%, var(--accent-dark) 100%); padding: 3px;">
+                                            <circle cx="100" cy="62" r="32" fill="var(--block-bg)"/>
+                                            <path d="M100 105c-35 0-63 18-63 42v18c0 3 14 5 63 5s63-2 63-5v-18c0-24-28-42-63-42z" fill="var(--block-bg)"/>
+                                        </svg>
                                     {% endif %}
                                     <a href="{% url 'accounts:profile' col.random.author.username %}">{{ col.random.author.username }}</a>
                                 {% endif %}

@@ -158,7 +158,10 @@
                 {% if project.author.avatar %}
                     <img src="{{ project.author.avatar.url }}" alt="">
                 {% else %}
-                    {{ project.author.username|first|upper }}
+                    <svg viewBox="0 0 200 200" width="36" height="36" style="border-radius: 50%; background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 50%, var(--accent-dark) 100%); padding: 4px;">
+                        <circle cx="100" cy="62" r="32" fill="var(--block-bg)"/>
+                        <path d="M100 105c-35 0-63 18-63 42v18c0 3 14 5 63 5s63-2 63-5v-18c0-24-28-42-63-42z" fill="var(--block-bg)"/>
+                    </svg>
                 {% endif %}
             </div>
             <div class="proj-meta">
@@ -248,7 +251,10 @@
                     {% if comment.user.avatar %}
                         <img src="{{ comment.user.avatar.url }}" alt="">
                     {% else %}
-                        {{ comment.user.username|first|upper }}
+                        <svg viewBox="0 0 200 200" width="28" height="28" style="border-radius: 50%; background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 50%, var(--accent-dark) 100%); padding: 3px;">
+                            <circle cx="100" cy="62" r="32" fill="var(--block-bg)"/>
+                            <path d="M100 105c-35 0-63 18-63 42v18c0 3 14 5 63 5s63-2 63-5v-18c0-24-28-42-63-42z" fill="var(--block-bg)"/>
+                        </svg>
                     {% endif %}
                 </div>
                 <span class="c-author"><a href="{% url 'accounts:profile' comment.user.username %}">{{ comment.user.username }}</a></span>
