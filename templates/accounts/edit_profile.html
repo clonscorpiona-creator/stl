@@ -31,11 +31,22 @@
 .avatar-section { text-align: center; margin-bottom: 24px; }
 .avatar-round {
     width: 100px; height: 100px; border-radius: 50%; margin: 0 auto 12px;
-    overflow: hidden; border: 3px solid color-mix(in srgb, var(--coffee-white) 80%, var(--text)); background: var(--bg-light);
+    overflow: hidden; border: 3px solid color-mix(in srgb, var(--background) 85%, var(--accent));
     display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(160deg, var(--accent) 0%, var(--accent-light) 50%, var(--foreground) 100%);
+    position: relative;
 }
-.avatar-round img { width: 100%; height: 100%; object-fit: cover; }
-.avatar-round span { font-size: 36px; color: var(--text); font-weight: 700; }
+.avatar-round img { width: 100%; height: 100%; object-fit: cover; z-index: 1; }
+.avatar-round svg.user-silhouette {
+    width: 50%;
+    height: 50%;
+    fill: var(--background);
+    opacity: 0.35;
+    position: absolute;
+    bottom: 8%;
+    left: 50%;
+    transform: translateX(-50%);
+}
 .craft-field { margin-bottom: 18px; }
 .craft-label {
     display: block; font-size: 11px; font-weight: 600; color: var(--text-light);
@@ -151,10 +162,18 @@ textarea.craft-input { resize: vertical; }
                     {% if user.avatar %}
                         <img src="{{ user.avatar.url }}" alt="Avatar">
                     {% else %}
-                        <span>{{ user.username|first|upper }}</span>
+                        <svg class="user-silhouette" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="100" cy="62" r="32" fill="currentColor"/>
+                            <path d="M100 105c-35 0-63 18-63 42v18c0 3 14 5 63 5s63-2 63-5v-18c0-24-28-42-63-42z" fill="currentColor"/>
+                        </svg>
                     {% endif %}
                 </div>
                 <input type="file" name="avatar" accept="image/*" class="craft-file">
+                {% if user.avatar %}
+                <label style="font-size:12px;color:var(--text-light);margin-top:8px;display:block;">
+                    <input type="checkbox" name="avatar_clear"> Удалить текущий аватар
+                </label>
+                {% endif %}
             </div>
         </div>
 

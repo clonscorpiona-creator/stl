@@ -5,9 +5,24 @@
 
 {% block extra_css %}
 <style>
+/* Theme-aware fallback — дефолт темы (если JS ещё не сработал) */
+:root {
+    --background: #f5f0eb;
+    --block-bg: #faf8f5;
+    --text-on-bg: #1a1a1a;
+    --btn-primary: var(--accent);
+    --text-on-btn: #1a1a1a;
+    --btn-secondary: var(--accent-light);
+    --text-on-btn-secondary: #2a2a1a;
+    --accent: #9a7bb9;
+    --accent-light: #A8B89F;
+    --accent-dark: #7A9370;
+    --foreground: #fefefe;
+}
+
 /* === Pattern background === */
 .parchment-pattern-bg {
-    background-color: #f5f0eb;
+    background-color: var(--background);
     background-image:
         radial-gradient(ellipse at 20% 50%, rgba(90,63,138,0.03) 0%, transparent 50%),
         radial-gradient(ellipse at 80% 20%, rgba(154,123,185,0.04) 0%, transparent 50%),
@@ -22,7 +37,7 @@ body .main > .container {
 }
 
 body {
-    background: #f5f0eb;
+    background: var(--background);
 }
 
 /* === Cover banner — full width === */
@@ -84,12 +99,12 @@ body {
     height: 345px;
     border-radius: 16px;
     overflow: hidden;
-    border: 5px solid color-mix(in srgb, var(--coffee-white) 80%, var(--text));
-    box-shadow: 0 4px 16px rgba(0,0,0,0.2), 0 0 0 2px rgba(90,63,138,0.15);
+    border: 5px solid color-mix(in srgb, var(--block-bg) 80%, var(--text));
+    box-shadow: 0 4px 16px rgba(61,42,95,0.15);
     position: relative;
     margin-left: -285px;
     margin-right: auto;
-    background: var(--primary);
+    background: linear-gradient(160deg, var(--accent-dark) 0%, var(--accent) 50%, var(--accent-light) 100%);
 }
 .avatar-frame img {
     width: 100%;
@@ -102,9 +117,32 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 80px;
-    font-weight: 700;
-    color: white;
+    background: linear-gradient(160deg, var(--accent) 0%, var(--accent-light) 50%, var(--foreground) 100%);
+    position: relative;
+    overflow: hidden;
+}
+/* Красивый SVG-силуэт пользователя */
+.avatar-frame-placeholder svg.user-silhouette {
+    width: 60%;
+    height: 60%;
+    fill: var(--block-bg);
+    opacity: 0.35;
+    position: absolute;
+    bottom: 10%;
+    left: 50%;
+    transform: translateX(-50%);
+}
+/* Декоративные круги на фоне */
+.avatar-frame-placeholder::after {
+    content: '';
+    position: absolute;
+    top: -60px;
+    right: -60px;
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    border: 40px solid var(--accent-dark);
+    opacity: 0.1;
 }
 
 /* === Profile body: 3-column grid === */
@@ -221,7 +259,7 @@ body {
     justify-content: center;
     background: color-mix(in srgb, var(--accent) 15%, var(--bg-light));
 }
-.mini-info { padding: 8px 6px; background: var(--coffee-white); }
+.mini-info { padding: 8px 6px; background: var(--block-bg); }
 .mini-title { font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .mini-stats { font-size: 10px; color: var(--text-light); }
 
@@ -250,14 +288,15 @@ body {
 
 /* === Parchment card === */
 .parchment-card {
-    background: var(--coffee-white);
-    border: 2px solid color-mix(in srgb, var(--coffee-white) 80%, var(--text));
+    background: var(--block-bg);
+    border: 2px solid color-mix(in srgb, var(--block-bg) 85%, var(--accent));
     border-radius: 12px;
     padding: 20px 22px;
     margin-bottom: 20px;
-    box-shadow: 0 2px 8px rgba(61,42,95,0.08), inset 0 0 30px rgba(139,115,85,0.05);
+    box-shadow: 0 2px 8px rgba(61,42,95,0.06), inset 0 0 30px rgba(61,42,95,0.03);
     position: relative;
     overflow: hidden;
+    color: var(--text-on-bg);
 }
 .parchment-card::after {
     content: '';
@@ -267,8 +306,8 @@ body {
         to bottom,
         transparent,
         transparent 28px,
-        rgba(61,42,95,0.04) 28px,
-        rgba(61,42,95,0.04) 29px
+        rgba(61,42,95,0.03) 28px,
+        rgba(61,42,95,0.03) 29px
     );
     pointer-events: none;
     border-radius: 12px;
@@ -381,9 +420,9 @@ body {
     align-items: center;
     border: none;
 }
-.btn-craft-primary { background: var(--primary); color: white; }
-.btn-craft-primary:hover { background: var(--primary-dark); color: white; }
-.btn-craft-secondary { background: var(--accent); color: white; border: 1px solid var(--primary-light); }
+.btn-craft-primary { background: var(--btn-primary, var(--primary)); color: var(--text-on-btn); }
+.btn-craft-primary:hover { background: var(--primary-dark); }
+.btn-craft-secondary { background: var(--btn-secondary, var(--accent)); color: var(--text-on-btn-secondary); border: 1px solid var(--primary-light); }
 .btn-craft-secondary:hover { background: var(--primary-light); }
 .btn-craft-danger { background: #DC3545; color: white; }
 .btn-craft-danger:hover { background: #A71D2A; color: white; }
@@ -402,8 +441,8 @@ body {
 }
 .category-tab {
     padding: 10px 14px;
-    background: var(--coffee-white);
-    border: 2px solid color-mix(in srgb, var(--coffee-white) 80%, var(--text));
+    background: var(--block-bg);
+    border: 2px solid color-mix(in srgb, var(--block-bg) 80%, var(--text));
     border-radius: 8px;
     font-size: 13px;
     cursor: pointer;
@@ -431,8 +470,8 @@ body {
     color: var(--text);
     transition: background 0.15s;
     margin-bottom: 8px;
-    background: var(--coffee-white);
-    border: 1px solid color-mix(in srgb, var(--coffee-white) 80%, var(--text));
+    background: var(--block-bg);
+    border: 1px solid color-mix(in srgb, var(--block-bg) 80%, var(--text));
 }
 .work-list-item:hover { background: color-mix(in srgb, var(--primary) 6%, var(--bg-light)); }
 .work-list-item img {
@@ -575,7 +614,14 @@ body {
         {% if profile_user.avatar %}
             <img src="{{ profile_user.avatar.url }}" alt="{{ profile_user.username }}">
         {% else %}
-            <div class="avatar-frame-placeholder">{{ profile_user.username|first|upper }}</div>
+            <div class="avatar-frame-placeholder">
+                <svg class="user-silhouette" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="100" cy="62" r="32" fill="currentColor"/>
+                    <path d="M100 105c-35 0-63 18-63 42v18c0 3 14 5 63 5s63-2 63-5v-18c0-24-28-42-63-42z" fill="currentColor"/>
+                    <circle cx="150" cy="40" r="18" fill="currentColor" opacity="0.3"/>
+                    <rect x="10" y="160" width="30" height="20" rx="4" fill="currentColor" opacity="0.2"/>
+                </svg>
+            </div>
         {% endif %}
     </div>
 </div>

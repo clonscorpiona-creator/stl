@@ -76,6 +76,14 @@
             --bg-light: #f5f5f5;
             --white: #fff;
             --coffee-white: #f5f0eb;
+            --background: #f5f0eb;
+            --foreground: #fefefe;
+            --block-bg: #faf8f5;
+            --text-on-bg: #1a1a1a;
+            --btn-primary: #8FA885;
+            --text-on-btn: #1a1a1a;
+            --btn-secondary: #A8B89F;
+            --text-on-btn-secondary: #2a2a1a;
             /* Фон Герой секции по умолчанию */
             --hero-bg-gradient: linear-gradient(135deg, #3d2961 0%, #4a3861 50%, #6b5582 100%);
         }
@@ -253,7 +261,7 @@
                 height: 18px;
             }
 
-            .nav-link span:not(#chatNotificationBadge, #notificationsBadge) {
+            .nav-link span:not(#notificationsBadge) {
                 display: none;
             }
 
@@ -659,10 +667,6 @@
                     <a href="{% url 'core:work_list' %}" class="nav-link" style="display: flex; align-items: center; gap: 6px;">
                         <img src="/static/icons/{{ icon_set }}/gallery.svg" alt="" class="nav-icon">Работы
                     </a>
-                    <a href="{% url 'chat:index' %}" class="nav-link" style="display: flex; align-items: center; gap: 6px; color: var(--primary); position: relative;">
-                        <img src="/static/icons/{{ icon_set }}/message.svg" alt="" class="nav-icon">Чат
-                        <span id="chatNotificationBadge" style="display: none; position: absolute; top: -8px; right: -12px; background: #ef4444; color: white; border-radius: 50%; min-width: 18px; height: 18px; font-size: 10px; font-weight: 700; text-align: center; line-height: 18px; padding: 0 4px; box-shadow: 0 2px 4px rgba(239, 68, 68, 0.4);">+0</span>
-                    </a>
                     {% if user.is_staff %}
                         <!-- Appearance Dropdown Menu -->
                         <div class="appearance-dropdown">
@@ -963,6 +967,41 @@
             }
         }
 
+        function luminance(hex) {
+            const [r, g, b] = hex.replace('#','').match(/.{2}/g).map(c => {
+                const v = parseInt(c, 16) / 255;
+                return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+            });
+            return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+        }
+
+        function hexAdjust(orig, factor, bgHex) {
+            // factor > 1: darker for light bg, factor < 1: lighter for dark bg
+            return orig;
+        }
+
+        function getContrastColor(bgHex) {
+            const lum = luminance(bgHex);
+            const DARK_THRESHOLD = 0.4;
+            if (lum > DARK_THRESHOLD) {
+                // Светлый фон — текст 4 тона темнее (почти чёрный)
+                return '#1a1a1a';
+            } else {
+                // Тёмный фон — текст 4 тона светлее (почти белый)
+                return '#f0f0f0';
+            }
+        }
+
+        function darkenBy(hex, amount) {
+            const [r, g, b] = hex.replace('#','').match(/.{2}/g).map(c => Math.max(0, Math.min(255, parseInt(c, 16) - amount)));
+            return '#' + [r,g,b].map(v => v.toString(16).padStart(2, '0')).join('');
+        }
+
+        function lightenBy(hex, amount) {
+            const [r, g, b] = hex.replace('#','').match(/.{2}/g).map(c => Math.max(0, Math.min(255, parseInt(c, 16) + amount)));
+            return '#' + [r,g,b].map(v => v.toString(16).padStart(2, '0')).join('');
+        }
+
         function applyTheme(themeName) {
             const themes = {
                 'olive-sage': {
@@ -1019,6 +1058,25 @@
             root.style.setProperty('--accent-light', theme.accentLight);
             root.style.setProperty('--accent-dark', theme.accentDark);
             document.body.style.background = theme.gradient;
+
+            // Фон блоков: на 1 тон светлее основного фона
+            root.style.setProperty('--block-bg', lightenBy(theme.background, 12));
+
+            // Текст: 4 тона темнее фона (светлые фоны) или 4 тона светлее (тёмные фоны)
+            const textOnBg = getContrastColor(theme.background);
+            root.style.setProperty('--text-on-bg', textOnBg);
+
+            // Основной акцент как цвет кнопок
+            const btnColor = theme.accent;
+            const textOnBtn = getContrastColor(btnColor);
+            root.style.setProperty('--btn-primary', btnColor);
+            root.style.setProperty('--text-on-btn', textOnBtn);
+
+            // Вторичные кнопки
+            const btnSecondary = theme.accentLight;
+            const textOnBtnSecondary = getContrastColor(btnSecondary);
+            root.style.setProperty('--btn-secondary', btnSecondary);
+            root.style.setProperty('--text-on-btn-secondary', textOnBtnSecondary);
         }
 
         // Get CSRF token helper
@@ -1048,28 +1106,6 @@
 
     {% if user.is_authenticated %}
     <script>
-        // Загрузка количества непрочитанных сообщений в чатах (глобальная функция)
-        window.loadUnreadCounts = async function() {
-            try {
-                const response = await fetch('/chat/api/unread-counts/', {
-                    credentials: 'include'
-                });
-                const data = await response.json();
-
-                const badge = document.getElementById('chatNotificationBadge');
-                if (badge) {
-                    if (data.total_unread > 0) {
-                        badge.textContent = '+' + data.total_unread;
-                        badge.style.display = 'inline-block';
-                    } else {
-                        badge.style.display = 'none';
-                    }
-                }
-            } catch (error) {
-                console.error('[Unread Counts] Load failed:', error);
-            }
-        };
-
         // Загрузка количества всех уведомлений (глобальная функция)
         window.loadNotificationsCount = async function() {
             // Не обновляем счетчик на странице уведомлений
@@ -1143,20 +1179,17 @@
             // Проверяем, не на странице ли уведомлений мы находимся
             const isNotificationsPage = window.location.pathname.includes('/notifications/');
 
-            loadUnreadCounts();
             // Не загружаем счетчик на странице уведомлений - он там управляется вручную
             if (!isNotificationsPage) {
                 loadNotificationsCount();
                 setInterval(loadNotificationsCount, 10000); // Уведомления каждые 10 секунд
             }
-            setInterval(loadUnreadCounts, 5000); // Чат каждые 5 секунд
         });
 
         // Обновляем счетчики при возврате на вкладку
         document.addEventListener('visibilitychange', () => {
             if (document.visibilityState === 'visible') {
                 const isNotificationsPage = window.location.pathname.includes('/notifications/');
-                loadUnreadCounts();
                 // Не обновляем счетчик на странице уведомлений
                 if (!isNotificationsPage) {
                     loadNotificationsCount();

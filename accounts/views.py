@@ -377,6 +377,9 @@ def edit_profile(request):
         if 'avatar' in request.FILES:
             request.user.avatar = request.FILES['avatar']
 
+        if request.POST.get('avatar_clear') == 'on' and not 'avatar' in request.FILES:
+            request.user.avatar = ''
+
         if 'cover_image' in request.FILES:
             request.user.cover_image = request.FILES['cover_image']
 
