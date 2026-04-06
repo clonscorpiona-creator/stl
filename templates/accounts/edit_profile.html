@@ -4,10 +4,10 @@
 
 {% block extra_css %}
 <style>
-.edit-page { max-width: 600px; margin: 0 auto; }
+.edit-page { max-width: 640px; margin: 0 auto; }
 .edit-card {
     background: var(--coffee-white); border: 2px solid color-mix(in srgb, var(--coffee-white) 80%, var(--text)); border-radius: 16px;
-    padding: 24px; box-shadow: 0 4px 12px rgba(61,42,95,0.1);
+    padding: 24px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(61,42,95,0.1);
     position: relative; overflow: hidden;
 }
 .edit-card::before {
@@ -52,8 +52,7 @@ textarea.craft-input { resize: vertical; }
 .craft-file {
     width: 100%; padding: 10px; background: var(--bg-light);
     border: 2px dashed color-mix(in srgb, var(--bg-light) 80%, var(--text)); border-radius: 8px;
-    cursor: pointer; box-sizing: border-box;
-    color: var(--text);
+    cursor: pointer; box-sizing: border-box; color: var(--text);
 }
 .craft-checkbox-row { display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: var(--bg-light); border-radius: 8px; border: 1px solid color-mix(in srgb, var(--bg-light) 80%, var(--text)); }
 .craft-checkbox-row input { width: 20px; height: 20px; cursor: pointer; }
@@ -69,24 +68,84 @@ textarea.craft-input { resize: vertical; }
 .btn-craft-primary:hover { background: var(--primary-dark); color: white; }
 .btn-craft-secondary { background: var(--accent); color: white; border: 1px solid var(--primary-light); }
 .btn-craft-secondary:hover { background: var(--primary-light); }
+
+/* Cover section */
+.cover-preview {
+    width: 100%; height: 120px; border-radius: 12px; margin-bottom: 16px;
+    overflow: hidden; background: var(--primary); position: relative;
+    background-size: cover; background-position: center;
+}
+.cover-preview-text {
+    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    color: white; font-weight: 600; font-size: 14px; background: rgba(0,0,0,0.15);
+}
+.cover-color-row { display: flex; gap: 12px; align-items: center; margin-bottom: 16px; }
+.cover-color-input { width: 60px; height: 40px; border: 2px solid var(--accent); border-radius: 8px; cursor: pointer; padding: 2px; }
+.cover-color-hint { font-size: 12px; color: var(--text-light); }
+
+/* Social section */
+.social-section { padding: 16px; background: var(--bg-light); border-radius: 10px; margin-bottom: 18px; }
+.social-section-title { font-size: 14px; font-weight: 700; color: var(--primary); margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+.social-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.social-row svg { width: 18px; height: 18px; color: var(--primary-dark); flex-shrink: 0; }
+.social-row input { flex: 1; }
+
+/* Widget toggles */
+.widget-toggles { padding: 16px; background: var(--bg-light); border-radius: 10px; margin-bottom: 18px; }
+.widget-toggle-title { font-size: 14px; font-weight: 700; color: var(--primary); margin-bottom: 14px; }
+.widget-toggle-item {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 8px 0; border-bottom: 1px solid color-mix(in srgb, var(--bg-light) 90%, var(--text));
+}
+.widget-toggle-item:last-child { border-bottom: none; }
+.widget-toggle-item label { font-size: 14px; color: var(--text); cursor: pointer; }
+.widget-toggle-item input[type="checkbox"] { width: 40px; height: 20px; cursor: pointer; }
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="edit-page">
-    <div class="edit-card">
-        <div class="edit-title">
-            <svg viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2">
-                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-            </svg>
-            Редактировать профиль
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <!-- COVER -->
+        <div class="edit-card">
+            <div class="edit-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+                Обложка профиля
+            </div>
+            <div class="cover-preview" id="cover-preview"
+                 {% if user.cover_image %}
+                     style="background-image: url('{{ user.cover_image.url }}');"
+                 {% elif user.cover_color %}
+                     style="background: {{ user.cover_color }};"
+                 {% endif %}>
+                <div class="cover-preview-text">Предпросмотр обложки</div>
+            </div>
+            <div class="craft-field">
+                <label class="craft-label">Изображение обложки</label>
+                <input type="file" name="cover_image" accept="image/*" class="craft-file" id="cover-image-input" onchange="previewCover(this)">
+                {% if user.cover_image %}
+                <label style="font-size:12px;color:var(--text-light);margin-top:6px;display:block;">
+                    <input type="checkbox" name="cover_image_clear"> Удалить текущую обложку
+                </label>
+                {% endif %}
+            </div>
+            <div class="cover-color-row">
+                <label class="craft-label" style="margin:0;">Цвет обложки</label>
+                <input type="color" name="cover_color" value="{{ user.cover_color|default:'#5a3f8a' }}" class="cover-color-input" id="cover-color-input" oninput="updateCoverColor(this.value)">
+                <span class="cover-color-hint" id="cover-color-value">{{ user.cover_color|default:'#5a3f8a' }}</span>
+            </div>
         </div>
-        <div class="edit-info">
-            <p><strong>Приватность:</strong> Email показывается только если включён соответствующий флаг. Текст «О себе» из этого раздела отображается на странице профиля.</p>
-        </div>
-        <form method="post" enctype="multipart/form-data">
-            {% csrf_token %}
+
+        <!-- AVATAR -->
+        <div class="edit-card">
+            <div class="edit-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2">
+                    <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/>
+                </svg>
+                Аватар
+            </div>
             <div class="avatar-section">
                 <div class="avatar-round">
                     {% if user.avatar %}
@@ -96,6 +155,33 @@ textarea.craft-input { resize: vertical; }
                     {% endif %}
                 </div>
                 <input type="file" name="avatar" accept="image/*" class="craft-file">
+            </div>
+        </div>
+
+        <!-- BASIC INFO -->
+        <div class="edit-card">
+            <div class="edit-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                </svg>
+                Основная информация
+            </div>
+            <div class="edit-info">
+                <p><strong>Приватность:</strong> Email показывается только если включён соответствующий флаг.</p>
+            </div>
+
+            <div class="craft-field">
+                <label class="craft-label">Профессия / Специальность</label>
+                <input type="text" name="profession" value="{{ user.profession|default:'' }}" class="craft-input" placeholder="3D-художник, Иллюстратор, UI-дизайнер...">
+            </div>
+            <div class="craft-field">
+                <label class="craft-label">Статус</label>
+                <select name="status" class="craft-input">
+                    {% for val, label in status_choices %}
+                    <option value="{{ val }}"{% if val == profile.status %} selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
             </div>
             <div class="craft-field">
                 <label class="craft-label">Отображаемое имя</label>
@@ -109,6 +195,12 @@ textarea.craft-input { resize: vertical; }
                 <div class="craft-checkbox-row">
                     <input type="checkbox" name="show_email" id="show_email" {% if profile.show_email %}checked{% endif %}>
                     <label for="show_email">Показывать email на странице профиля</label>
+                </div>
+            </div>
+            <div class="craft-field">
+                <div class="craft-checkbox-row">
+                    <input type="checkbox" name="show_badges" id="show_badges" {% if profile.show_badges %}checked{% endif %}>
+                    <label for="show_badges">Показывать бейджи (админ/модератор/PRO и т.д.)</label>
                 </div>
             </div>
             <div class="craft-field">
@@ -128,11 +220,96 @@ textarea.craft-input { resize: vertical; }
                 <label class="craft-label">Город</label>
                 <input type="text" name="location" value="{{ user.location|default:'' }}" class="craft-input">
             </div>
-            <div style="display: flex; gap: 12px; margin-top: 24px;">
-                <button type="submit" class="btn-craft btn-craft-primary">Сохранить</button>
-                <a href="{% url 'accounts:profile' user.username %}" class="btn-craft btn-craft-secondary">Отмена</a>
+            <div class="craft-field">
+                <label class="craft-label">Дата рождения</label>
+                <input type="date" name="date_of_birth" value="{{ user.date_of_birth|date:'Y-m-d'|default_if_none:'' }}" class="craft-input">
             </div>
-        </form>
-    </div>
+            <div class="craft-field">
+                <div class="craft-checkbox-row">
+                    <input type="checkbox" name="show_dob" id="show_dob" {% if user.show_dob %}checked{% endif %}>
+                    <label for="show_dob">Показывать дату рождения на странице профиля</label>
+                </div>
+            </div>
+        </div>
+
+        <!-- SOCIAL LINKS -->
+        <div class="edit-card">
+            <div class="edit-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                Социальные сети
+            </div>
+
+            <div class="social-section" style="background:transparent;padding:0;">
+                <!-- VK -->
+                <div class="social-row">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.785 16.241s.288-.032.436-.194c.136-.148.132-.427.132-.427s-.02-1.304.587-1.496c.598-.189 1.365 1.26 2.179 1.818.615.422 1.083.33 1.083.33l2.178-.03s1.139-.07.598-.964c-.044-.073-.314-.661-1.618-1.869-1.366-1.265-1.183-1.06.462-3.246.999-1.33 1.398-2.142 1.273-2.49-.12-.331-.856-.244-.856-.244l-2.453.015s-.183-.025-.316.056c-.131.079-.216.263-.216.263s-.387 1.03-.903 1.905c-1.089 1.848-1.524 1.946-1.702 1.833-.414-.264-.31-1.065-.31-1.635 0-1.779.27-2.518-.525-2.712-.264-.064-.458-.106-1.134-.113-.866-.009-1.598.003-2.014.206-.277.135-.49.435-.361.453.161.021.525.098.718.36.249.338.24 1.097.24 1.097s.143 2.09-.334 2.349c-.327.178-.773-.185-1.733-1.845-.492-.85-.863-1.784-.863-1.784s-.072-.176-.2-.271c-.155-.115-.372-.152-.372-.152l-2.332.015s-.35.01-.479.162c-.114.135-.009.414-.009.414s1.82 4.256 3.878 6.401c1.886 1.964 4.029 1.834 4.029 1.834h.97z"/></svg>
+                    <input type="url" name="social_vk" value="{{ social_data.vk|default:'' }}" class="craft-input" placeholder="Ссылка на VK">
+                </div>
+                <!-- Telegram -->
+                <div class="social-row">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.479.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+                    <input type="url" name="social_telegram" value="{{ social_data.telegram|default:'' }}" class="craft-input" placeholder="Ссылка на Telegram">
+                </div>
+                <!-- Instagram -->
+                <div class="social-row">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/></svg>
+                    <input type="url" name="social_instagram" value="{{ social_data.instagram|default:'' }}" class="craft-input" placeholder="Ссылка на Instagram">
+                </div>
+                <!-- YouTube -->
+                <div class="social-row">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                    <input type="url" name="social_youtube" value="{{ social_data.youtube|default:'' }}" class="craft-input" placeholder="Ссылка на YouTube">
+                </div>
+                <!-- Behance -->
+                <div class="social-row">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M22 7h-7V5h7v2zm1.726 10c-.442 1.297-2.029 3-5.101 3-3.074 0-5.564-1.729-5.564-5.675 0-3.91 2.325-5.92 5.466-5.92 3.082 0 4.964 1.782 5.375 4.426.078.506.109 1.188.095 2.14H15.97c.13 3.211 3.483 3.312 4.588 2.029h3.168zm-7.686-4h4.965c-.105-1.547-1.136-2.219-2.477-2.219-1.466 0-2.277.768-2.488 2.219zM9.005 21H2V3h7.509c4.001 0 5.911 2.039 5.911 4.595 0 1.822-.932 3.186-2.522 3.915 2.017.545 3.032 2.272 3.032 4.252 0 3.126-2.338 5.243-6.925 5.238zM5 16h2.789c1.735 0 2.686-.726 2.686-2.261 0-1.567-.991-2.195-2.646-2.195H5V16zm0-5.953h2.397c1.715 0 2.572-.772 2.572-2.395 0-1.534-.857-2.152-2.532-2.152H5v4.547z"/></svg>
+                    <input type="url" name="social_behance" value="{{ social_data.behance|default:'' }}" class="craft-input" placeholder="Ссылка на Behance">
+                </div>
+                <!-- GitHub -->
+                <div class="social-row">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+                    <input type="url" name="social_github" value="{{ social_data.github|default:'' }}" class="craft-input" placeholder="Ссылка на GitHub">
+                </div>
+            </div>
+        </div>
+
+        <!-- WIDGET VISIBILITY -->
+        <div class="edit-card">
+            <div class="edit-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                Видимость блоков на профиле
+            </div>
+            <div class="widget-toggles" style="background:transparent;padding:0;">
+                {% for widget in profile.widgets.all %}
+                <div class="widget-toggle-item">
+                    <label for="widget_{{ widget.widget_type }}">{{ widget.get_widget_type_display }}</label>
+                    <input type="checkbox" name="widget_{{ widget.widget_type }}" id="widget_{{ widget.widget_type }}" {% if widget.is_visible %}checked{% endif %}>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Submit -->
+        <div style="display: flex; gap: 12px; margin-bottom: 40px;">
+            <button type="submit" class="btn-craft btn-craft-primary">Сохранить</button>
+            <a href="{% url 'accounts:profile' user.username %}" class="btn-craft btn-craft-secondary">Отмена</a>
+        </div>
+    </form>
 </div>
+
+<script>
+function previewCover(input) {
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('cover-preview').style.backgroundImage = 'url(' + e.target.result + ')';
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+function updateCoverColor(color) {
+    document.getElementById('cover-preview').style.background = color;
+    document.getElementById('cover-color-value').textContent = color;
+}
+</script>
 {% endblock %}

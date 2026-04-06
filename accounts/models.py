@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils.text import slugify
 from django.db.models import Count
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 
 class User(AbstractUser):
@@ -12,6 +14,13 @@ class User(AbstractUser):
     website = models.URLField(blank=True)
     location = models.CharField('Город', max_length=100, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    # Поля профиля-портфолио
+    profession = models.CharField('Профессия', max_length=150, blank=True)
+    cover_color = models.CharField('Цвет обложки', max_length=7, blank=True, default='#5a3f8a')
+    cover_image = models.ImageField(upload_to='covers/', null=True, blank=True, verbose_name='Картинка обложки')
+    date_of_birth = models.DateField('Дата рождения', null=True, blank=True)
+    show_dob = models.BooleanField('Показывать дату рождения', default=False)
 
     class Meta:
         verbose_name = 'Пользователь'
@@ -41,9 +50,19 @@ class Profile(models.Model):
 
     # Настройки приватности
     show_email = models.BooleanField('Показывать email', default=False)
+    show_badges = models.BooleanField('Показывать бейджи', default=True)
+
+    # Статус/роль пользователя (из категорий сайта + общие)
+    status = models.CharField(
+        'Статус', max_length=150, blank=True,
+        help_text='Роль пользователя: категория сайта, фрилансер и т.д.'
+    )
 
     # Программное обеспечение
     tools = models.TextField('Программы', blank=True, help_text='Программы, в которых работает пользователь (через запятую)')
+
+    # Социальные сети и контакты (JSON-строка)
+    social_links = models.TextField('Социальные сети', blank=True, help_text='JSON с ссылками на соцсети: {"telegram": "", "vk": "", "instagram": "", "youtube": "", "behance": "", "github": ""}')
 
     # Роли пользователя
     is_moderator = models.BooleanField('Модератор', default=False)
@@ -73,6 +92,32 @@ class Profile(models.Model):
                 counter += 1
             self.slug = slug
         super().save(*args, **kwargs)
+
+
+class ProfileWidget(models.Model):
+    """Виджет для профиля пользователя — позволяет управлять блоками"""
+    WIDGET_CHOICES = [
+        ('stats', 'Статистика'),
+        ('skills', 'Навыки и профессия'),
+        ('tools', 'Программы'),
+        ('social', 'Социальные сети и контакты'),
+        ('best_works', 'Лучшие работы'),
+        ('projects', 'Проекты'),
+        ('bio', 'О себе'),
+    ]
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='widgets')
+    widget_type = models.CharField('Тип виджета', max_length=20, choices=WIDGET_CHOICES)
+    is_visible = models.BooleanField('Видимый', default=True)
+    sort_order = models.PositiveIntegerField('Порядок', default=0)
+
+    class Meta:
+        verbose_name = 'Виджет профиля'
+        verbose_name_plural = 'Виджеты профиля'
+        ordering = ['sort_order']
+        unique_together = ['profile', 'widget_type']
+
+    def __str__(self):
+        return f'{self.profile.display_name or self.profile.user.username} — {self.get_widget_type_display()}'
 
 
 class Follow(models.Model):
@@ -266,3 +311,18 @@ class UserFavoriteCategory(models.Model):
 
         # Проверяем, есть ли категория в любимых
         return cls.objects.filter(user=user, category_id=category_id).exists()
+
+
+@receiver(post_save, sender=Profile)
+def create_default_widgets(sender, instance, created, **kwargs):
+    """Auto-create default widgets when a Profile is created"""
+    if created:
+        default_widgets = ['stats', 'skills', 'tools', 'social', 'best_works', 'bio']
+        for idx, widget_type in enumerate(default_widgets):
+            if not ProfileWidget.objects.filter(profile=instance, widget_type=widget_type).exists():
+                ProfileWidget.objects.create(
+                    profile=instance,
+                    widget_type=widget_type,
+                    is_visible=True,
+                    sort_order=idx
+                )

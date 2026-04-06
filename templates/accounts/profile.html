@@ -592,8 +592,19 @@ body {
 <!-- PROFILE BODY: 3 columns -->
 <div class="profile-body">
 
-    <!-- LEFT COLUMN: Info + Badges + Social -->
+    <!-- LEFT COLUMN: Status + Info + Badges + Social -->
     <div class="left-sidebar">
+        <!-- Status card -->
+        {% if profile.status %}
+        <div class="parchment-card" style="padding: 14px 18px; text-align: center;">
+            <div class="card-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                Статус
+            </div>
+            <div style="font-size: 15px; color: var(--text); font-weight: 500; margin-top: 4px;">{{ profile.status }}</div>
+        </div>
+        {% endif %}
+
         <!-- Info card -->
         {% if profile_user.location or profile_user.date_of_birth and profile_user.show_dob %}
         <div class="parchment-card" style="padding: 14px 18px;">
@@ -622,7 +633,8 @@ body {
         </div>
         {% endif %}
 
-        <!-- Badges card -->
+        <!-- Badges card (скрываемый, если пользователь не включил) -->
+        {% if profile.show_badges %}
         <div class="parchment-card" style="padding: 14px 16px;">
             <div style="display:flex;flex-direction:column;gap:6px;">
                 {% if profile_user.is_staff %}
@@ -643,6 +655,7 @@ body {
                 {% endif %}
             </div>
         </div>
+        {% endif %}
 
         <!-- Контакты -->
         {% if social_links or profile_user.website %}

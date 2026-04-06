@@ -1,3 +1,4 @@
+import json
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
@@ -5,8 +6,9 @@ from django.contrib.auth import get_user_model
 from django.db.models import Q
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
-from .models import Profile, Follow, Warning
+from .models import Profile, Follow, Warning, ProfileWidget
 
 User = get_user_model()
 
@@ -190,8 +192,8 @@ def profile_view(request, username):
     recent_works = list(all_works[:5])
     works_count = all_works.count()
 
-    # Лучшая работа (по лайкам)
-    top_work = all_works.order_by('-likes_count').first() if works_count else None
+    # Лучшая работа (по лайкам) — топ-3 для виджета
+    best_works = list(all_works.order_by('-likes_count')[:3])
 
     # Подсчёт общих лайков и просмотров
     total_likes = sum(w.likes_count for w in all_works)
@@ -203,20 +205,65 @@ def profile_view(request, username):
     if can_view_drafts:
         drafted_works = list(profile_user.works.filter(status='draft').order_by('-created_at'))
 
+    # Online статус (last_login < 15 мин назад)
+    is_online = False
+    if profile_user.last_login:
+        is_online = (timezone.now() - profile_user.last_login).seconds < 900
+
+    # Список инструментов
+    tools_list = [t.strip() for t in profile.tools.split(',') if t.strip()] if profile.tools else []
+
+    # Социальные сети
+    social_links = {}
+    if profile.social_links:
+        try:
+            social_links = json.loads(profile.social_links)
+        except (json.JSONDecodeError, TypeError):
+            social_links = {}
+
+    # Видимые виджеты
+    visible_widgets = {}
+    widgets = ProfileWidget.objects.filter(profile=profile).order_by('sort_order')
+    for w in widgets:
+        visible_widgets[w.widget_type] = w.is_visible
+
+    # Проекты пользователя
+    user_projects = list(profile_user.projects.filter(status='published').order_by('-created_at')[:6])
+
+    # Работы по категориям (для правой колонки)
+    from core.models import Category
+    works_by_category = {}
+    for work in all_works:
+        cat_name = work.category.name if work.category else 'Другое'
+        cat_id = work.category.id if work.category else 0
+        key = (cat_id, cat_name)
+        if key not in works_by_category:
+            works_by_category[key] = []
+        works_by_category[key].append(work)
+    # Sort by category name
+    works_by_category = dict(sorted(works_by_category.items(), key=lambda x: x[0][1]))
+
     context = {
         'profile_user': profile_user,
         'profile': profile,
         'recent_works': recent_works,
         'published_works': list(all_works),
         'drafted_works': drafted_works,
-        'top_work': top_work,
+        'top_work': best_works[0] if best_works else None,
+        'best_works': best_works,
         'total_likes': total_likes,
         'total_views': total_views,
         'collections': collections,
         'is_following': is_following,
         'drafts': drafted_works if drafted_works else None,
-        'works': recent_works,
+        'works': list(all_works),
         'works_count': works_count,
+        'is_online': is_online,
+        'tools_list': tools_list,
+        'social_links': social_links,
+        'visible_widgets': visible_widgets,
+        'user_projects': user_projects,
+        'works_by_category': works_by_category,
     }
     return render(request, 'accounts/profile.html', context)
 
@@ -293,21 +340,124 @@ def edit_profile(request):
         request.user.bio = request.POST.get('bio', '') if request.POST.get('bio') else request.POST.get('user_bio', '')
         request.user.website = request.POST.get('website', '')
         request.user.location = request.POST.get('location', '')
+        request.user.profession = request.POST.get('profession', '')
+        request.user.cover_color = request.POST.get('cover_color', '#5a3f8a')
+        dob = request.POST.get('date_of_birth', '')
+        if dob:
+            request.user.date_of_birth = dob
+        else:
+            request.user.date_of_birth = None
+        request.user.show_dob = request.POST.get('show_dob') == 'on'
         if request.POST.get('bio'):
             profile.bio = request.POST.get('bio')
 
         profile.display_name = request.POST.get('display_name', '')
         profile.tools = request.POST.get('tools', '')
         profile.show_email = request.POST.get('show_email') == 'on'
+        profile.show_badges = request.POST.get('show_badges') == 'on'
+        profile.status = request.POST.get('status', '').strip()
+
+        # Соцсети — собираем из отдельных полей
+        social_links = {}
+        for key in ['telegram', 'vk', 'instagram', 'youtube', 'rutube', 'behance', 'github']:
+            val = request.POST.get(f'social_{key}', '').strip()
+            if val:
+                social_links[key] = val
+        profile.social_links = json.dumps(social_links, ensure_ascii=False) if social_links else ''
+
+        # Виджеты — видимость
+        for widget_type in ['stats', 'skills', 'tools', 'social', 'best_works', 'projects', 'bio']:
+            try:
+                widget, _ = ProfileWidget.objects.get_or_create(profile=profile, widget_type=widget_type)
+                widget.is_visible = f'widget_{widget_type}' in request.POST
+                widget.save(update_fields=['is_visible'])
+            except Exception:
+                pass
 
         if 'avatar' in request.FILES:
             request.user.avatar = request.FILES['avatar']
+
+        if 'cover_image' in request.FILES:
+            request.user.cover_image = request.FILES['cover_image']
 
         request.user.save()
         profile.save()
         return redirect('accounts:profile', username=request.user.username)
 
-    return render(request, 'accounts/edit_profile.html', {'profile': profile})
+    # Подготовить соцсети для формы
+    social_data = {}
+    if profile.social_links:
+        try:
+            social_data = json.loads(profile.social_links)
+        except (json.JSONDecodeError, TypeError):
+            pass
+
+    status_choices = [
+        ('', '— Не выбрано —'),
+        ('Пользователь', 'Пользователь'),
+        ('Фрилансер', 'Фрилансер'),
+        ('Моушен-дизайнер', 'Моушен-дизайнер'),
+        ('Графический дизайнер', 'Графический дизайнер'),
+        ('3D моделлер', '3D моделлер'),
+        ('3D визуализатор', '3D визуализатор'),
+        ('Web-дизайнер', 'Web-дизайнер'),
+        ('UI/UX', 'UI/UX'),
+        ('Иллюстратор', 'Иллюстратор'),
+        ('Гейм-индустрия', 'Гейм-индустрия'),
+        ('Видео-монтажер', 'Видео-монтажер'),
+        ('Аниматор', 'Аниматор'),
+        ('ИИ-технологии', 'ИИ-технологии'),
+    ]
+
+    return render(request, 'accounts/edit_profile.html', {
+        'profile': profile,
+        'social_data': social_data,
+        'status_choices': status_choices,
+    })
+
+
+@login_required
+@require_POST
+def toggle_widget(request, widget_type):
+    """AJAX вкл/выкл виджет"""
+    if not request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return JsonResponse({'error': 'AJAX only'}, status=400)
+
+    profile, _ = Profile.objects.get_or_create(user=request.user)
+    valid_types = [t[0] for t in ProfileWidget.WIDGET_CHOICES]
+    if widget_type not in valid_types:
+        return JsonResponse({'error': 'Invalid widget type'}, status=400)
+
+    widget, _ = ProfileWidget.objects.get_or_create(profile=profile, widget_type=widget_type)
+    widget.is_visible = not widget.is_visible
+    widget.save(update_fields=['is_visible'])
+
+    return JsonResponse({'success': True, 'is_visible': widget.is_visible})
+
+
+@login_required
+@require_POST
+def reorder_widgets(request):
+    """AJAX переупорядочение виджетов"""
+    if not request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return JsonResponse({'error': 'AJAX only'}, status=400)
+
+    try:
+        data = json.loads(request.body)
+        order = data.get('order', [])
+    except (json.JSONDecodeError, TypeError):
+        return JsonResponse({'error': 'Invalid JSON'}, status=400)
+
+    profile, _ = Profile.objects.get_or_create(user=request.user)
+    for idx, widget_type in enumerate(order):
+        try:
+            widget = ProfileWidget.objects.get(profile=profile, widget_type=widget_type)
+            widget.sort_order = idx
+            widget.save(update_fields=['sort_order'])
+        except ProfileWidget.DoesNotExist:
+            pass
+
+    return JsonResponse({'success': True})
 
 
 @login_required
