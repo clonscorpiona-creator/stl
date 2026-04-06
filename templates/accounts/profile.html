@@ -5,106 +5,381 @@
 
 {% block extra_css %}
 <style>
-.profile-page { max-width: 960px; margin: 0 auto; }
+/* === Pattern background === */
+.parchment-pattern-bg {
+    background-color: #f5f0eb;
+    background-image:
+        radial-gradient(ellipse at 20% 50%, rgba(90,63,138,0.03) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 20%, rgba(154,123,185,0.04) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 80%, rgba(90,63,138,0.02) 0%, transparent 50%);
+}
 
-.craft-card {
-    background: var(--coffee-white); border: 2px solid color-mix(in srgb, var(--coffee-white) 80%, var(--text)); border-radius: 16px;
-    padding: 24px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(61,42,95,0.1);
-    position: relative; overflow: hidden;
+/* Profile page — full width background */
+body .main > .container {
+    max-width: none;
+    width: 100%;
+    padding: 0;
 }
-.craft-card::before {
-    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
-    background: color-mix(in srgb, var(--coffee-white) 80%, var(--text));
-    filter: blur(1px);
-}
-.card-title {
-    font-size: 14px; font-weight: 700; text-transform: uppercase;
-    letter-spacing: 1.5px; color: var(--primary); margin-bottom: 16px;
-    display: flex; align-items: center; gap: 8px;
-}
-.card-title svg { width: 20px; height: 20px; flex-shrink: 0; }
 
-/* Header */
-.profile-header { display: flex; gap: 24px; align-items: center; }
-.profile-avatar {
-    width: 120px; height: 120px; border-radius: 50%; overflow: hidden;
-    flex-shrink: 0; border: 3px solid var(--accent); background: color-mix(in srgb, var(--accent) 15%, var(--bg-light));
+body {
+    background: #f5f0eb;
 }
-.profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
-.avatar-placeholder {
-    width: 100%; height: 100%; display: flex; align-items: center;
-    justify-content: center; font-size: 40px; color: var(--primary); font-weight: 700;
-}
-.profile-main { flex: 1; min-width: 0; }
-.profile-name { font-size: 26px; font-weight: 700; color: var(--text); margin: 0 0 4px 0; }
-.profile-uname { color: var(--text-light); margin: 0 0 8px 0; font-size: 14px; }
-.profile-meta { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 8px; }
-.profile-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
 
-/* Badges */
+/* === Cover banner — full width === */
+.cover-banner {
+    width: 100%;
+    margin: 0 auto 0;
+    height: 364px;
+    border-radius: 0;
+    overflow: hidden;
+    position: relative;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    box-shadow: 0 4px 20px rgba(61,42,95,0.2);
+}
+.cover-banner.cover-bg-image {
+    background-size: cover;
+    background-position: center;
+}
+.cover-banner .cover-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.55) 100%);
+}
+.cover-info {
+    position: absolute;
+    bottom: 40px;
+    left: 0;
+    right: 0;
+    padding: 0 20px;
+    color: white;
+    z-index: 2;
+    text-align: center;
+}
+.cover-info .cover-username {
+    font-size: 28px;
+    font-weight: 700;
+    margin: 0 0 2px 0;
+}
+.cover-info .cover-profession {
+    font-size: 14px;
+    opacity: 0.85;
+    margin: 0 0 4px 0;
+}
+.cover-info .cover-meta {
+    font-size: 12px;
+    opacity: 0.7;
+}
+
+/* === Avatar (square) === */
+.avatar-frame-wrapper {
+    display: block;
+    max-width: 960px;
+    margin: 0 auto;
+    transform: translateY(-182px);
+    position: relative;
+    z-index: 3;
+}
+.avatar-frame {
+    width: 345px;
+    height: 345px;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 5px solid color-mix(in srgb, var(--coffee-white) 80%, var(--text));
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2), 0 0 0 2px rgba(90,63,138,0.15);
+    position: relative;
+    margin-left: -285px;
+    margin-right: auto;
+    background: var(--primary);
+}
+.avatar-frame img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.avatar-frame-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 80px;
+    font-weight: 700;
+    color: white;
+}
+
+/* === Profile body: 3-column grid === */
+.profile-body {
+    width: 100%;
+    max-width: none;
+    padding: 0 20px;
+    display: grid;
+    grid-template-columns: 280px 740px 1fr;
+    gap: 20px;
+    position: relative;
+    z-index: 2;
+}
+.left-sidebar {
+    grid-column: 1;
+    grid-row: 1;
+}
+.main-column {
+    grid-column: 2;
+    grid-row: 1;
+    margin-top: -250px;
+}
+.right-sidebar {
+    grid-column: 3;
+    grid-row: 1;
+    margin-top: -250px;
+}
+
+/* === Info items in left sidebar === */
+.profile-info-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    color: var(--text);
+    font-size: 14px;
+}
+.profile-info-item svg { width: 18px; height: 18px; flex-shrink: 0; opacity: 0.6; }
+.info-val-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-light); margin-bottom: 2px; }
+.info-val { font-size: 14px; color: var(--text); font-weight: 500; }
+
+/* === Social links as rows === */
+.social-row-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    color: var(--text);
+    text-decoration: none;
+    font-size: 13px;
+    transition: background 0.15s;
+    margin: 0 -10px;
+}
+.social-row-item:hover { background: rgba(90,63,138,0.06); }
+.social-row-item svg { width: 20px; height: 20px; flex-shrink: 0; }
+.social-row-item-label { flex: 1; }
+.social-row-item-arrow { opacity: 0.25; font-size: 16px; }
+
+/* === Stats row === */
+.stats-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.stat-box {
+    text-align: center;
+    padding: 14px 8px;
+    background: color-mix(in srgb, var(--accent) 20%, var(--bg-light));
+    border-radius: 10px;
+    text-decoration: none;
+    transition: transform 0.15s;
+}
+.stat-box:hover { transform: translateY(-2px); }
+.stat-value { font-size: 22px; font-weight: 700; color: var(--primary); }
+.stat-label { font-size: 11px; color: var(--text-light); margin-top: 3px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+/* === Tools === */
+.tools-list { display: flex; flex-wrap: wrap; gap: 8px; }
+.tool-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 5px 12px;
+    background: color-mix(in srgb, var(--primary) 8%, var(--bg-light));
+    border: 1px solid var(--primary-light);
+    border-radius: 20px;
+    font-size: 12px;
+    color: var(--primary-dark);
+}
+.tool-tag svg { width: 12px; height: 12px; flex-shrink: 0; }
+
+/* === Skill items === */
+.skill-item {
+    padding: 4px 14px;
+    background: color-mix(in srgb, var(--accent) 20%, var(--bg-light));
+    border-radius: 20px;
+    font-size: 13px;
+    color: var(--primary-dark);
+}
+
+/* === Best works row === */
+.best-works-row { display: flex; gap: 12px; }
+.best-work-mini {
+    flex: 1;
+    text-decoration: none;
+    border-radius: 10px;
+    overflow: hidden;
+    transition: transform 0.15s;
+}
+.best-work-mini:hover { transform: translateY(-2px); }
+.best-work-mini img { width: 100%; height: 120px; object-fit: cover; display: block; }
+.no-cover-mini {
+    width: 100%;
+    height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: color-mix(in srgb, var(--accent) 15%, var(--bg-light));
+}
+.mini-info { padding: 8px 6px; background: var(--coffee-white); }
+.mini-title { font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mini-stats { font-size: 10px; color: var(--text-light); }
+
+/* === Projects mini === */
+.projects-mini { display: flex; gap: 10px; flex-wrap: wrap; }
+.project-mini-item {
+    padding: 8px 14px;
+    background: color-mix(in srgb, var(--accent) 15%, var(--bg-light));
+    border-radius: 8px;
+    text-decoration: none;
+    color: var(--text);
+    font-size: 13px;
+    transition: background 0.15s;
+}
+.project-mini-item:hover { background: color-mix(in srgb, var(--primary) 10%, var(--bg-light)); }
+.proj-name { font-weight: 600; }
+.proj-cat { font-size: 11px; color: var(--text-light); margin-top: 1px; }
+
+/* === Bio === */
+.bio-text { font-size: 14px; line-height: 1.65; color: var(--text); margin-top: 40px; }
+.info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
+.info-item { padding: 10px; background: color-mix(in srgb, var(--accent) 15%, var(--bg-light)); border-radius: 8px; }
+.info-label { font-size: 10px; text-transform: uppercase; color: var(--text-light); letter-spacing: 0.5px; }
+.info-value { font-size: 14px; color: var(--text); margin-top: 3px; }
+.info-value a { color: var(--primary); }
+
+/* === Parchment card === */
+.parchment-card {
+    background: var(--coffee-white);
+    border: 2px solid color-mix(in srgb, var(--coffee-white) 80%, var(--text));
+    border-radius: 12px;
+    padding: 20px 22px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(61,42,95,0.08), inset 0 0 30px rgba(139,115,85,0.05);
+    position: relative;
+    overflow: hidden;
+}
+.parchment-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+        to bottom,
+        transparent,
+        transparent 28px,
+        rgba(61,42,95,0.04) 28px,
+        rgba(61,42,95,0.04) 29px
+    );
+    pointer-events: none;
+    border-radius: 12px;
+}
+.parchment-card > * {
+    position: relative;
+    z-index: 1;
+}
+
+/* === Parchment card title === */
+.parchment-card .card-title {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--primary);
+    margin-bottom: 14px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+.parchment-card .card-title svg { width: 18px; height: 18px; flex-shrink: 0; }
+.parchment-card .card-title::before,
+.parchment-card .card-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, rgba(61,42,95,0.15), transparent);
+}
+.parchment-card .card-title::after {
+    background: linear-gradient(to left, rgba(61,42,95,0.15), transparent);
+}
+
+/* === Tabs === */
+.tabs-bar-full {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+.tabs-bar {
+    display: flex;
+    gap: 8px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid color-mix(in srgb, var(--accent) 15%, var(--bg-light));
+    align-items: center;
+    flex-wrap: wrap;
+}
+.tab-btn {
+    padding: 8px 18px;
+    background: transparent;
+    border: 1px solid color-mix(in srgb, var(--bg-light) 80%, var(--text));
+    border-radius: 8px;
+    color: var(--text-light);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+}
+.tab-btn:hover, .tab-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+.tabs-right { margin-left: auto; display: flex; gap: 8px; }
+
+/* === Badge === */
 .badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
 .badge-staff { background: var(--primary); color: white; }
 .badge-joined { background: var(--accent); color: white; }
 .badge-location { background: color-mix(in srgb, var(--accent) 15%, var(--bg-light)); color: var(--primary-dark); border: 1px solid var(--primary-light); }
 .badge-verified { background: #A8B89F; color: #2A2A1A; }
-.badge-warning-badge { background: #FFF3CD; color: #856404; border: 1px solid #FFC107; gap: 3px; }
 .badge-pro { background: var(--primary-light); color: white; }
+.badge-warning-badge { background: #FFF3CD; color: #856404; border: 1px solid #FFC107; gap: 3px; }
 .warning-dots span { display: inline-block; width: 6px; height: 6px; background: #FFC107; border-radius: 50%; }
 
-/* Alert */
+/* === Alert === */
 .ban-alert {
-    background: #F8D7DA; border: 1px solid #F5C6CB; border-radius: 12px;
-    padding: 16px 20px; margin-bottom: 20px; color: #721C24; font-weight: 600;
+    max-width: 960px;
+    margin: 0 auto 20px;
+    background: #F8D7DA;
+    border: 1px solid #F5C6CB;
+    border-radius: 12px;
+    padding: 16px 20px;
+    color: #721C24;
+    font-weight: 600;
 }
 .warning-alert {
-    background: #FFF3CD; border: 1px solid #FFC107; border-radius: 10px;
-    padding: 10px 16px; margin-top: 10px; color: #856404; font-size: 13px;
-    display: flex; align-items: center; gap: 6px;
+    max-width: 960px;
+    margin: 0 auto 14px;
+    background: #FFF3CD;
+    border: 1px solid #FFC107;
+    border-radius: 10px;
+    padding: 10px 16px;
+    color: #856404;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
 
-/* Stats */
-.stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
-.stat-box {
-    background: var(--bg-light); border: 1px solid color-mix(in srgb, var(--bg-light) 80%, var(--text)); border-radius: 12px;
-    padding: 16px 12px; text-align: center; text-decoration: none; transition: box-shadow 0.2s;
-}
-.stat-box:hover { box-shadow: 0 2px 8px rgba(61,42,95,0.15); text-decoration: none; }
-.stat-value { font-size: 28px; font-weight: 800; color: var(--primary-dark); line-height: 1; }
-.stat-label { font-size: 12px; color: var(--text-light); margin-top: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
-
-/* Info */
-.info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.info-item { background: var(--bg-light); border: 1px solid color-mix(in srgb, var(--bg-light) 80%, var(--text)); border-radius: 10px; padding: 14px 16px; }
-.info-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-light); margin-bottom: 4px; font-weight: 600; }
-.info-value { color: var(--text); font-size: 15px; }
-.info-value a { color: var(--primary); text-decoration: none; }
-.info-value a:hover { text-decoration: underline; }
-.bio-text { color: var(--text); font-size: 14px; line-height: 1.6; }
-
-/* Tools */
-.tools-list { display: flex; flex-wrap: wrap; gap: 8px; }
-.tool-tag {
-    background: var(--bg-light); border: 1px solid color-mix(in srgb, var(--bg-light) 80%, var(--text)); border-radius: 20px;
-    padding: 6px 14px; font-size: 13px; color: var(--primary-dark); font-weight: 500;
-    display: inline-flex; align-items: center; gap: 6px;
-}
-.tool-tag svg { width: 14px; height: 14px; stroke: var(--primary-light); }
-
-/* Tabs */
-.tabs-bar { display: flex; gap: 8px; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 2px solid color-mix(in srgb, var(--accent) 15%, var(--bg-light)); align-items: center; flex-wrap: wrap; }
-.tab-btn {
-    padding: 8px 18px; background: transparent; border: 1px solid color-mix(in srgb, var(--bg-light) 80%, var(--text));
-    border-radius: 8px; color: var(--text-light); font-size: 14px; font-weight: 500;
-    cursor: pointer; transition: all 0.2s; text-decoration: none;
-}
-.tab-btn:hover, .tab-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
-.tabs-right { margin-left: auto; display: flex; gap: 8px; }
-
-/* Buttons */
+/* === Buttons === */
 .btn-craft {
-    padding: 8px 20px; border-radius: 8px; font-size: 14px; font-weight: 500;
-    cursor: pointer; transition: all 0.2s; text-decoration: none;
-    display: inline-flex; align-items: center; border: none;
+    padding: 8px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    border: none;
 }
 .btn-craft-primary { background: var(--primary); color: white; }
 .btn-craft-primary:hover { background: var(--primary-dark); color: white; }
@@ -112,369 +387,672 @@
 .btn-craft-secondary:hover { background: var(--primary-light); }
 .btn-craft-danger { background: #DC3545; color: white; }
 .btn-craft-danger:hover { background: #A71D2A; color: white; }
+.btn-follow { width: 100%; justify-content: center; padding: 12px; font-size: 15px; font-weight: 600; }
 
-/* Works grid */
-.works-craft-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px; }
-.craft-work-card {
-    background: var(--bg-light); border: 1px solid color-mix(in srgb, var(--bg-light) 80%, var(--text)); border-radius: 12px;
-    overflow: hidden; position: relative; transition: box-shadow 0.3s;
+/* === Works feed (right sidebar) === */
+.works-feed {
+    position: sticky;
+    top: 20px;
 }
-.craft-work-card:hover { box-shadow: 0 6px 20px rgba(61,42,95,0.18); }
-.craft-work-card img.cover { width: 100%; height: 180px; object-fit: cover; display: block; background: color-mix(in srgb, var(--accent) 15%, var(--bg-light)); }
-.craft-work-card .no-cover { width: 100%; height: 180px; display: flex; align-items: center; justify-content: center; background: color-mix(in srgb, var(--accent) 15%, var(--bg-light)); }
-.craft-work-body { padding: 12px 14px; }
-.craft-work-body h3 {
-    font-size: 15px; margin: 0 0 6px 0; color: var(--text);
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+.category-tabs {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 16px;
 }
-.craft-work-body h3 a { color: inherit; text-decoration: none; }
-.craft-work-body h3 a:hover { text-decoration: underline; }
-.cat-badge { display: inline-block; background: var(--accent); color: white; padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 600; margin-bottom: 8px; }
-.craft-mini-stats { display: flex; gap: 10px; font-size: 12px; color: var(--text-light); }
-.craft-mini-stats span { display: flex; align-items: center; gap: 3px; }
-.craft-mini-stats img { width: 12px; height: 12px; }
+.category-tab {
+    padding: 10px 14px;
+    background: var(--coffee-white);
+    border: 2px solid color-mix(in srgb, var(--coffee-white) 80%, var(--text));
+    border-radius: 8px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-align: left;
+    color: var(--text);
+    font-weight: 500;
+}
+.category-tab:hover { background: color-mix(in srgb, var(--primary) 8%, var(--bg-light)); }
+.category-tab.active { background: var(--primary); color: white; border-color: var(--primary); }
+.category-tab .cat-count { float: right; font-size: 11px; opacity: 0.6; }
 
-/* Drafts */
+.works-vertical-list {
+    display: none;
+}
+.works-vertical-list.active {
+    display: block;
+}
+.work-list-item {
+    display: flex;
+    gap: 12px;
+    padding: 10px;
+    border-radius: 10px;
+    text-decoration: none;
+    color: var(--text);
+    transition: background 0.15s;
+    margin-bottom: 8px;
+    background: var(--coffee-white);
+    border: 1px solid color-mix(in srgb, var(--coffee-white) 80%, var(--text));
+}
+.work-list-item:hover { background: color-mix(in srgb, var(--primary) 6%, var(--bg-light)); }
+.work-list-item img {
+    width: 120px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 8px;
+    flex-shrink: 0;
+}
+.work-list-item .no-cover-sm {
+    width: 120px;
+    height: 80px;
+    border-radius: 8px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: color-mix(in srgb, var(--accent) 15%, var(--bg-light));
+}
+.work-item-info { flex: 1; }
+.work-item-title {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.work-item-cat {
+    font-size: 11px;
+    color: var(--primary);
+    margin-bottom: 4px;
+}
+.work-item-stats {
+    font-size: 11px;
+    color: var(--text-light);
+    display: flex;
+    gap: 10px;
+}
+
+/* === Drafts === */
 .draft-list { display: flex; flex-direction: column; gap: 8px; }
-.draft-item {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 10px 14px; background: var(--bg-light); border: 1px dashed color-mix(in srgb, var(--bg-light) 80%, var(--text));
-    border-radius: 10px; gap: 10px;
-}
+.draft-item { display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: var(--bg-light); border: 1px dashed color-mix(in srgb, var(--bg-light) 80%, var(--text)); border-radius: 10px; }
 .draft-name { font-size: 14px; color: var(--text); }
 .draft-name a { color: inherit; text-decoration: none; }
 .draft-name a:hover { text-decoration: underline; }
 .draft-date { font-size: 12px; color: var(--text-light); }
-.draft-status { font-size: 11px; background: #FFF3CD; color: #856404; padding: 3px 8px; border-radius: 10px; font-weight: 600; }
 
-/* Warnings */
+.empty-state { text-align: center; padding: 40px 20px; color: var(--text-light); }
+
+/* === Warning items === */
 .warning-item { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 10px; }
 .warning-item.yellow { background: #FFF8E1; }
 .warning-item.red { background: #FDE8E8; }
 .warning-bar { width: 4px; height: 16px; border-radius: 2px; flex-shrink: 0; }
 .warning-bar.yellow { background: #FFC107; }
 .warning-bar.red { background: #DC3545; }
-
-/* Top work */
-.top-work-card {
-    background: var(--bg-light); border: 1px solid color-mix(in srgb, var(--bg-light) 80%, var(--text)); border-radius: 12px;
-    overflow: hidden; display: flex; gap: 16px; transition: box-shadow 0.3s;
-}
-.top-work-card:hover { box-shadow: 0 4px 16px rgba(61,42,95,0.15); }
-.top-work-cover { width: 180px; height: 120px; flex-shrink: 0; overflow: hidden; background: color-mix(in srgb, var(--accent) 15%, var(--bg-light)); }
-.top-work-cover img { width: 100%; height: 100%; object-fit: cover; }
-.top-work-info { flex: 1; padding: 14px 14px 14px 0; display: flex; flex-direction: column; justify-content: center; }
-.top-work-title { font-size: 16px; font-weight: 600; color: var(--text); margin: 0 0 4px 0; }
-.top-work-title a { color: inherit; text-decoration: none; }
-.top-work-stats { display: flex; gap: 12px; color: var(--text-light); font-size: 13px; }
-.top-badge { display: inline-block; background: var(--primary-light); color: white; padding: 2px 8px; border-radius: 12px; font-size: 10px; font-weight: 700; text-transform: uppercase; margin-bottom: 8px; }
-
-.empty-state { text-align: center; padding: 40px 20px; color: var(--text-light); }
-
-textarea.craft-input {
-    width: 100%; padding: 10px 14px; background: var(--bg-light);
-    border: 1px solid color-mix(in srgb, var(--bg-light) 80%, var(--text)); border-radius: 8px; font-size: 14px;
-    color: var(--text); outline: none; transition: border-color 0.2s; box-sizing: border-box; resize: vertical;
-}
-textarea.craft-input:focus { border-color: var(--primary); }
-
-.craft-label { display: block; font-size: 11px; font-weight: 600; color: var(--text-light); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
-.craft-checkbox { display: flex; align-items: center; gap: 8px; cursor: pointer; }
-.craft-checkbox input { width: 18px; height: 18px; }
-.craft-checkbox label { font-size: 14px; color: var(--text); }
-
-/* Warning form */
 .warning-form { display: none; }
 
-@media (max-width: 600px) {
+/* === Right sidebar action cards === */
+.action-card {
+    padding: 16px 18px;
+}
+
+/* === Responsive === */
+@media (max-width: 1200px) {
+    .profile-body {
+        grid-template-columns: 240px 1fr;
+        max-width: 960px;
+    }
+    .left-sidebar { grid-column: 1; grid-row: 1; }
+    .main-column { grid-column: 2; grid-row: 1; }
+    .right-sidebar { grid-column: 1 / span 2; grid-row: 2; }
+}
+@media (max-width: 992px) {
+    .profile-body {
+        grid-template-columns: 1fr;
+        padding: 0 20px;
+    }
+    .left-sidebar, .main-column, .right-sidebar {
+        grid-column: 1;
+        grid-row: auto;
+    }
+    .category-tabs {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+    .works-feed { position: static; }
+}
+@media (max-width: 660px) {
+    .avatar-frame-wrapper { transform: translateY(-80px); margin-left: 20px; }
+    .avatar-frame { width: 180px; height: 180px; }
     .stats-row { grid-template-columns: repeat(2, 1fr); }
     .info-grid { grid-template-columns: 1fr; }
-    .profile-header { flex-direction: column; text-align: center; }
-    .profile-actions { justify-content: center; }
+    .cover-banner { height: 200px; }
+    .best-works-row { flex-direction: column; }
     .tabs-right { margin-left: 0; }
-    .top-work-card { flex-direction: column; }
-    .top-work-cover { width: 100%; height: 140px; }
 }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="profile-page">
-    <!-- Ban alert -->
-    {% if profile.is_banned %}
-    <div class="ban-alert">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6M9 9l6 6"/></svg>
-        Пользователь заблокирован{% if profile.ban_reason %} — <span style="font-weight:400;">{{ profile.ban_reason }}</span>{% endif %}
-    </div>
-    {% endif %}
+<!-- Ban alert -->
+{% if profile.is_banned %}
+<div class="ban-alert">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6M9 9l6 6"/></svg>
+    Пользователь заблокирован{% if profile.ban_reason %} — <span style="font-weight:400;">{{ profile.ban_reason }}</span>{% endif %}
+</div>
+{% endif %}
 
-    <!-- Profile header -->
-    <div class="craft-card">
-        <div class="profile-header">
-            <div class="profile-avatar">
-                {% if profile_user.avatar %}
-                    <img src="{{ profile_user.avatar.url }}" alt="{{ profile_user.username }}">
-                {% else %}
-                    <div class="avatar-placeholder">{{ profile_user.username|first|upper }}</div>
-                {% endif %}
-            </div>
-            <div class="profile-main">
-                <p class="profile-name">
-                    {{ profile.display_name|default:profile_user.username }}
-                    {% if profile.is_verified %}<span style="color:#A8B89F;">&#10003;</span>{% endif %}
-                    {% if profile.is_banned %}
-                        <span style="display:inline-block;width:4px;height:20px;background:#DC3545;transform:rotate(25deg);margin-left:5px;" title="Заблокирован"></span>
-                    {% elif profile.warning_count > 0 %}
-                        {% for i in "123456789"|make_list %}{% if forloop.counter <= profile.warning_count %}<span style="display:inline-block;width:4px;height:16px;background:#FFC107;transform:rotate(25deg);margin-left:3px;" title="Предупреждение"></span>{% endif %}{% endfor %}
-                    {% endif %}
-                </p>
-                <p class="profile-uname">&#64;{{ profile_user.username }}</p>
-                <div class="profile-meta">
-                    {% if profile_user.is_staff %}
-                        <span class="badge badge-staff">АДМИН</span>
-                    {% elif profile.is_senior_moderator %}
-                        <span class="badge badge-staff" style="background:linear-gradient(135deg,#f093fb,#f5576c);">СТ. МОД</span>
-                    {% elif profile.is_moderator %}
-                        <span class="badge badge-staff" style="background:linear-gradient(135deg,#4facfe,#00f2fe);">МОД</span>
-                    {% endif %}
-                    <span class="badge badge-joined">На проекте с {{ profile_user.date_joined|date:"d.m.Y" }}</span>
-                    {% if profile_user.location %}
-                        <span class="badge badge-location">{{ profile_user.location }}</span>
-                    {% endif %}
-                    {% if profile.is_verified %}
-                        <span class="badge badge-verified">Проверен</span>
-                    {% endif %}
-                    {% if profile.is_pro %}
-                        <span class="badge badge-pro">PRO</span>
-                    {% endif %}
-                    {% if profile.warning_count > 0 and not profile.is_banned %}
-                        <span class="badge badge-warning-badge">НАРУШИТЕЛЬ <span class="warning-dots">{% for i in profile.warning_count|make_list %}<span></span>{% endfor %}</span></span>
-                    {% endif %}
-                </div>
-                <div class="profile-actions">
-                    {% if user.is_authenticated and user != profile_user %}
-                        <form action="{% url 'accounts:follow' profile_user.username %}" method="post" style="display:inline;">{% csrf_token %}
-                            <button type="submit" class="btn-craft {% if is_following %}btn-craft-secondary{% else %}btn-craft-primary{% endif %}">
-                                {% if is_following %}Отписаться{% else %}Подписаться{% endif %}
-                            </button>
-                        </form>
-                        {% if user.is_staff %}
-                            <button type="button" class="btn-craft btn-craft-secondary" onclick="document.getElementById('warning-form').style.display='block'">Предупреждение</button>
-                            <button type="button" class="btn-craft {% if profile.is_banned %}btn-craft-secondary{% else %}btn-craft-danger{% endif %}" onclick="toggleBan()">
-                                {% if profile.is_banned %}Разбанить{% else %}Заблокировать{% endif %}
-                            </button>
-                        {% endif %}
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Warning form (staff) -->
-    {% if user.is_staff %}
-    <div id="warning-form" class="craft-card warning-form">
-        <div class="card-title">Выдать предупреждение</div>
-        <form action="{% url 'accounts:warning_give' profile_user.id %}" method="post">
-            {% csrf_token %}
-            <div style="margin-bottom:14px;">
-                <span class="craft-label">Причина</span>
-                <textarea name="reason" rows="3" required class="craft-input"></textarea>
-            </div>
-            <div style="margin-bottom:14px;">
-                <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:14px;color:var(--text);">
-                    <input type="checkbox" name="is_yellow" checked style="width:18px;height:18px;">
-                    Жёлтое предупреждение (красное = бан)
-                </label>
-            </div>
-            <div style="display:flex;gap:10px;">
-                <button type="submit" class="btn-craft btn-craft-primary">Выдать</button>
-                <button type="button" class="btn-craft btn-craft-secondary" onclick="document.getElementById('warning-form').style.display='none'">Отмена</button>
-            </div>
-        </form>
-    </div>
-    <form id="ban-form" action="{% url 'accounts:ban_toggle' profile_user.id %}" method="post" style="display:none;">
-        {% csrf_token %}<input type="hidden" name="reason" id="ban-reason-input">
-    </form>
-    {% endif %}
-
-    {% if not profile.is_banned and profile.warning_count > 0 %}
-    <div class="warning-alert">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-        Предупреждений: {{ profile.warning_count }}
-        {% if profile.warning_count >= 3 %}<span style="color:#DC3545;font-weight:600;">(последнее предупреждение!)</span>{% endif %}
-    </div>
-    {% endif %}
-
-    <!-- О себе -->
-    {% if profile.bio or profile_user.bio or profile_user.website or profile_user.first_name or profile_user.last_name %}
-    <div class="craft-card">
-        <div class="card-title">
-            <svg viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
-            О себе
-        </div>
-        {% if profile.bio %}
-        <p class="bio-text" style="margin-bottom:14px;">{{ profile.bio|linebreaksbr }}</p>
-        {% elif profile_user.bio %}
-        <p class="bio-text" style="margin-bottom:14px;">{{ profile_user.bio|linebreaksbr }}</p>
+<!-- COVER BANNER -->
+<div class="cover-banner {% if profile_user.cover_image %}cover-bg-image{% endif %}"
+     {% if profile_user.cover_image %}
+         style="background-image: url('{{ profile_user.cover_image.url }}');"
+     {% elif profile_user.cover_color %}
+         style="background: {{ profile_user.cover_color }};"
+     {% endif %}>
+    <div class="cover-overlay"></div>
+    <div class="cover-info">
+        <h1 class="cover-username">
+            {{ profile.display_name|default:profile_user.username }}
+            {% if profile.is_verified %}<span style="color:#A8B89F;">&#10003;</span>{% endif %}
+        </h1>
+        {% if profile_user.profession %}
+        <p class="cover-profession">{{ profile_user.profession }}</p>
         {% endif %}
-        <div class="info-grid">
-            {% if profile_user.first_name or profile_user.last_name %}
-            <div class="info-item">
-                <div class="info-label">Имя</div>
-                <div class="info-value">{{ profile_user.last_name }} {{ profile_user.first_name }}</div>
-            </div>
+        <div class="cover-meta">
+            <span>&#64;{{ profile_user.username }}</span>
+            {% if is_online %}
+            <span style="margin-left:8px;"><span class="online-dot"></span> Online</span>
             {% endif %}
+            <span style="margin-left:8px;">На проекте с {{ profile_user.date_joined|date:"d.m.Y" }}</span>
+        </div>
+    </div>
+</div>
+
+<!-- AVATAR -->
+<div class="avatar-frame-wrapper">
+    <div class="avatar-frame">
+        {% if profile_user.avatar %}
+            <img src="{{ profile_user.avatar.url }}" alt="{{ profile_user.username }}">
+        {% else %}
+            <div class="avatar-frame-placeholder">{{ profile_user.username|first|upper }}</div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- WARNING ALERT -->
+{% if not profile.is_banned and profile.warning_count > 0 %}
+<div class="warning-alert">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+    Предупреждений: {{ profile.warning_count }}
+    {% if profile.warning_count >= 3 %}<span style="color:#DC3545;font-weight:600;">(последнее предупреждение!)</span>{% endif %}
+</div>
+{% endif %}
+
+<!-- PROFILE BODY: 3 columns -->
+<div class="profile-body">
+
+    <!-- LEFT COLUMN: Info + Badges + Social -->
+    <div class="left-sidebar">
+        <!-- Info card -->
+        {% if profile_user.location or profile_user.date_of_birth and profile_user.show_dob %}
+        <div class="parchment-card" style="padding: 14px 18px;">
+            <div class="card-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+                Информация
+            </div>
             {% if profile_user.location %}
-            <div class="info-item">
-                <div class="info-label">Город</div>
-                <div class="info-value">{{ profile_user.location }}</div>
+            <div class="profile-info-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                <div>
+                    <div class="info-val-label">Город</div>
+                    <div class="info-val">{{ profile_user.location }}</div>
+                </div>
             </div>
             {% endif %}
+            {% if profile_user.date_of_birth and profile_user.show_dob %}
+            <div class="profile-info-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                <div>
+                    <div class="info-val-label">Дата рождения</div>
+                    <div class="info-val">{{ profile_user.date_of_birth|date:"d.m.Y" }}</div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <!-- Badges card -->
+        <div class="parchment-card" style="padding: 14px 16px;">
+            <div style="display:flex;flex-direction:column;gap:6px;">
+                {% if profile_user.is_staff %}
+                    <span class="badge badge-staff">АДМИН</span>
+                {% elif profile.is_senior_moderator %}
+                    <span class="badge badge-staff" style="background:linear-gradient(135deg,#f093fb,#f5576c);">СТ. МОД</span>
+                {% elif profile.is_moderator %}
+                    <span class="badge badge-staff" style="background:linear-gradient(135deg,#4facfe,#00f2fe);">МОД</span>
+                {% endif %}
+                {% if profile.is_verified %}
+                    <span class="badge badge-verified">Проверен</span>
+                {% endif %}
+                {% if profile.is_pro %}
+                    <span class="badge badge-pro">PRO</span>
+                {% endif %}
+                {% if profile.warning_count > 0 and not profile.is_banned %}
+                    <span class="badge badge-warning-badge">НАРУШИТЕЛЬ <span class="warning-dots">{% for i in profile.warning_count|make_list %}<span></span>{% endfor %}</span></span>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Контакты -->
+        {% if social_links or profile_user.website %}
+        <div class="parchment-card" style="padding: 14px 18px;">
+            <div class="card-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                Контакты
+            </div>
             {% if profile_user.website %}
-            <div class="info-item">
-                <div class="info-label">Сайт</div>
-                <div class="info-value"><a href="{{ profile_user.website }}" target="_blank">{{ profile_user.website }}</a></div>
-            </div>
-            {% endif %}
-            {% if profile_user.email and profile.show_email %}
-            <div class="info-item">
-                <div class="info-label">Email</div>
-                <div class="info-value">{{ profile_user.email }}</div>
-            </div>
-            {% endif %}
-        </div>
-    </div>
-    {% endif %}
-
-    <!-- Программы -->
-    {% if profile.tools %}
-    <div class="craft-card">
-        <div class="card-title">
-            <svg viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
-            Программы
-        </div>
-        <div class="tools-list">
-            {% for tool in profile.tools|split:',' %}
-                {% if tool|trim %}
-                <span class="tool-tag">
-                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
-                    {{ tool|trim }}
-                </span>
-                {% endif %}
-            {% endfor %}
-        </div>
-    </div>
-    {% endif %}
-
-    <!-- Статистика -->
-    <div class="craft-card">
-        <div class="card-title">
-            <svg viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
-            Статистика
-        </div>
-        <div class="stats-row">
-            <a href="{% url 'accounts:followers' profile_user.username %}" class="stat-box">
-                <div class="stat-value">{{ profile.followers_count|default:0 }}</div>
-                <div class="stat-label">Подписчики</div>
+            <a href="{{ profile_user.website }}" target="_blank" class="social-row-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                <span class="social-row-item-label">Сайт</span>
+                <span class="social-row-item-arrow">&#8250;</span>
             </a>
-            <a href="{% url 'accounts:following' profile_user.username %}" class="stat-box">
-                <div class="stat-value">{{ profile.following_count|default:0 }}</div>
-                <div class="stat-label">Подписки</div>
+            {% endif %}
+            {% if social_links.vk %}
+            <a href="{{ social_links.vk }}" target="_blank" class="social-row-item">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.785 16.241s.288-.032.436-.194c.136-.148.132-.427.132-.427s-.02-1.304.587-1.496c.598-.189 1.365 1.26 2.179 1.818.615.422 1.083.33 1.083.33l2.178-.03s1.139-.07.598-.964c-.044-.073-.314-.661-1.618-1.869-1.366-1.265-1.183-1.06.462-3.246.999-1.33 1.398-2.142 1.273-2.49-.12-.331-.856-.244-.856-.244l-2.453.015s-.183-.025-.316.056c-.131.079-.216.263-.216.263s-.387 1.03-.903 1.905c-1.089 1.848-1.524 1.946-1.702 1.833-.414-.264-.31-1.065-.31-1.635 0-1.779.27-2.518-.525-2.712-.264-.064-.458-.106-1.134-.113-.866-.009-1.598.003-2.014.206-.277.135-.49.435-.361.453.161.021.525.098.718.36.249.338.24 1.097.24 1.097s.143 2.09-.334 2.349c-.327.178-.773-.185-1.733-1.845-.492-.85-.863-1.784-.863-1.784s-.072-.176-.2-.271c-.155-.115-.372-.152-.372-.152l-2.332.015s-.35.01-.479.162c-.114.135-.009.414-.009.414s1.82 4.256 3.878 6.401c1.886 1.964 4.029 1.834 4.029 1.834h.97z"/></svg>
+                <span class="social-row-item-label">VKontakte</span>
+                <span class="social-row-item-arrow">&#8250;</span>
             </a>
-            <div class="stat-box">
-                <div class="stat-value">{{ total_likes|default:0 }}</div>
-                <div class="stat-label">Лайков</div>
-            </div>
-            <div class="stat-box">
-                <div class="stat-value">{{ works_count|default:0 }}</div>
-                <div class="stat-label">Публикации</div>
-            </div>
+            {% endif %}
+            {% if social_links.telegram %}
+            <a href="{{ social_links.telegram }}" target="_blank" class="social-row-item">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.479.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+                <span class="social-row-item-label">Telegram</span>
+                <span class="social-row-item-arrow">&#8250;</span>
+            </a>
+            {% endif %}
+            {% if social_links.instagram %}
+            <a href="{{ social_links.instagram }}" target="_blank" class="social-row-item">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/></svg>
+                <span class="social-row-item-label">Instagram</span>
+                <span class="social-row-item-arrow">&#8250;</span>
+            </a>
+            {% endif %}
+            {% if social_links.youtube %}
+            <a href="{{ social_links.youtube }}" target="_blank" class="social-row-item">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                <span class="social-row-item-label">YouTube</span>
+                <span class="social-row-item-arrow">&#8250;</span>
+            </a>
+            {% endif %}
+            {% if social_links.rutube %}
+            <a href="{{ social_links.rutube }}" target="_blank" class="social-row-item">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-3 14V8l6 4-6 4z"/></svg>
+                <span class="social-row-item-label">RuTube</span>
+                <span class="social-row-item-arrow">&#8250;</span>
+            </a>
+            {% endif %}
+            {% if social_links.behance %}
+            <a href="{{ social_links.behance }}" target="_blank" class="social-row-item">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M22 7h-7V5h7v2zm1.726 10c-.442 1.297-2.029 3-5.101 3-3.074 0-5.564-1.729-5.564-5.675 0-3.91 2.325-5.92 5.466-5.92 3.082 0 4.964 1.782 5.375 4.426.078.506.109 1.188.095 2.14H15.97c.13 3.211 3.483 3.312 4.588 2.029h3.168zm-7.686-4h4.965c-.105-1.547-1.136-2.219-2.477-2.219-1.466 0-2.277.768-2.488 2.219zM9.005 21H2V3h7.509c4.001 0 5.911 2.039 5.911 4.595 0 1.822-.932 3.186-2.522 3.915 2.017.545 3.032 2.272 3.032 4.252 0 3.126-2.338 5.243-6.925 5.238zM5 16h2.789c1.735 0 2.686-.726 2.686-2.261 0-1.567-.991-2.195-2.646-2.195H5V16zm0-5.953h2.397c1.715 0 2.572-.772 2.572-2.395 0-1.534-.857-2.152-2.532-2.152H5v4.547z"/></svg>
+                <span class="social-row-item-label">Behance</span>
+                <span class="social-row-item-arrow">&#8250;</span>
+            </a>
+            {% endif %}
+            {% if social_links.github %}
+            <a href="{{ social_links.github }}" target="_blank" class="social-row-item">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+                <span class="social-row-item-label">GitHub</span>
+                <span class="social-row-item-arrow">&#8250;</span>
+            </a>
+            {% endif %}
         </div>
-    </div>
+        {% endif %}
+    </div><!-- /.left-sidebar -->
 
-    <!-- Лучшая работа -->
-    {% if top_work %}
-    <div class="craft-card">
-        <div class="card-title">
-            <svg viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-            Лучшая работа
-        </div>
-        <div class="top-work-card">
-            <div class="top-work-cover">
-                {% if top_work.cover %}
-                    <img src="{{ top_work.cover.url }}" alt="{{ top_work.title }}">
-                {% else %}
-                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--primary-light)" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
-                {% endif %}
+    <!-- CENTER COLUMN -->
+    <div class="main-column">
+        <!-- О себе (main centerpiece) -->
+        {% if visible_widgets.bio and profile.bio or profile_user.bio %}
+        <div class="parchment-card">
+            <div class="card-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+                О себе
             </div>
-            <div class="top-work-info">
-                <span class="top-badge">{{ top_work.category.name }}</span>
-                <h3 class="top-work-title">
-                    <a href="{% url 'core:work_detail' top_work.author.username top_work.slug %}">{{ top_work.title }}</a>
-                </h3>
-                <div class="top-work-stats">
-                    <span>{{ top_work.likes_count }} лайков</span>
-                    <span>{{ top_work.views_count }} просмотров</span>
-                    <span>{{ top_work.comments_count }} комментариев</span>
+            {% if profile.bio %}
+            <p class="bio-text">{{ profile.bio|linebreaksbr }}</p>
+            {% elif profile_user.bio %}
+            <p class="bio-text">{{ profile_user.bio|linebreaksbr }}</p>
+            {% else %}
+            <p class="bio-text" style="color:var(--text-light);font-style:italic;">Расскажите немного о себе...</p>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <!-- Widget: Stats -->
+        {% if visible_widgets.stats %}
+        <div class="parchment-card" data-widget="stats">
+            <div class="card-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+                Статистика
+            </div>
+            <div class="stats-row">
+                <a href="{% url 'accounts:followers' profile_user.username %}" class="stat-box">
+                    <div class="stat-value">{{ profile.followers_count|default:0 }}</div>
+                    <div class="stat-label">Подписчики</div>
+                </a>
+                <a href="{% url 'accounts:following' profile_user.username %}" class="stat-box">
+                    <div class="stat-value">{{ profile.following_count|default:0 }}</div>
+                    <div class="stat-label">Подписки</div>
+                </a>
+                <div class="stat-box">
+                    <div class="stat-value">{{ total_likes|default:0 }}</div>
+                    <div class="stat-label">Лайков</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value">{{ works_count|default:0 }}</div>
+                    <div class="stat-label">Публикации</div>
                 </div>
             </div>
         </div>
-    </div>
-    {% endif %}
+        {% endif %}
 
-    <!-- Черновики — владелец и администрация -->
-    {% if drafts %}
-    <div class="craft-card">
-        <div class="card-title">
-            <svg viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-            Черновики ({{ drafts|length }})
+        <!-- Widget: Skills / Profession -->
+        {% if visible_widgets.skills and profile_user.profession %}
+        <div class="parchment-card" data-widget="skills">
+            <div class="card-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>
+                Навыки и профессия
+            </div>
+            <div style="display:flex;flex-wrap:wrap;gap:8px;">
+                {% if profile_user.profession %}
+                <span class="skill-item">{{ profile_user.profession }}</span>
+                {% endif %}
+            </div>
         </div>
-        <div class="draft-list">
-            {% for work in drafts %}
-            <div class="draft-item">
-                <div class="draft-name">
-                    {% if work.slug %}
-                        <a href="{% url 'core:work_detail' work.author.username work.slug %}">{{ work.title }}</a>
-                    {% else %}
-                        {{ work.title }}
+        {% endif %}
+
+        <!-- Widget: Программы -->
+        {% if visible_widgets.tools and tools_list %}
+        <div class="parchment-card" data-widget="tools">
+            <div class="card-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                Программы
+            </div>
+            <div class="tools-list">
+                {% for tool in tools_list %}
+                <span class="tool-tag">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke="var(--primary)"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
+                    {{ tool }}
+                </span>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Certificate placeholder -->
+        {% if user == profile_user %}
+        <div class="parchment-card">
+            <div class="card-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><path d="M4 4h16v12a4 4 0 01-4 4H8a4 4 0 01-4-4V4z"/><path d="M9 20l2 4 1 2 1-2 2-4"/><circle cx="12" cy="10" r="3"/></svg>
+                Сертификаты
+            </div>
+            <div class="empty-state" style="padding:20px;">
+                <p style="font-size:14px;color:var(--text-light);margin-bottom:12px;">Сертификаты пока не добавлены</p>
+                <a href="{% url 'accounts:edit' %}" class="btn-craft btn-craft-secondary" style="display:inline-block;font-size:13px;padding:6px 14px;">Добавить сертификат</a>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Schools placeholder -->
+        {% if user == profile_user %}
+        <div class="parchment-card">
+            <div class="card-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><path d="M2 3h20l-10 7L2 3z"/><path d="M4 10v8a1 1 0 001 1h14a1 1 0 001-1v-8"/><path d="M12 18v4"/></svg>
+                Обучение
+            </div>
+            <div class="empty-state" style="padding:20px;">
+                <p style="font-size:14px;color:var(--text-light);margin-bottom:12px;">Школы обучения пока не добавлены</p>
+                <a href="{% url 'accounts:edit' %}" class="btn-craft btn-craft-secondary" style="display:inline-block;font-size:13px;padding:6px 14px;">Добавить школу</a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- RIGHT COLUMN: Works feed -->
+    <div class="right-sidebar">
+        <div class="works-feed">
+            <div class="parchment-card action-card">
+                <div class="card-title">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+                    Работы по категориям
+                </div>
+
+                {% if works_by_category %}
+                <!-- Category tabs -->
+                <div class="category-tabs">
+                    <!-- All works tab -->
+                    <button class="category-tab active" data-category="all">
+                        Все работы <span class="cat-count">{{ works_count }}</span>
+                    </button>
+                    {% for key, cat_works in works_by_category %}
+                    <button class="category-tab" data-category="{{ key.0 }}">
+                        {{ key.1 }} <span class="cat-count">{{ cat_works|length }}</span>
+                    </button>
+                    {% endfor %}
+                </div>
+
+                <!-- Works lists by category -->
+                <div id="works-all" class="works-vertical-list active">
+                    <!-- All works (shown by default) -->
+                    <div id="works-cat-all" class="works-works-group">
+                        {% for key, cat_works in works_by_category %}
+                            {% for work in cat_works %}
+                            {% if work.author.username and work.slug %}
+                            <a href="{% url 'core:work_detail' work.author.username work.slug %}" class="work-list-item" data-work-cat="{{ key.0 }}">
+                                {% if work.cover %}
+                                <img src="{{ work.cover.url }}" alt="{{ work.title }}">
+                                {% else %}
+                                <div class="no-cover-sm">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary-light)" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+                                </div>
+                                {% endif %}
+                                <div class="work-item-info">
+                                    <div class="work-item-title">{{ work.title }}</div>
+                                    {% if work.category %}
+                                    <div class="work-item-cat">{{ work.category.name }}</div>
+                                    {% endif %}
+                                    <div class="work-item-stats">
+                                        <span>{{ work.likes_count }} &#9829;</span>
+                                        <span>{{ work.views_count }} &#128065;</span>
+                                    </div>
+                                </div>
+                            </a>
+                            {% endif %}
+                            {% endfor %}
+                        {% endfor %}
+                    </div>
+
+                    <!-- Individual category lists (hidden by default) -->
+                    {% for key, cat_works in works_by_category %}
+                    <div id="works-cat-{{ key.0 }}" class="works-works-group" data-cat="{{ key.0 }}" style="display:none;">
+                        {% for work in cat_works %}
+                        {% if work.author.username and work.slug %}
+                        <a href="{% url 'core:work_detail' work.author.username work.slug %}" class="work-list-item">
+                            {% if work.cover %}
+                            <img src="{{ work.cover.url }}" alt="{{ work.title }}">
+                            {% else %}
+                            <div class="no-cover-sm">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary-light)" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+                            </div>
+                            {% endif %}
+                            <div class="work-item-info">
+                                <div class="work-item-title">{{ work.title }}</div>
+                                <div class="work-item-stats">
+                                    <span>{{ work.likes_count }} &#9829;</span>
+                                    <span>{{ work.views_count }} &#128065;</span>
+                                </div>
+                            </div>
+                        </a>
+                        {% endif %}
+                        {% endfor %}
+                    </div>
+                    {% endfor %}
+                </div>
+
+                {% else %}
+                <div class="empty-state" style="padding:20px 0;">
+                    <p style="font-size:14px;color:var(--text-light);">Работ пока нет</p>
+                    {% if user == profile_user %}
+                    <a href="{% url 'core:work_create' %}" class="btn-craft btn-craft-primary" style="display:inline-block;margin-top:12px;font-size:13px;padding:6px 14px;">Создать работу</a>
                     {% endif %}
                 </div>
-                <span class="draft-status" style="font-size:11px;background:#FFF3CD;color:#856404;padding:3px 8px;border-radius:10px;font-weight:600;">Черновик</span>
-                <span class="draft-date">{{ work.created_at|date:"d.m.Y" }}</span>
+                {% endif %}
             </div>
-            {% endfor %}
-        </div>
-    </div>
-    {% endif %}
 
-    <!-- История предупреждений (staff) -->
-    {% if user.is_staff and profile_user.warnings.all %}
-    <div class="craft-card">
-        <div class="card-title">
-            <svg viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-            История предупреждений
-        </div>
-        <div style="display:flex;flex-direction:column;gap:10px;">
-            {% for warning in profile_user.warnings.all %}
-            <div class="warning-item {% if warning.is_yellow %}yellow{% else %}red{% endif %}">
-                <div class="warning-bar {% if warning.is_yellow %}yellow{% else %}red{% endif %}"></div>
-                <div style="flex:1;">
-                    <strong style="color:var(--text);font-size:14px;">{{ warning.moderator.username }}</strong>
-                    <span style="color:var(--text-light);font-size:13px;"> выдал {{ warning.created_at|date:"d.m.Y H:i" }}</span>
-                    <div style="color:var(--text);font-size:13px;margin-top:2px;">{{ warning.reason }}</div>
-                </div>
-                <form action="{% url 'accounts:warning_remove' warning.id %}" method="post" style="display:inline;">{% csrf_token %}
-                    <button type="submit" class="btn-craft btn-craft-secondary" style="padding:4px 8px;font-size:11px;">Снять</button>
+            <!-- Follow / Actions card -->
+            {% if user.is_authenticated and user != profile_user %}
+            <div class="parchment-card action-card">
+                <form action="{% url 'accounts:follow' profile_user.username %}" method="post">
+                    {% csrf_token %}
+                    {% if is_following %}
+                    <button type="submit" class="btn-craft btn-craft-secondary btn-follow">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="18" y1="8" x2="23" y2="13"/><line x1="23" y1="8" x2="18" y2="13"/></svg>
+                        Отписаться
+                    </button>
+                    {% else %}
+                    <button type="submit" class="btn-craft btn-craft-primary btn-follow">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="12" y1="8" x2="12" y2="14"/><line x1="9" y1="11" x2="15" y2="11"/></svg>
+                        Подписаться
+                    </button>
+                    {% endif %}
                 </form>
+
+                {% if user.is_staff %}
+                <div style="margin-top:12px;padding-top:12px;border-top:1px solid color-mix(in srgb, var(--bg-light) 80%, var(--text));">
+                    <div style="font-size:11px;color:var(--text-light);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px;">Модерация</div>
+                    <div style="display:flex;flex-direction:column;gap:8px;">
+                        <button type="button" class="btn-craft btn-craft-secondary" style="width:100%;justify-content:center;" onclick="document.getElementById('warning-form').style.display='block';document.querySelector('.warning-alert')?.scrollIntoView({behavior:'smooth'});">
+                            Выдать предупреждение
+                        </button>
+                        <button type="button" class="btn-craft btn-craft-danger" style="width:100%;justify-content:center;" onclick="toggleBan()">
+                            {% if profile.is_banned %}Разблокировать{% else %}Заблокировать{% endif %}
+                        </button>
+                    </div>
+                </div>
+                {% endif %}
             </div>
-            {% endfor %}
+            {% elif user == profile_user %}
+            <div class="parchment-card action-card">
+                <div style="display:flex;flex-direction:column;gap:8px;">
+                    <a href="{% url 'accounts:edit' %}" class="btn-craft btn-craft-primary btn-follow">
+                        Редактировать профиль
+                    </a>
+                    <a href="{% url 'core:work_create' %}" class="btn-craft btn-craft-secondary btn-follow">
+                        Создать работу
+                    </a>
+                </div>
+            </div>
+            {% endif %}
         </div>
     </div>
-    {% endif %}
 
-    <!-- Вкладки / Работы -->
+</div><!-- end profile-body -->
+
+<!-- Follow form for right sidebar owner (shown when no social_links but user authenticated and != profile) -->
+{% if not user.is_authenticated or user == profile_user %}
+<!-- Hidden: actions already shown in right sidebar -->
+{% endif %}
+
+<!-- Warning form (staff) -->
+{% if user.is_staff %}
+<div style="max-width:960px;margin:14px auto 0;">
+<div id="warning-form" class="parchment-card warning-form" style="display:none;">
+    <div class="card-title">Выдать предупреждение</div>
+    <form action="{% url 'accounts:warning_give' profile_user.id %}" method="post">
+        {% csrf_token %}
+        <div style="margin-bottom:14px;">
+            <span class="craft-label">Причина</span>
+            <textarea name="reason" rows="3" required class="craft-input"></textarea>
+        </div>
+        <div style="margin-bottom:14px;">
+            <label style="display:flex;align-items:center;gap:8px;font-size:14px;color:var(--text);">
+                <input type="checkbox" name="is_yellow" checked style="width:18px;height:18px;">
+                Жёлтое предупреждение
+            </label>
+        </div>
+        <div style="display:flex;gap:10px;">
+            <button type="submit" class="btn-craft btn-craft-primary">Выдать</button>
+            <button type="button" class="btn-craft btn-craft-secondary" onclick="document.getElementById('warning-form').style.display='none'">Отмена</button>
+        </div>
+    </form>
+</div>
+<form id="ban-form" action="{% url 'accounts:ban_toggle' profile_user.id %}" method="post" style="display:none;">
+    {% csrf_token %}<input type="hidden" name="reason" id="ban-reason-input">
+</form>
+</div>
+{% endif %}
+
+<!-- Drafts -->
+{% if drafts %}
+<div style="max-width:960px;margin:14px auto 0;">
+<div class="parchment-card">
+    <div class="card-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        Черновики ({{ drafts|length }})
+    </div>
+    <div class="draft-list">
+        {% for work in drafts %}
+        <div class="draft-item">
+            <div class="draft-name">
+                {% if work.slug %}
+                    <a href="{% url 'core:work_detail' work.author.username work.slug %}">{{ work.title }}</a>
+                {% else %}
+                    {{ work.title }}
+                {% endif %}
+            </div>
+            <span class="draft-status" style="font-size:11px;background:#FFF3CD;color:#856404;padding:3px 8px;border-radius:10px;font-weight:600;">Черновик</span>
+            <span class="draft-date">{{ work.created_at|date:"d.m.Y" }}</span>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+</div>
+{% endif %}
+
+<!-- Warning history (staff) -->
+{% if user.is_staff and profile_user.warnings.all %}
+<div style="max-width:960px;margin:14px auto 0;">
+<div class="parchment-card">
+    <div class="card-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        История предупреждений
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px;">
+        {% for warning in profile_user.warnings.all %}
+        <div class="warning-item {% if warning.is_yellow %}yellow{% else %}red{% endif %}">
+            <div class="warning-bar {% if warning.is_yellow %}yellow{% else %}red{% endif %}"></div>
+            <div style="flex:1;">
+                <strong style="color:var(--text);font-size:14px;">{{ warning.moderator.username }}</strong>
+                <span style="color:var(--text-light);font-size:13px;"> выдал {{ warning.created_at|date:"d.m.Y H:i" }}</span>
+                <div style="color:var(--text);font-size:13px;margin-top:2px;">{{ warning.reason }}</div>
+            </div>
+            <form action="{% url 'accounts:warning_remove' warning.id %}" method="post" style="display:inline;">{% csrf_token %}
+                <button type="submit" class="btn-craft btn-craft-secondary" style="padding:4px 8px;font-size:11px;">Снять</button>
+            </form>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+</div>
+{% endif %}
+
+<!-- Works grid section below the grid -->
+{% if not works_by_category %}
+<div class="tabs-bar-full" style="margin-top:24px;">
     <div class="tabs-bar">
-        <span class="tab-btn active">Работы ({{ works|length }})</span>
+        <span class="tab-btn active">Работы</span>
         {% if collections %}<span class="tab-btn">Подборки ({{ collections|length }})</span>{% endif %}
         <a href="{% url 'accounts:user_projects' profile_user.username %}" class="tab-btn">Проекты</a>
         <a href="{% url 'accounts:portfolio_user' profile_user.username %}" class="tab-btn">Портфолио</a>
@@ -482,54 +1060,84 @@ textarea.craft-input:focus { border-color: var(--primary); }
         <div class="tabs-right">
             <a href="{% url 'accounts:favorite_categories' %}" class="tab-btn">Категории</a>
             <a href="{% url 'core:drafts' %}" class="tab-btn">Черновики</a>
-            <a href="{% url 'accounts:edit' %}" class="tab-btn">Редактировать</a>
-            <a href="{% url 'accounts:profile_test' %}" class="tab-btn" style="background:var(--primary-light);color:white;border-color:var(--primary-light);">Тест</a>
         </div>
         {% endif %}
     </div>
+</div>
 
-    {% if works %}
-    <div class="works-craft-grid">
-        {% for work in works %}
-        <div class="craft-work-card">
-            {% if work.cover %}
-                <a href="{% url 'core:work_detail' work.author.username work.slug %}">
-                    <img class="cover" src="{{ work.cover.url }}" alt="{{ work.title }}">
-                </a>
-            {% else %}
-                <div class="no-cover">
-                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--primary-light)" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
-                </div>
-            {% endif %}
-            <div class="craft-work-body">
-                <span class="cat-badge">{{ work.category.name }}</span>
-                <h3><a href="{% url 'core:work_detail' work.author.username work.slug %}">{{ work.title }}</a></h3>
-                <div class="craft-mini-stats">
-                    <span><img src="/static/icons/{{ icon_set }}/heart.svg" alt=""> {{ work.likes_count }}</span>
-                    <span><img src="/static/icons/{{ icon_set }}/eye.svg" alt=""> {{ work.views_count }}</span>
-                    <span><img src="/static/icons/{{ icon_set }}/message.svg" alt=""> {{ work.comments_count }}</span>
-                </div>
-            </div>
-        </div>
-        {% endfor %}
-    </div>
-    {% else %}
-    <div class="craft-card">
-        <div class="empty-state">
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--primary-light)" stroke-width="1.5" style="margin-bottom:12px;"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
-            <p style="font-size:16px;margin-bottom:8px;color:var(--text-light);">Опубликованных работ пока нет.</p>
-            {% if user == profile_user %}
-            <a href="{% url 'core:work_create' %}" class="btn-craft btn-craft-primary" style="display:inline-block;margin-top:8px;">Создать работу</a>
-            {% endif %}
-        </div>
-    </div>
+<div class="works-section" style="max-width:960px;margin:20px auto 40px;">
+<div class="empty-state">
+    <p style="font-size:16px;margin-bottom:8px;color:var(--text-light);">Опубликованных работ пока нет.</p>
+    {% if user == profile_user %}
+    <a href="{% url 'core:work_create' %}" class="btn-craft btn-craft-primary" style="display:inline-block;margin-top:8px;">Создать работу</a>
     {% endif %}
 </div>
+</div>
+{% endif %}
+
 {% endblock %}
 
 {% block extra_js %}
-{% if user.is_staff %}
 <script>
+// Category tab switching for works feed
+(function() {
+    const tabs = document.querySelectorAll('.category-tab');
+    if (!tabs.length) return;
+
+    tabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+            const catId = this.getAttribute('data-category');
+
+            // Tab active state
+            tabs.forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+
+            // Get all work categories
+            const allGroups = document.querySelectorAll('.works-works-group');
+
+            if (catId === 'all') {
+                // Show all works
+                document.querySelectorAll('#works-all .work-list-item').forEach(item => {
+                    item.style.display = '';
+                });
+                // Hide individual category groups
+                allGroups.forEach(g => {
+                    if (g.id !== 'works-cat-all') g.style.display = 'none';
+                });
+                if (document.getElementById('works-cat-all')) {
+                    document.getElementById('works-cat-all').style.display = '';
+                }
+            } else {
+                // Hide all items in works-all
+                allGroups.forEach(g => g.style.display = 'none');
+                document.querySelectorAll('#works-all .work-list-item').forEach(item => {
+                    item.style.display = 'none';
+                });
+                // Show only specific category group
+                const target = document.getElementById('works-cat-' + catId);
+                if (target) target.style.display = 'block';
+            }
+        });
+    });
+})();
+
+// Toggle widget visibility
+function toggleWidget(widgetType) {
+    const csrf = document.querySelector('[name=csrfmiddlewaretoken]')?.value || '{{ csrf_token }}';
+    fetch(`/accounts/profile/${encodeURIComponent('{{ profile_user.username }}')}/widget/${widgetType}/toggle/`, {
+        method: 'POST',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRFToken': csrf,
+        },
+    }).then(r => r.json()).then(data => {
+        if (data.success) {
+            location.reload();
+        }
+    });
+}
+
+{% if user.is_staff %}
 function toggleBan() {
     const isBanned = {{ profile.is_banned|yesno:"true,false" }};
     if (isBanned) {
@@ -544,6 +1152,6 @@ function toggleBan() {
         }
     }
 }
-</script>
 {% endif %}
+</script>
 {% endblock %}
